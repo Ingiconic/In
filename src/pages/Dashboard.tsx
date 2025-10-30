@@ -11,6 +11,8 @@ import {
   LogOut,
   FileText,
   HelpCircle,
+  Sparkles,
+  TrendingUp,
 } from "lucide-react";
 
 const Dashboard = () => {
@@ -77,29 +79,64 @@ const Dashboard = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+      <div className="min-h-screen flex items-center justify-center gradient-hero">
+        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-white"></div>
       </div>
     );
   }
 
+  const features = [
+    {
+      title: "خلاصه‌سازی مطالب",
+      description: "جزوات و مطالب درسی خود را خلاصه کنید",
+      icon: FileText,
+      gradient: "gradient-primary",
+      path: "/summarize",
+      delay: "0s",
+    },
+    {
+      title: "حل سوالات",
+      description: "سوالات خود را از هوش مصنوعی بپرسید",
+      icon: HelpCircle,
+      gradient: "gradient-secondary",
+      path: "/questions",
+      delay: "0.1s",
+    },
+    {
+      title: "مشاوره تحصیلی",
+      description: "راهنمایی و مشاوره شخصی‌سازی شده",
+      icon: MessageSquare,
+      gradient: "gradient-accent",
+      path: "/consultation",
+      delay: "0.2s",
+    },
+    {
+      title: "برنامه مطالعه",
+      description: "برنامه‌ریزی هوشمند برای مطالعه",
+      icon: Calendar,
+      gradient: "gradient-primary",
+      path: "/study-plan",
+      delay: "0.3s",
+    },
+  ];
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="border-b bg-card">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+      <header className="border-b border-border/50 bg-card/50 backdrop-blur-lg sticky top-0 z-50">
+        <div className="container mx-auto px-4 py-4 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="gradient-hero p-2 rounded-lg">
+            <div className="gradient-hero p-2 rounded-lg shadow-glow">
               <BookOpen className="w-6 h-6 text-white" />
             </div>
-            <div>
-              <h1 className="text-xl font-bold">پلتفرم یادگیری هوشمند</h1>
+            <div className="text-center sm:text-right">
+              <h1 className="text-xl font-bold text-gradient">پلتفرم یادگیری هوشمند</h1>
               <p className="text-sm text-muted-foreground">
-                خوش آمدید، {profile?.full_name}
+                خوش آمدید، {profile?.full_name} 👋
               </p>
             </div>
           </div>
-          <Button variant="ghost" onClick={handleLogout} size="sm">
+          <Button variant="ghost" onClick={handleLogout} size="sm" className="hover:shadow-glow">
             <LogOut className="ml-2 w-4 h-4" />
             خروج
           </Button>
@@ -108,98 +145,91 @@ const Dashboard = () => {
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
-        <div className="mb-8 animate-fade-in">
-          <h2 className="text-3xl font-bold mb-2">داشبورد من</h2>
-          <p className="text-muted-foreground">
-            ابزارهای هوشمند برای پیشرفت تحصیلی شما
-          </p>
+        {/* Welcome Banner */}
+        <Card className="p-8 mb-8 gradient-hero text-white shadow-glow animate-fade-in relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-0 left-0 w-80 h-80 bg-white/5 rounded-full blur-3xl"></div>
+          
+          <div className="relative z-10">
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+              <div>
+                <h2 className="text-3xl md:text-4xl font-bold mb-2 flex items-center gap-3">
+                  <Sparkles className="w-8 h-8 animate-pulse" />
+                  داشبورد من
+                </h2>
+                <p className="text-lg text-white/90">
+                  ابزارهای هوشمند برای پیشرفت تحصیلی شما
+                </p>
+              </div>
+              <div className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-lg backdrop-blur-sm">
+                <TrendingUp className="w-5 h-5" />
+                <span className="font-bold">آماده یادگیری</span>
+              </div>
+            </div>
+          </div>
+        </Card>
+
+        {/* Feature Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {features.map((feature, index) => (
+            <Card
+              key={index}
+              className="p-6 hover:shadow-glow hover:border-primary/50 transition-all duration-300 cursor-pointer group animate-fade-in hover:scale-105"
+              style={{ animationDelay: feature.delay }}
+              onClick={() => navigate(feature.path)}
+            >
+              <div className="flex flex-col h-full">
+                <div className={`${feature.gradient} w-14 h-14 rounded-xl flex items-center justify-center mb-4 shadow-neon group-hover:shadow-glow transition-all`}>
+                  <feature.icon className="w-7 h-7 text-white" />
+                </div>
+                <h3 className="text-xl font-bold mb-2 group-hover:text-gradient transition-all">
+                  {feature.title}
+                </h3>
+                <p className="text-muted-foreground text-sm mb-4 flex-1 leading-relaxed">
+                  {feature.description}
+                </p>
+                <Button variant="outline" size="sm" className="w-full group-hover:border-primary/50">
+                  شروع کنید
+                </Button>
+              </div>
+            </Card>
+          ))}
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {/* خلاصه‌سازی مطالب */}
-          <Card
-            className="p-6 hover:shadow-lg transition-all duration-300 cursor-pointer animate-fade-in"
-            style={{ animationDelay: "0.1s" }}
-            onClick={() => navigate("/summarize")}
-          >
-            <div className="flex items-start gap-4">
-              <div className="gradient-primary p-3 rounded-lg">
+        {/* Quick Stats */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-8">
+          <Card className="p-6 shadow-glow border-primary/20 animate-fade-in" style={{ animationDelay: "0.4s" }}>
+            <div className="flex items-center gap-4">
+              <div className="gradient-primary p-3 rounded-lg shadow-neon">
                 <FileText className="w-6 h-6 text-white" />
               </div>
-              <div className="flex-1">
-                <h3 className="text-xl font-bold mb-2">خلاصه‌سازی مطالب</h3>
-                <p className="text-muted-foreground text-sm mb-4">
-                  جزوات و مطالب درسی خود را خلاصه کنید
-                </p>
-                <Button variant="outline" size="sm">
-                  شروع کنید
-                </Button>
+              <div>
+                <p className="text-2xl font-bold">0</p>
+                <p className="text-sm text-muted-foreground">مطالب خلاصه شده</p>
               </div>
             </div>
           </Card>
 
-          {/* حل سوالات */}
-          <Card
-            className="p-6 hover:shadow-lg transition-all duration-300 cursor-pointer animate-fade-in"
-            style={{ animationDelay: "0.2s" }}
-            onClick={() => navigate("/questions")}
-          >
-            <div className="flex items-start gap-4">
-              <div className="gradient-secondary p-3 rounded-lg">
+          <Card className="p-6 shadow-glow border-secondary/20 animate-fade-in" style={{ animationDelay: "0.5s" }}>
+            <div className="flex items-center gap-4">
+              <div className="gradient-secondary p-3 rounded-lg shadow-neon">
                 <HelpCircle className="w-6 h-6 text-white" />
               </div>
-              <div className="flex-1">
-                <h3 className="text-xl font-bold mb-2">حل سوالات</h3>
-                <p className="text-muted-foreground text-sm mb-4">
-                  سوالات خود را از هوش مصنوعی بپرسید
-                </p>
-                <Button variant="outline" size="sm">
-                  شروع کنید
-                </Button>
+              <div>
+                <p className="text-2xl font-bold">0</p>
+                <p className="text-sm text-muted-foreground">سوالات پرسیده شده</p>
               </div>
             </div>
           </Card>
 
-          {/* مشاوره تحصیلی */}
-          <Card
-            className="p-6 hover:shadow-lg transition-all duration-300 cursor-pointer animate-fade-in"
-            style={{ animationDelay: "0.3s" }}
-            onClick={() => navigate("/consultation")}
-          >
-            <div className="flex items-start gap-4">
-              <div className="gradient-accent p-3 rounded-lg">
-                <MessageSquare className="w-6 h-6 text-white" />
-              </div>
-              <div className="flex-1">
-                <h3 className="text-xl font-bold mb-2">مشاوره تحصیلی</h3>
-                <p className="text-muted-foreground text-sm mb-4">
-                  راهنمایی و مشاوره شخصی‌سازی شده
-                </p>
-                <Button variant="outline" size="sm">
-                  شروع کنید
-                </Button>
-              </div>
-            </div>
-          </Card>
-
-          {/* برنامه‌ریزی مطالعه */}
-          <Card
-            className="p-6 hover:shadow-lg transition-all duration-300 cursor-pointer animate-fade-in"
-            style={{ animationDelay: "0.4s" }}
-            onClick={() => navigate("/study-plan")}
-          >
-            <div className="flex items-start gap-4">
-              <div className="bg-primary p-3 rounded-lg">
+          <Card className="p-6 shadow-glow border-accent/20 animate-fade-in" style={{ animationDelay: "0.6s" }}>
+            <div className="flex items-center gap-4">
+              <div className="gradient-accent p-3 rounded-lg shadow-neon">
                 <Calendar className="w-6 h-6 text-white" />
               </div>
-              <div className="flex-1">
-                <h3 className="text-xl font-bold mb-2">برنامه مطالعه</h3>
-                <p className="text-muted-foreground text-sm mb-4">
-                  برنامه‌ریزی هوشمند برای مطالعه
-                </p>
-                <Button variant="outline" size="sm">
-                  شروع کنید
-                </Button>
+              <div>
+                <p className="text-2xl font-bold">0</p>
+                <p className="text-sm text-muted-foreground">برنامه‌های مطالعه</p>
               </div>
             </div>
           </Card>
