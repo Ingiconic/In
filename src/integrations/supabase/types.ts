@@ -322,6 +322,48 @@ export type Database = {
         }
         Relationships: []
       }
+      points_history: {
+        Row: {
+          created_at: string | null
+          exam_id: string | null
+          id: string
+          points_change: number
+          reason: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          exam_id?: string | null
+          id?: string
+          points_change: number
+          reason: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          exam_id?: string | null
+          id?: string
+          points_change?: number
+          reason?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "points_history_exam_id_fkey"
+            columns: ["exam_id"]
+            isOneToOne: false
+            referencedRelation: "exams"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "points_history_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           birth_date: string | null
@@ -528,6 +570,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      award_exam_points: {
+        Args: { exam_id_param: string; points_to_award: number }
+        Returns: undefined
+      }
       create_friendship: { Args: { request_id: string }; Returns: undefined }
     }
     Enums: {

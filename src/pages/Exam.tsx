@@ -54,52 +54,24 @@ const Exam = () => {
   };
 
   const submitExam = async () => {
-    let score = 0;
-    exam.questions.forEach((q: any, index: number) => {
-      if (answers[index] === q.correct_answer) {
-        score++;
-      }
-    });
+    if (!exam) return;
 
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('لطفا ابتدا وارد شوید');
 
-      const percentageScore = Math.round((score / exam.questions.length) * 100);
-      
-      // Calculate points: 10 base points + correct answers + bonus for high scores
-      let pointsAwarded = 10 + score;
-      if (percentageScore >= 100) {
-        pointsAwarded += 10; // Perfect score bonus
-      } else if (percentageScore >= 80) {
-        pointsAwarded += 5; // High score bonus
-      }
-
-      // Save exam
-      await supabase.from('exams').insert({
-        user_id: user.id,
-        title: `آزمون ${new Date().toLocaleDateString('fa-IR')}`,
-        questions: exam.questions,
-        answers: answers,
-        score: percentageScore,
-        points_awarded: pointsAwarded,
-        completed_at: new Date().toISOString(),
+      // Call secure edge function to submit exam
+      const { data, error } = await supabase.functions.invoke('submit-exam', {
+        body: {
+          examQuestions: exam.questions,
+          userAnswers: answers,
+          examTitle: `آزمون ${new Date().toLocaleDateString("fa-IR")}`,
+        },
       });
 
-      // Update user points and exam count
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('points, exams_taken')
-        .eq('id', user.id)
-        .single();
+      if (error) throw error;
 
-      await supabase
-        .from('profiles')
-        .update({
-          points: (profile?.points || 0) + pointsAwarded,
-          exams_taken: (profile?.exams_taken || 0) + 1,
-        })
-        .eq('id', user.id);
+      const { score: percentageScore, pointsAwarded } = data;
 
       setShowResults(true);
       toast({
@@ -107,9 +79,10 @@ const Exam = () => {
         description: `نمره: ${percentageScore} | امتیاز کسب شده: ${pointsAwarded}`,
       });
     } catch (error: any) {
+      console.error("Error submitting exam:", error);
       toast({
         title: "خطا",
-        description: error.message,
+        description: error.message || "لطفا دوباره تلاش کنید",
         variant: "destructive",
       });
     }
