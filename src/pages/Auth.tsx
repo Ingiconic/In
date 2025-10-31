@@ -9,9 +9,12 @@ import { BookOpen, GraduationCap, Sparkles } from "lucide-react";
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
+  const [grade, setGrade] = useState("");
+  const [field, setField] = useState("");
+  const [birthDate, setBirthDate] = useState("");
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -38,8 +41,19 @@ const Auth = () => {
 
     try {
       if (isLogin) {
+        // For login, we need to get the user's email from username
+        const { data: profiles } = await supabase
+          .from('profiles')
+          .select('id')
+          .eq('username', username)
+          .single();
+
+        if (!profiles) {
+          throw new Error('نام کاربری یافت نشد');
+        }
+
         const { error } = await supabase.auth.signInWithPassword({
-          email,
+          email: `${username}@temp.local`,
           password,
         });
 
@@ -50,18 +64,27 @@ const Auth = () => {
           description: "با موفقیت وارد شدید",
         });
       } else {
-        const { error } = await supabase.auth.signUp({
-          email,
+        // Validate required fields
+        if (parseInt(grade) >= 9 && !field) {
+          throw new Error('لطفا رشته تحصیلی را انتخاب کنید');
+        }
+
+        const { data: authData, error: signUpError } = await supabase.auth.signUp({
+          email: `${username}@temp.local`,
           password,
           options: {
             data: {
               full_name: fullName,
+              username: username,
+              grade: grade,
+              field: parseInt(grade) >= 9 ? field : null,
+              birth_date: birthDate,
             },
             emailRedirectTo: `${window.location.origin}/dashboard`,
           },
         });
 
-        if (error) throw error;
+        if (signUpError) throw signUpError;
 
         toast({
           title: "ثبت‌نام موفق! 🎊",
@@ -112,26 +135,73 @@ const Auth = () => {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {!isLogin && (
-            <div className="space-y-2">
-              <label className="text-sm font-medium">نام و نام خانوادگی</label>
-              <Input
-                type="text"
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-                placeholder="نام خود را وارد کنید"
-                required={!isLogin}
-                className="bg-input border-border/50 focus:border-primary/50 focus:ring-primary/20"
-              />
-            </div>
+            <>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">نام و نام خانوادگی</label>
+                <Input
+                  type="text"
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  placeholder="نام خود را وارد کنید"
+                  required={!isLogin}
+                  className="bg-input border-border/50 focus:border-primary/50 focus:ring-primary/20"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium">تاریخ تولد</label>
+                <Input
+                  type="date"
+                  value={birthDate}
+                  onChange={(e) => setBirthDate(e.target.value)}
+                  required={!isLogin}
+                  className="bg-input border-border/50 focus:border-primary/50 focus:ring-primary/20"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium">مقطع تحصیلی</label>
+                <select
+                  value={grade}
+                  onChange={(e) => setGrade(e.target.value)}
+                  required={!isLogin}
+                  className="flex h-10 w-full rounded-md border border-input bg-input px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                >
+                  <option value="">انتخاب کنید</option>
+                  {[...Array(12)].map((_, i) => (
+                    <option key={i + 1} value={i + 1}>
+                      پایه {i + 1}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {parseInt(grade) >= 9 && (
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">رشته تحصیلی</label>
+                  <select
+                    value={field}
+                    onChange={(e) => setField(e.target.value)}
+                    required={parseInt(grade) >= 9}
+                    className="flex h-10 w-full rounded-md border border-input bg-input px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                  >
+                    <option value="">انتخاب کنید</option>
+                    <option value="math">ریاضی</option>
+                    <option value="science">تجربی</option>
+                    <option value="humanities">انسانی</option>
+                  </select>
+                </div>
+              )}
+            </>
           )}
 
           <div className="space-y-2">
-            <label className="text-sm font-medium">ایمیل</label>
+            <label className="text-sm font-medium">نام کاربری</label>
             <Input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="email@example.com"
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="نام کاربری خود را وارد کنید"
               required
               className="bg-input border-border/50 focus:border-primary/50 focus:ring-primary/20"
             />
@@ -167,7 +237,7 @@ const Auth = () => {
           </Button>
         </form>
 
-        <div className="text-center">
+        <div className="text-center space-y-3">
           <button
             type="button"
             onClick={() => setIsLogin(!isLogin)}
@@ -175,6 +245,9 @@ const Auth = () => {
           >
             {isLogin ? "حساب کاربری ندارید؟ ثبت‌نام کنید" : "حساب دارید؟ وارد شوید"}
           </button>
+          <p className="text-xs text-muted-foreground">
+            Made by مهدی رنجبر
+          </p>
         </div>
       </Card>
     </div>

@@ -14,27 +14,69 @@ export type Database = {
   }
   public: {
     Tables: {
+      exams: {
+        Row: {
+          answers: Json | null
+          completed_at: string | null
+          created_at: string | null
+          id: string
+          questions: Json
+          score: number | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          answers?: Json | null
+          completed_at?: string | null
+          created_at?: string | null
+          id?: string
+          questions: Json
+          score?: number | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          answers?: Json | null
+          completed_at?: string | null
+          created_at?: string | null
+          id?: string
+          questions?: Json
+          score?: number | null
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
+          birth_date: string | null
           created_at: string
+          field: string | null
           full_name: string
           grade: string | null
           id: string
           updated_at: string
+          username: string | null
         }
         Insert: {
+          birth_date?: string | null
           created_at?: string
+          field?: string | null
           full_name: string
           grade?: string | null
           id: string
           updated_at?: string
+          username?: string | null
         }
         Update: {
+          birth_date?: string | null
           created_at?: string
+          field?: string | null
           full_name?: string
           grade?: string | null
           id?: string
           updated_at?: string
+          username?: string | null
         }
         Relationships: []
       }
@@ -62,6 +104,75 @@ export type Database = {
           question?: string
           subject?: string | null
           user_id?: string
+        }
+        Relationships: []
+      }
+      step_by_step_solutions: {
+        Row: {
+          created_at: string | null
+          field: string | null
+          grade: string
+          id: string
+          page_number: number
+          question_number: number
+          solution: string
+          subject: string
+        }
+        Insert: {
+          created_at?: string | null
+          field?: string | null
+          grade: string
+          id?: string
+          page_number: number
+          question_number: number
+          solution: string
+          subject: string
+        }
+        Update: {
+          created_at?: string | null
+          field?: string | null
+          grade?: string
+          id?: string
+          page_number?: number
+          question_number?: number
+          solution?: string
+          subject?: string
+        }
+        Relationships: []
+      }
+      study_books: {
+        Row: {
+          book_type: string
+          content: string
+          created_at: string | null
+          field: string | null
+          grade: string
+          id: string
+          subject: string
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          book_type?: string
+          content: string
+          created_at?: string | null
+          field?: string | null
+          grade: string
+          id?: string
+          subject: string
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          book_type?: string
+          content?: string
+          created_at?: string | null
+          field?: string | null
+          grade?: string
+          id?: string
+          subject?: string
+          title?: string
+          updated_at?: string | null
         }
         Relationships: []
       }

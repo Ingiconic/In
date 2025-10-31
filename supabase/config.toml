@@ -8,3 +8,12 @@ verify_jwt = true
 
 [functions.ai-consultation]
 verify_jwt = true
+
+[functions.ai-image-analysis]
+verify_jwt = true
+
+[functions.ai-exam-generator]
+verify_jwt = true
+
+[functions.ai-study-planner]
+verify_jwt = true

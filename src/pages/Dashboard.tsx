@@ -13,6 +13,8 @@ import {
   HelpCircle,
   Sparkles,
   TrendingUp,
+  BookCheck,
+  Brain,
 } from "lucide-react";
 
 const Dashboard = () => {
@@ -100,7 +102,7 @@ const Dashboard = () => {
       icon: HelpCircle,
       gradient: "gradient-secondary",
       path: "/questions",
-      delay: "0.1s",
+      delay: "0.05s",
     },
     {
       title: "مشاوره تحصیلی",
@@ -108,7 +110,7 @@ const Dashboard = () => {
       icon: MessageSquare,
       gradient: "gradient-accent",
       path: "/consultation",
-      delay: "0.2s",
+      delay: "0.1s",
     },
     {
       title: "برنامه مطالعه",
@@ -116,6 +118,30 @@ const Dashboard = () => {
       icon: Calendar,
       gradient: "gradient-primary",
       path: "/study-plan",
+      delay: "0.15s",
+    },
+    {
+      title: "جزوات درسی",
+      description: "دسترسی به جزوات همه دروس",
+      icon: BookOpen,
+      gradient: "gradient-secondary",
+      path: "/study-books",
+      delay: "0.2s",
+    },
+    {
+      title: "گام به گام",
+      description: "پاسخ‌های تشریحی سوالات کتاب",
+      icon: BookCheck,
+      gradient: "gradient-accent",
+      path: "/step-by-step",
+      delay: "0.25s",
+    },
+    {
+      title: "آزمون هوشمند",
+      description: "ایجاد آزمون با هوش مصنوعی",
+      icon: Brain,
+      gradient: "gradient-primary",
+      path: "/exam",
       delay: "0.3s",
     },
   ];
@@ -170,7 +196,7 @@ const Dashboard = () => {
         </Card>
 
         {/* Feature Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {features.map((feature, index) => (
             <Card
               key={index}
