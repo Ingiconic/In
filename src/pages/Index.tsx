@@ -206,6 +206,20 @@ const Index = () => {
         </div>
       </section>
 
+      {/* About Creator Section */}
+      <section className="py-12 bg-gradient-to-b from-background to-card/30">
+        <div className="container mx-auto px-4 text-center">
+          <div className="inline-block bg-card/50 backdrop-blur-sm px-8 py-4 rounded-xl border border-primary/20 shadow-glow animate-fade-in">
+            <p className="text-muted-foreground text-sm mb-2">
+              این وبسایت با ❤️ ساخته شده توسط
+            </p>
+            <h3 className="text-2xl font-bold text-gradient">
+              مهدی رنجبر
+            </h3>
+          </div>
+        </div>
+      </section>
+
       {/* CTA Section */}
       <section className="py-24 gradient-hero relative overflow-hidden">
         <div className="absolute inset-0 opacity-20">
