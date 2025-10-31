@@ -575,6 +575,14 @@ export type Database = {
         Returns: undefined
       }
       create_friendship: { Args: { request_id: string }; Returns: undefined }
+      is_channel_member: {
+        Args: { _channel_id: string; _user_id: string }
+        Returns: boolean
+      }
+      is_group_member: {
+        Args: { _group_id: string; _user_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never
