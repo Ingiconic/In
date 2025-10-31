@@ -84,10 +84,15 @@ const Summarize = () => {
               <Button variant={type === "explain" ? "default" : "outline"} onClick={() => setType("explain")} className="flex-1">توضیح کامل</Button>
             </div>
             
-            <label className="flex items-center justify-center gap-2 p-4 border-2 border-dashed rounded-lg cursor-pointer hover:border-primary/50 mb-4">
+            <label className="flex flex-col items-center justify-center gap-2 p-4 border-2 border-dashed rounded-lg cursor-pointer hover:border-primary/50 mb-4 transition-all">
               <Image className="w-5 h-5" />
-              <span className="text-sm">آپلود تصویر</span>
+              <span className="text-sm">آپلود تصویر از گالری</span>
               <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
+            </label>
+            <label className="flex flex-col items-center justify-center gap-2 p-4 border-2 border-dashed rounded-lg cursor-pointer hover:border-primary/50 mb-4 transition-all">
+              <Image className="w-5 h-5" />
+              <span className="text-sm">عکس‌برداری با دوربین</span>
+              <input type="file" accept="image/*" capture="environment" onChange={handleImageUpload} className="hidden" />
             </label>
             {imagePreview && <div className="mb-4 relative"><img src={imagePreview} className="w-full rounded-lg" /><Button variant="destructive" size="sm" className="absolute top-2 left-2" onClick={() => { setImageFile(null); setImagePreview(""); }}>حذف</Button></div>}
 

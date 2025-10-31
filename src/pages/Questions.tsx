@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { ArrowRight, Send, Brain, Loader2, MessageCircle } from "lucide-react";
+import { ArrowRight, Send, Brain, Loader2, MessageCircle, Image } from "lucide-react";
 
 const Questions = () => {
   const navigate = useNavigate();
@@ -13,12 +13,24 @@ const Questions = () => {
   const [question, setQuestion] = useState("");
   const [messages, setMessages] = useState<Array<{ role: string; content: string }>>([]);
   const [loading, setLoading] = useState(false);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string>("");
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImageFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => setImagePreview(reader.result as string);
+      reader.readAsDataURL(file);
+    }
+  };
 
   const handleAsk = async () => {
-    if (!question.trim()) {
+    if (!question.trim() && !imageFile) {
       toast({
         title: "خطا",
-        description: "لطفا سوال خود را بنویسید",
+        description: "لطفا سوال خود را بنویسید یا تصویر آپلود کنید",
         variant: "destructive",
       });
       return;
@@ -30,14 +42,23 @@ const Questions = () => {
     setLoading(true);
 
     try {
-      const { data, error } = await supabase.functions.invoke("ai-answer", {
-        body: { question },
-      });
-
-      if (error) throw error;
-
-      const aiMessage = { role: "assistant", content: data.answer };
-      setMessages((prev) => [...prev, aiMessage]);
+      if (imageFile) {
+        const { data, error } = await supabase.functions.invoke('ai-image-analysis', {
+          body: { image: imagePreview, prompt: question || 'لطفا این تصویر را تحلیل کن.' }
+        });
+        if (error) throw error;
+        const aiMessage = { role: "assistant", content: data.result };
+        setMessages((prev) => [...prev, aiMessage]);
+        setImageFile(null);
+        setImagePreview("");
+      } else {
+        const { data, error } = await supabase.functions.invoke("ai-answer", {
+          body: { question },
+        });
+        if (error) throw error;
+        const aiMessage = { role: "assistant", content: data.answer };
+        setMessages((prev) => [...prev, aiMessage]);
+      }
     } catch (error: any) {
       toast({
         title: "خطا",
@@ -111,18 +132,40 @@ const Questions = () => {
         </div>
 
         <Card className="p-4 shadow-glow border-primary/20">
-          <div className="flex gap-3">
-            <Input
-              value={question}
-              onChange={(e) => setQuestion(e.target.value)}
-              onKeyPress={(e) => e.key === "Enter" && !loading && handleAsk()}
-              placeholder="سوال خود را بنویسید..."
-              className="flex-1 bg-input border-border/50"
-              disabled={loading}
-            />
-            <Button onClick={handleAsk} disabled={loading} size="lg" className="shadow-glow">
-              <Send className="w-4 h-4" />
-            </Button>
+          <div className="flex flex-col gap-3">
+            {imagePreview && (
+              <div className="relative">
+                <img src={imagePreview} className="w-32 h-32 object-cover rounded-lg" />
+                <Button variant="destructive" size="sm" className="absolute top-1 left-1" onClick={() => { setImageFile(null); setImagePreview(""); }}>×</Button>
+              </div>
+            )}
+            <div className="flex gap-2">
+              <label className="cursor-pointer">
+                <Button type="button" variant="outline" size="sm" asChild>
+                  <span><Image className="w-4 h-4" /></span>
+                </Button>
+                <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
+              </label>
+              <label className="cursor-pointer">
+                <Button type="button" variant="outline" size="sm" asChild>
+                  <span>📷</span>
+                </Button>
+                <input type="file" accept="image/*" capture="environment" onChange={handleImageUpload} className="hidden" />
+              </label>
+            </div>
+            <div className="flex gap-3">
+              <Input
+                value={question}
+                onChange={(e) => setQuestion(e.target.value)}
+                onKeyPress={(e) => e.key === "Enter" && !loading && handleAsk()}
+                placeholder="سوال خود را بنویسید..."
+                className="flex-1 bg-input border-border/50"
+                disabled={loading}
+              />
+              <Button onClick={handleAsk} disabled={loading} size="lg" className="shadow-glow">
+                <Send className="w-4 h-4" />
+              </Button>
+            </div>
           </div>
         </Card>
       </main>

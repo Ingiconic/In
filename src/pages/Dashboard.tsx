@@ -16,6 +16,7 @@ import {
   BookCheck,
   Brain,
   MessagesSquare,
+  Info,
 } from "lucide-react";
 
 const Dashboard = () => {
@@ -172,17 +173,17 @@ const Dashboard = () => {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="ghost" onClick={() => navigate("/chat")} size="sm" className="hover:shadow-glow">
-              <MessageSquare className="ml-2 w-4 h-4" />
-              چت
+            <Button variant="ghost" size="sm" onClick={() => navigate("/about")} className="hover:shadow-glow">
+              <Info className="w-4 h-4" />
             </Button>
-            <Button variant="ghost" onClick={() => navigate("/progress")} size="sm" className="hover:shadow-glow">
-              <TrendingUp className="ml-2 w-4 h-4" />
-              پیشرفت
+            <Button variant="ghost" size="sm" onClick={() => navigate("/progress")} className="hover:shadow-glow">
+              <TrendingUp className="w-4 h-4" />
             </Button>
-            <Button variant="ghost" onClick={handleLogout} size="sm" className="hover:shadow-glow">
-              <LogOut className="ml-2 w-4 h-4" />
-              خروج
+            <Button variant="ghost" size="sm" onClick={() => navigate("/chat")} className="hover:shadow-glow">
+              <MessagesSquare className="w-4 h-4" />
+            </Button>
+            <Button variant="ghost" size="sm" onClick={handleLogout} className="hover:bg-destructive/10 text-destructive">
+              <LogOut className="w-4 h-4" />
             </Button>
           </div>
         </div>
