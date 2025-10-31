@@ -45,23 +45,16 @@ const Auth = () => {
       const validatedUsername = usernameSchema.parse(username);
 
       if (isLogin) {
-        // For login, we need to get the user's email from username
-        const { data: profiles } = await supabase
-          .from('profiles')
-          .select('id')
-          .eq('username', validatedUsername)
-          .single();
-
-        if (!profiles) {
-          throw new Error('نام کاربری یافت نشد');
-        }
-
+        // Try login directly without revealing username existence
         const { error } = await supabase.auth.signInWithPassword({
           email: `${validatedUsername}@temp.local`,
           password,
         });
 
-        if (error) throw error;
+        if (error) {
+          // Generic error message - don't reveal if username exists
+          throw new Error('نام کاربری یا رمز عبور اشتباه است');
+        }
 
         toast({
           title: "خوش آمدید! 🎉",
