@@ -15,6 +15,7 @@ import {
   TrendingUp,
   BookCheck,
   Brain,
+  MessagesSquare,
 } from "lucide-react";
 
 const Dashboard = () => {
@@ -143,6 +144,14 @@ const Dashboard = () => {
       gradient: "gradient-primary",
       path: "/exam",
       delay: "0.3s",
+    },
+    {
+      title: "چت و ارتباطات",
+      description: "گفتگو با دوستان و عضویت در کانال‌ها",
+      icon: MessagesSquare,
+      gradient: "gradient-secondary",
+      path: "/chat",
+      delay: "0.35s",
     },
   ];
 
