@@ -7,9 +7,12 @@ import { Avatar } from "@/components/ui/avatar";
 import { ArrowRight, MessageSquare, Users, Radio, Search, Plus, Hash, User } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { messageSchema } from "@/lib/validation";
+import { useToast } from "@/hooks/use-toast";
 
 const Chat = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
   const [conversations, setConversations] = useState<any[]>([]);
   const [profile, setProfile] = useState<any>(null);
@@ -205,40 +208,56 @@ const Chat = () => {
   const sendMessage = async () => {
     if (!messageInput.trim()) return;
 
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
+    try {
+      // Validate message
+      const validatedMessage = messageSchema.parse({ content: messageInput });
 
-    if (selectedConversation.type === 'channel') {
-      const { data: channel } = await supabase
-        .from("channels")
-        .select("owner_id")
-        .eq("id", selectedConversation.id)
-        .single();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
 
-      if (channel?.owner_id !== user.id) {
-        return;
+      if (selectedConversation.type === 'channel') {
+        const { data: channel } = await supabase
+          .from("channels")
+          .select("owner_id")
+          .eq("id", selectedConversation.id)
+          .single();
+
+        if (channel?.owner_id !== user.id) {
+          toast({
+            title: "خطا",
+            description: "فقط صاحب کانال می‌تواند پیام بفرستد",
+            variant: "destructive",
+          });
+          return;
+        }
+
+        await supabase.from("channel_messages").insert({
+          channel_id: selectedConversation.id,
+          user_id: user.id,
+          content: validatedMessage.content,
+        });
+      } else if (selectedConversation.type === 'group') {
+        await supabase.from("group_messages").insert({
+          group_id: selectedConversation.id,
+          user_id: user.id,
+          content: validatedMessage.content,
+        });
+      } else {
+        await supabase.from("direct_messages").insert({
+          sender_id: user.id,
+          receiver_id: selectedConversation.id,
+          content: validatedMessage.content,
+        });
       }
 
-      await supabase.from("channel_messages").insert({
-        channel_id: selectedConversation.id,
-        user_id: user.id,
-        content: messageInput,
-      });
-    } else if (selectedConversation.type === 'group') {
-      await supabase.from("group_messages").insert({
-        group_id: selectedConversation.id,
-        user_id: user.id,
-        content: messageInput,
-      });
-    } else {
-      await supabase.from("direct_messages").insert({
-        sender_id: user.id,
-        receiver_id: selectedConversation.id,
-        content: messageInput,
+      setMessageInput("");
+    } catch (error: any) {
+      toast({
+        title: "خطا",
+        description: error.message,
+        variant: "destructive",
       });
     }
-
-    setMessageInput("");
   };
 
   const filteredConversations = conversations.filter(c =>

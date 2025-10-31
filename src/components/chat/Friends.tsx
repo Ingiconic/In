@@ -6,6 +6,7 @@ import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { UserPlus, Check, X, MessageSquare } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { usernameSchema } from "@/lib/validation";
 
 interface FriendRequest {
   id: string;
@@ -76,6 +77,9 @@ const Friends = () => {
     setLoading(true);
 
     try {
+      // Validate username
+      const validatedUsername = usernameSchema.parse(username);
+
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("لطفاً وارد شوید");
 
@@ -83,7 +87,7 @@ const Friends = () => {
       const { data: targetUser, error: userError } = await supabase
         .from("profiles")
         .select("id")
-        .eq("username", username.trim())
+        .eq("username", validatedUsername)
         .single();
 
       if (userError || !targetUser) {

@@ -6,6 +6,7 @@ import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Plus, Send, Edit2, Trash2 } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
+import { messageSchema, groupNameSchema, descriptionSchema } from "@/lib/validation";
 
 interface Group {
   id: string;
@@ -112,14 +113,18 @@ const Groups = () => {
     if (!newGroupName.trim()) return;
 
     try {
+      // Validate inputs
+      const validatedName = groupNameSchema.parse(newGroupName);
+      const validatedDesc = descriptionSchema.parse(newGroupDesc);
+
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("لطفاً وارد شوید");
 
       const { data, error } = await supabase
         .from("groups")
         .insert({
-          name: newGroupName,
-          description: newGroupDesc,
+          name: validatedName,
+          description: validatedDesc,
           owner_id: user.id,
         })
         .select()
@@ -156,10 +161,13 @@ const Groups = () => {
     if (!message.trim() || !selectedGroup || !currentUserId) return;
 
     try {
+      // Validate message
+      const validatedMessage = messageSchema.parse({ content: message });
+
       if (editingId) {
         const { error } = await supabase
           .from("group_messages")
-          .update({ content: message, is_edited: true })
+          .update({ content: validatedMessage.content, is_edited: true })
           .eq("id", editingId);
 
         if (error) throw error;
@@ -168,7 +176,7 @@ const Groups = () => {
         const { error } = await supabase.from("group_messages").insert({
           group_id: selectedGroup,
           user_id: currentUserId,
-          content: message,
+          content: validatedMessage.content,
         });
 
         if (error) throw error;

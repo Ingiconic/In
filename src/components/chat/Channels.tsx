@@ -6,6 +6,7 @@ import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Plus, Send, Edit2, Trash2 } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
+import { messageSchema, channelNameSchema, descriptionSchema } from "@/lib/validation";
 
 interface Channel {
   id: string;
@@ -128,14 +129,18 @@ const Channels = () => {
     if (!newChannelName.trim()) return;
 
     try {
+      // Validate inputs
+      const validatedName = channelNameSchema.parse(newChannelName);
+      const validatedDesc = descriptionSchema.parse(newChannelDesc);
+
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("لطفاً وارد شوید");
 
       const { data, error } = await supabase
         .from("channels")
         .insert({
-          name: newChannelName,
-          description: newChannelDesc,
+          name: validatedName,
+          description: validatedDesc,
           owner_id: user.id,
         })
         .select()
@@ -181,10 +186,13 @@ const Channels = () => {
     }
 
     try {
+      // Validate message
+      const validatedMessage = messageSchema.parse({ content: message });
+
       if (editingId) {
         const { error } = await supabase
           .from("channel_messages")
-          .update({ content: message, is_edited: true })
+          .update({ content: validatedMessage.content, is_edited: true })
           .eq("id", editingId);
 
         if (error) throw error;
@@ -193,7 +201,7 @@ const Channels = () => {
         const { error } = await supabase.from("channel_messages").insert({
           channel_id: selectedChannel,
           user_id: currentUserId,
-          content: message,
+          content: validatedMessage.content,
         });
 
         if (error) throw error;

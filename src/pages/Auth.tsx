@@ -6,6 +6,7 @@ import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { BookOpen, GraduationCap, Sparkles } from "lucide-react";
+import { usernameSchema } from "@/lib/validation";
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -40,12 +41,15 @@ const Auth = () => {
     setLoading(true);
 
     try {
+      // Validate username
+      const validatedUsername = usernameSchema.parse(username);
+
       if (isLogin) {
         // For login, we need to get the user's email from username
         const { data: profiles } = await supabase
           .from('profiles')
           .select('id')
-          .eq('username', username)
+          .eq('username', validatedUsername)
           .single();
 
         if (!profiles) {
@@ -53,7 +57,7 @@ const Auth = () => {
         }
 
         const { error } = await supabase.auth.signInWithPassword({
-          email: `${username}@temp.local`,
+          email: `${validatedUsername}@temp.local`,
           password,
         });
 
@@ -70,12 +74,12 @@ const Auth = () => {
         }
 
         const { data: authData, error: signUpError } = await supabase.auth.signUp({
-          email: `${username}@temp.local`,
+          email: `${validatedUsername}@temp.local`,
           password,
           options: {
             data: {
               full_name: fullName,
-              username: username,
+              username: validatedUsername,
               grade: grade,
               field: parseInt(grade) >= 9 ? field : null,
               birth_date: birthDate,

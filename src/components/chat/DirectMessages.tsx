@@ -6,6 +6,7 @@ import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Send, Edit2, Trash2 } from "lucide-react";
 import { useSearchParams } from "react-router-dom";
+import { messageSchema } from "@/lib/validation";
 
 interface Message {
   id: string;
@@ -87,10 +88,13 @@ const DirectMessages = () => {
     if (!message.trim() || !selectedUserId || !currentUserId) return;
 
     try {
+      // Validate message
+      const validatedMessage = messageSchema.parse({ content: message });
+
       if (editingId) {
         const { error } = await supabase
           .from("direct_messages")
-          .update({ content: message, is_edited: true })
+          .update({ content: validatedMessage.content, is_edited: true })
           .eq("id", editingId);
 
         if (error) throw error;
@@ -99,7 +103,7 @@ const DirectMessages = () => {
         const { error } = await supabase.from("direct_messages").insert({
           sender_id: currentUserId,
           receiver_id: selectedUserId,
-          content: message,
+          content: validatedMessage.content,
         });
 
         if (error) throw error;
