@@ -14,6 +14,8 @@ import StudyBooks from "./pages/StudyBooks";
 import StepByStep from "./pages/StepByStep";
 import Exam from "./pages/Exam";
 import Chat from "./pages/Chat";
+import ChatFriends from "./pages/ChatFriends";
+import Progress from "./pages/Progress";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -36,6 +38,8 @@ const App = () => (
           <Route path="/step-by-step" element={<StepByStep />} />
           <Route path="/exam" element={<Exam />} />
           <Route path="/chat" element={<Chat />} />
+          <Route path="/chat/friends" element={<ChatFriends />} />
+          <Route path="/progress" element={<Progress />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

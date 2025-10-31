@@ -171,10 +171,20 @@ const Dashboard = () => {
               </p>
             </div>
           </div>
-          <Button variant="ghost" onClick={handleLogout} size="sm" className="hover:shadow-glow">
-            <LogOut className="ml-2 w-4 h-4" />
-            خروج
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" onClick={() => navigate("/chat")} size="sm" className="hover:shadow-glow">
+              <MessageSquare className="ml-2 w-4 h-4" />
+              چت
+            </Button>
+            <Button variant="ghost" onClick={() => navigate("/progress")} size="sm" className="hover:shadow-glow">
+              <TrendingUp className="ml-2 w-4 h-4" />
+              پیشرفت
+            </Button>
+            <Button variant="ghost" onClick={handleLogout} size="sm" className="hover:shadow-glow">
+              <LogOut className="ml-2 w-4 h-4" />
+              خروج
+            </Button>
+          </div>
         </div>
       </header>
 

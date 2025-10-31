@@ -65,19 +65,46 @@ const Exam = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('لطفا ابتدا وارد شوید');
 
+      const percentageScore = Math.round((score / exam.questions.length) * 100);
+      
+      // Calculate points: 10 base points + correct answers + bonus for high scores
+      let pointsAwarded = 10 + score;
+      if (percentageScore >= 100) {
+        pointsAwarded += 10; // Perfect score bonus
+      } else if (percentageScore >= 80) {
+        pointsAwarded += 5; // High score bonus
+      }
+
+      // Save exam
       await supabase.from('exams').insert({
         user_id: user.id,
         title: `آزمون ${new Date().toLocaleDateString('fa-IR')}`,
         questions: exam.questions,
         answers: answers,
-        score: Math.round((score / exam.questions.length) * 100),
+        score: percentageScore,
+        points_awarded: pointsAwarded,
         completed_at: new Date().toISOString(),
       });
+
+      // Update user points and exam count
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('points, exams_taken')
+        .eq('id', user.id)
+        .single();
+
+      await supabase
+        .from('profiles')
+        .update({
+          points: (profile?.points || 0) + pointsAwarded,
+          exams_taken: (profile?.exams_taken || 0) + 1,
+        })
+        .eq('id', user.id);
 
       setShowResults(true);
       toast({
         title: "آزمون ثبت شد! 🎉",
-        description: `نمره شما: ${Math.round((score / exam.questions.length) * 100)}`,
+        description: `نمره: ${percentageScore} | امتیاز کسب شده: ${pointsAwarded}`,
       });
     } catch (error: any) {
       toast({

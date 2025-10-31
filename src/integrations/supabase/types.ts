@@ -147,6 +147,7 @@ export type Database = {
           completed_at: string | null
           created_at: string | null
           id: string
+          points_awarded: number | null
           questions: Json
           score: number | null
           title: string
@@ -157,6 +158,7 @@ export type Database = {
           completed_at?: string | null
           created_at?: string | null
           id?: string
+          points_awarded?: number | null
           questions: Json
           score?: number | null
           title: string
@@ -167,6 +169,7 @@ export type Database = {
           completed_at?: string | null
           created_at?: string | null
           id?: string
+          points_awarded?: number | null
           questions?: Json
           score?: number | null
           title?: string
@@ -323,30 +326,36 @@ export type Database = {
         Row: {
           birth_date: string | null
           created_at: string
+          exams_taken: number | null
           field: string | null
           full_name: string
           grade: string | null
           id: string
+          points: number | null
           updated_at: string
           username: string | null
         }
         Insert: {
           birth_date?: string | null
           created_at?: string
+          exams_taken?: number | null
           field?: string | null
           full_name: string
           grade?: string | null
           id: string
+          points?: number | null
           updated_at?: string
           username?: string | null
         }
         Update: {
           birth_date?: string | null
           created_at?: string
+          exams_taken?: number | null
           field?: string | null
           full_name?: string
           grade?: string | null
           id?: string
+          points?: number | null
           updated_at?: string
           username?: string | null
         }
