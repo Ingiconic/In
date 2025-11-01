@@ -17,13 +17,13 @@ All colors MUST be HSL.
     --popover: 222 47% 14%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 280 100% 65%;
+    --primary: 248 73% 62%;
     --primary-foreground: 0 0% 100%;
-    --primary-hover: 280 100% 72%;
+    --primary-hover: 248 73% 72%;
 
-    --secondary: 180 100% 50%;
+    --secondary: 164 73% 60%;
     --secondary-foreground: 0 0% 100%;
-    --secondary-hover: 180 100% 57%;
+    --secondary-hover: 164 73% 67%;
 
     --accent: 340 100% 60%;
     --accent-foreground: 0 0% 100%;
@@ -44,11 +44,11 @@ All colors MUST be HSL.
 
     --radius: 1rem;
 
-    --gradient-primary: linear-gradient(135deg, hsl(280 100% 65%) 0%, hsl(260 100% 60%) 50%, hsl(240 100% 55%) 100%);
-    --gradient-secondary: linear-gradient(135deg, hsl(180 100% 50%) 0%, hsl(160 100% 45%) 50%, hsl(140 100% 50%) 100%);
+    --gradient-primary: linear-gradient(135deg, hsl(248 73% 62%) 0%, hsl(280 60% 50%) 100%);
+    --gradient-secondary: linear-gradient(135deg, hsl(164 73% 60%) 0%, hsl(164 60% 45%) 100%);
     --gradient-accent: linear-gradient(135deg, hsl(340 100% 60%) 0%, hsl(320 100% 55%) 50%, hsl(300 100% 60%) 100%);
-    --gradient-hero: linear-gradient(135deg, hsl(280 100% 40%) 0%, hsl(240 100% 35%) 30%, hsl(200 100% 30%) 60%, hsl(180 100% 35%) 100%);
-    --gradient-neon: linear-gradient(45deg, hsl(280 100% 65%), hsl(340 100% 60%), hsl(180 100% 50%));
+    --gradient-hero: linear-gradient(135deg, hsl(248 73% 62% / 0.05) 0%, hsl(164 73% 60% / 0.05) 100%);
+    --gradient-neon: linear-gradient(45deg, hsl(248 73% 62%), hsl(280 60% 50%), hsl(164 73% 60%));
 
     --shadow-sm: 0 1px 2px 0 hsl(280 100% 65% / 0.2);
     --shadow: 0 4px 6px -1px hsl(280 100% 65% / 0.3);

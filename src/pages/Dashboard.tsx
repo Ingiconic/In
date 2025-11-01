@@ -156,40 +156,46 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="border-b border-border/50 bg-card/50 backdrop-blur-lg sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="gradient-hero p-2 rounded-lg shadow-glow">
-              <BookOpen className="w-6 h-6 text-white" />
+      <header className="border-b border-border/50 glassmorphism backdrop-blur-lg sticky top-0 z-50">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center shadow-glow">
+                <Brain className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h1 className="text-xl font-bold text-gradient">Easy Dars</h1>
+                <p className="text-xs text-muted-foreground">
+                  خوش آمدید، {profile?.full_name} 👋
+                </p>
+              </div>
             </div>
-            <div className="text-center sm:text-right">
-              <h1 className="text-xl font-bold text-gradient">پلتفرم یادگیری هوشمند</h1>
-              <p className="text-sm text-muted-foreground">
-                خوش آمدید، {profile?.full_name} 👋
-              </p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" size="sm" onClick={() => navigate("/about")} className="hover:shadow-glow">
-              <Info className="w-4 h-4" />
-            </Button>
-            <Button variant="ghost" size="sm" onClick={() => navigate("/progress")} className="hover:shadow-glow">
-              <TrendingUp className="w-4 h-4" />
-            </Button>
-            <Button variant="ghost" size="sm" onClick={() => navigate("/chat")} className="hover:shadow-glow">
-              <MessagesSquare className="w-4 h-4" />
-            </Button>
-            <Button variant="ghost" size="sm" onClick={() => navigate("/profile")} className="hover:shadow-glow">
-              <UserIcon className="w-4 h-4" />
-            </Button>
-            {isAdmin && (
-              <Button variant="ghost" size="sm" onClick={() => navigate("/admin")} className="hover:shadow-glow">
-                <Shield className="w-4 h-4 text-primary" />
+            <div className="flex items-center gap-2">
+              <div className="hidden md:flex items-center gap-2 px-3 py-1 rounded-lg bg-primary/10 border border-primary/20">
+                <TrendingUp className="w-4 h-4 text-primary" />
+                <span className="text-sm font-bold text-primary">{profile?.points || 0} امتیاز</span>
+              </div>
+              <Button variant="ghost" size="sm" onClick={() => navigate("/about")} className="hover:shadow-glow" title="درباره">
+                <Info className="w-4 h-4" />
               </Button>
-            )}
-            <Button variant="ghost" size="sm" onClick={handleLogout} className="hover:bg-destructive/10 text-destructive">
-              <LogOut className="w-4 h-4" />
-            </Button>
+              <Button variant="ghost" size="sm" onClick={() => navigate("/progress")} className="hover:shadow-glow" title="پیشرفت">
+                <TrendingUp className="w-4 h-4" />
+              </Button>
+              <Button variant="ghost" size="sm" onClick={() => navigate("/chat")} className="hover:shadow-glow" title="پیام‌رسان">
+                <MessagesSquare className="w-4 h-4" />
+              </Button>
+              <Button variant="ghost" size="sm" onClick={() => navigate("/profile")} className="hover:shadow-glow" title="پروفایل">
+                <UserIcon className="w-4 h-4" />
+              </Button>
+              {isAdmin && (
+                <Button variant="ghost" size="sm" onClick={() => navigate("/admin")} className="hover:shadow-glow" title="مدیریت">
+                  <Shield className="w-4 h-4 text-primary" />
+                </Button>
+              )}
+              <Button variant="ghost" size="sm" onClick={handleLogout} className="hover:bg-destructive/10 text-destructive" title="خروج">
+                <LogOut className="w-4 h-4" />
+              </Button>
+            </div>
           </div>
         </div>
       </header>
@@ -197,24 +203,31 @@ const Dashboard = () => {
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
         {/* Welcome Banner */}
-        <Card className="p-8 mb-8 gradient-hero text-white shadow-glow animate-fade-in relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-0 left-0 w-80 h-80 bg-white/5 rounded-full blur-3xl"></div>
+        <Card className="p-6 md:p-8 mb-8 gradient-primary text-white shadow-glow animate-fade-in relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-full h-full opacity-10">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-white rounded-full blur-3xl animate-pulse"></div>
+            <div className="absolute bottom-0 left-0 w-64 h-64 bg-white rounded-full blur-3xl animate-pulse delay-500"></div>
+          </div>
           
           <div className="relative z-10">
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
               <div>
-                <h2 className="text-3xl md:text-4xl font-bold mb-2 flex items-center gap-3">
-                  <Sparkles className="w-8 h-8 animate-pulse" />
+                <h2 className="text-2xl md:text-4xl font-bold mb-2 flex items-center gap-3">
+                  <Sparkles className="w-6 h-6 md:w-8 md:h-8 animate-pulse" />
                   داشبورد من
                 </h2>
-                <p className="text-lg text-white/90">
-                  ابزارهای هوشمند برای پیشرفت تحصیلی شما
+                <p className="text-sm md:text-lg text-white/90">
+                  ابزارهای هوشمند برای پیشرفت تحصیلی تو
                 </p>
               </div>
-              <div className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-lg backdrop-blur-sm">
-                <TrendingUp className="w-5 h-5" />
-                <span className="font-bold">آماده یادگیری</span>
+              <div className="flex flex-col gap-2">
+                <div className="flex items-center gap-2 bg-white/20 px-4 py-2 rounded-lg backdrop-blur-sm">
+                  <TrendingUp className="w-5 h-5" />
+                  <span className="font-bold">Level {Math.floor((profile?.points || 0) / 100)}</span>
+                </div>
+                <div className="text-xs text-white/80 text-center">
+                  {profile?.exams_taken || 0} آزمون
+                </div>
               </div>
             </div>
           </div>
