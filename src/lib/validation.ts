@@ -30,5 +30,4 @@ export const groupNameSchema = channelNameSchema;
 export const descriptionSchema = z
   .string()
   .trim()
-  .max(500, "توضیحات حداکثر ۵۰۰ کاراکتر است")
-  .optional();
+  .max(500, "توضیحات حداکثر ۵۰۰ کاراکتر است");

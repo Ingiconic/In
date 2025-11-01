@@ -329,11 +329,14 @@ const Chat = () => {
   };
 
   const createChannel = async () => {
-    if (!newChannelName.trim()) return;
+    if (!newChannelName.trim()) {
+      toast({ title: "خطا", description: "لطفا نام کانال را وارد کنید", variant: "destructive" });
+      return;
+    }
 
     try {
       const validatedName = channelNameSchema.parse(newChannelName);
-      const validatedDesc = descriptionSchema.parse(newChannelDesc);
+      const validatedDesc = newChannelDesc.trim() ? descriptionSchema.parse(newChannelDesc) : "";
 
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("لطفاً وارد شوید");
@@ -342,7 +345,7 @@ const Chat = () => {
         .from("channels")
         .insert({
           name: validatedName,
-          description: validatedDesc,
+          description: validatedDesc || null,
           owner_id: user.id,
         })
         .select()
@@ -366,11 +369,14 @@ const Chat = () => {
   };
 
   const createGroup = async () => {
-    if (!newGroupName.trim()) return;
+    if (!newGroupName.trim()) {
+      toast({ title: "خطا", description: "لطفا نام گروه را وارد کنید", variant: "destructive" });
+      return;
+    }
 
     try {
       const validatedName = groupNameSchema.parse(newGroupName);
-      const validatedDesc = descriptionSchema.parse(newGroupDesc);
+      const validatedDesc = newGroupDesc.trim() ? descriptionSchema.parse(newGroupDesc) : "";
 
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("لطفاً وارد شوید");
@@ -379,7 +385,7 @@ const Chat = () => {
         .from("groups")
         .insert({
           name: validatedName,
-          description: validatedDesc,
+          description: validatedDesc || null,
           owner_id: user.id,
         })
         .select()
@@ -438,22 +444,22 @@ const Chat = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="border-b border-border/50 bg-card/50 backdrop-blur-lg sticky top-0 z-50">
+      <header className="glassmorphism border-b border-border/30 sticky top-0 z-50 animate-fade-in">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center gap-4">
             <Button
               variant="ghost"
               size="sm"
               onClick={() => navigate("/dashboard")}
-              className="hover:shadow-glow"
+              className="hover:shadow-glow hover-lift transition-all"
             >
               <ArrowRight className="w-4 h-4" />
             </Button>
             <div className="flex items-center gap-3">
-              <div className="gradient-primary p-2 rounded-lg shadow-glow">
+              <div className="gradient-primary p-2 rounded-xl shadow-glow animate-pulse-glow">
                 <MessageSquare className="w-6 h-6 text-white" />
               </div>
-              <h1 className="text-xl font-bold text-gradient">پیام‌رسان ایزی درس</h1>
+              <h1 className="text-xl font-bold text-gradient animate-neon-pulse">پیام‌رسان ایزی درس</h1>
             </div>
           </div>
         </div>
@@ -462,19 +468,19 @@ const Chat = () => {
       <div className="container mx-auto p-4">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 h-[calc(100vh-120px)]">
           {/* Conversations List */}
-          <Card className="p-4 flex flex-col">
+          <Card className="p-4 flex flex-col glassmorphism-card animate-scale-in">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-bold">پیام‌رسان</h2>
+              <h2 className="text-lg font-bold text-gradient">پیام‌رسان</h2>
               <div className="flex gap-1">
                 <Dialog open={showCreateChannel} onOpenChange={setShowCreateChannel}>
                   <DialogTrigger asChild>
-                    <Button size="sm" variant="ghost">
+                    <Button size="sm" variant="ghost" className="hover-lift hover:shadow-glow" title="ایجاد کانال">
                       <Hash className="w-4 h-4" />
                     </Button>
                   </DialogTrigger>
-                  <DialogContent>
+                  <DialogContent className="glassmorphism-card">
                     <DialogHeader>
-                      <DialogTitle>ایجاد کانال جدید</DialogTitle>
+                      <DialogTitle className="text-gradient">ایجاد کانال جدید</DialogTitle>
                     </DialogHeader>
                     <div className="space-y-4 mt-4">
                       <div>
@@ -495,8 +501,8 @@ const Chat = () => {
                           dir="rtl"
                         />
                       </div>
-                      <Button onClick={createChannel} className="w-full">
-                        ایجاد کانال
+                      <Button onClick={createChannel} className="w-full gradient-primary hover-lift">
+                        ایجاد کانال ✨
                       </Button>
                     </div>
                   </DialogContent>
@@ -504,13 +510,13 @@ const Chat = () => {
 
                 <Dialog open={showCreateGroup} onOpenChange={setShowCreateGroup}>
                   <DialogTrigger asChild>
-                    <Button size="sm" variant="ghost">
+                    <Button size="sm" variant="ghost" className="hover-lift hover:shadow-glow" title="ایجاد گروه">
                       <Users className="w-4 h-4" />
                     </Button>
                   </DialogTrigger>
-                  <DialogContent>
+                  <DialogContent className="glassmorphism-card">
                     <DialogHeader>
-                      <DialogTitle>ایجاد گروه جدید</DialogTitle>
+                      <DialogTitle className="text-gradient">ایجاد گروه جدید</DialogTitle>
                     </DialogHeader>
                     <div className="space-y-4 mt-4">
                       <div>
@@ -531,14 +537,14 @@ const Chat = () => {
                           dir="rtl"
                         />
                       </div>
-                      <Button onClick={createGroup} className="w-full">
-                        ایجاد گروه
+                      <Button onClick={createGroup} className="w-full gradient-primary hover-lift">
+                        ایجاد گروه ✨
                       </Button>
                     </div>
                   </DialogContent>
                 </Dialog>
 
-                <Button size="sm" variant="ghost" onClick={() => navigate("/chat/friends")}>
+                <Button size="sm" variant="ghost" className="hover-lift hover:shadow-glow" onClick={() => navigate("/chat/friends")} title="مدیریت دوستان">
                   <UserPlus className="w-4 h-4" />
                 </Button>
               </div>
@@ -555,17 +561,17 @@ const Chat = () => {
             </div>
 
             {profile && (
-              <Card className="p-3 mb-4 bg-primary/5 border-primary/20">
+              <Card className="p-3 mb-4 glassmorphism border-primary/30 hover-lift">
                 <div className="flex items-center gap-2">
-                  <Avatar className="w-8 h-8 bg-primary text-white">
-                    <div className="w-full h-full flex items-center justify-center">
+                  <Avatar className="w-8 h-8 gradient-primary text-white shadow-glow">
+                    <div className="w-full h-full flex items-center justify-center font-bold">
                       {profile.full_name?.[0]}
                     </div>
                   </Avatar>
                   <div className="flex-1">
                     <p className="font-bold text-sm">{profile.full_name}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {profile.points || 0} امتیاز
+                    <p className="text-xs text-primary animate-pulse">
+                      {profile.points || 0} امتیاز ⭐
                     </p>
                   </div>
                 </div>
@@ -579,16 +585,18 @@ const Chat = () => {
                   return (
                     <Card
                       key={conv.id}
-                      className={`p-3 cursor-pointer hover:bg-primary/5 transition-all ${
-                        selectedConversation?.id === conv.id ? "bg-primary/10 border-primary/50" : ""
+                      className={`p-3 cursor-pointer hover-lift transition-all ${
+                        selectedConversation?.id === conv.id 
+                          ? "glassmorphism border-primary/50 shadow-glow" 
+                          : "glassmorphism-card hover:border-primary/30"
                       }`}
                       onClick={() => setSelectedConversation(conv)}
                     >
                       <div className="flex items-center gap-3">
-                        <Icon className="w-5 h-5 text-muted-foreground" />
+                        <Icon className={`w-5 h-5 ${selectedConversation?.id === conv.id ? 'text-primary' : 'text-muted-foreground'}`} />
                         <div className="flex-1">
                           <p className="font-medium">{conv.name}</p>
-                          <p className="text-xs text-muted-foreground">{conv.type === 'channel' ? 'کانال' : conv.type === 'group' ? 'گروه' : 'گفتگوی خصوصی'}</p>
+                          <p className="text-xs text-muted-foreground">{conv.type === 'channel' ? '📡 کانال' : conv.type === 'group' ? '👥 گروه' : '💬 گفتگوی خصوصی'}</p>
                         </div>
                       </div>
                     </Card>
@@ -599,7 +607,7 @@ const Chat = () => {
           </Card>
 
           {/* Messages Area */}
-          <Card className="md:col-span-2 p-4 flex flex-col">
+          <Card className="md:col-span-2 p-4 flex flex-col glassmorphism-card animate-scale-in">
             {selectedConversation ? (
               <>
                 <div className="border-b pb-3 mb-4">
@@ -612,26 +620,31 @@ const Chat = () => {
                       const isOwn = msg.user_id === profile?.id || msg.sender_id === profile?.id;
                       const isSaved = savedMessageIds.has(msg.id);
                       return (
-                        <div key={msg.id} className={`flex ${isOwn ? "justify-end" : "justify-start"}`}>
-                          <Card className={`p-3 max-w-[70%] ${isOwn ? "bg-primary text-primary-foreground" : ""}`}>
+                        <div key={msg.id} className={`flex ${isOwn ? "justify-end" : "justify-start"} animate-scale-in`}>
+                          <Card className={`p-3 max-w-[70%] hover-lift ${
+                            isOwn 
+                              ? "gradient-primary text-white shadow-glow" 
+                              : "glassmorphism-card"
+                          }`}>
                             {!isOwn && (
-                              <p className="text-xs font-bold mb-1">
+                              <p className="text-xs font-bold mb-1 text-primary">
                                 {msg.profiles?.full_name || msg.sender?.full_name || "کاربر"}
                               </p>
                             )}
                             <p className="text-sm break-words">{msg.content}</p>
                             {msg.is_edited && (
-                              <p className="text-xs opacity-70 mt-1">ویرایش شده</p>
+                              <p className="text-xs opacity-70 mt-1">✏️ ویرایش شده</p>
                             )}
                             <div className="flex gap-1 mt-2">
                               <Button
                                 size="sm"
                                 variant="ghost"
                                 onClick={() => toggleSaveMessage(msg.id)}
-                                className="h-6 px-2"
+                                className="h-6 px-2 hover:scale-110 transition-transform"
+                                title={isSaved ? "حذف از ذخیره شده‌ها" : "ذخیره پیام"}
                               >
                                 {isSaved ? (
-                                  <BookmarkCheck className="w-3 h-3" />
+                                  <BookmarkCheck className="w-3 h-3 text-accent" />
                                 ) : (
                                   <Bookmark className="w-3 h-3" />
                                 )}
@@ -642,7 +655,8 @@ const Chat = () => {
                                     size="sm"
                                     variant="ghost"
                                     onClick={() => startEdit(msg)}
-                                    className="h-6 px-2"
+                                    className="h-6 px-2 hover:scale-110 transition-transform"
+                                    title="ویرایش پیام"
                                   >
                                     <Edit2 className="w-3 h-3" />
                                   </Button>
@@ -650,7 +664,8 @@ const Chat = () => {
                                     size="sm"
                                     variant="ghost"
                                     onClick={() => deleteMessage(msg.id)}
-                                    className="h-6 px-2"
+                                    className="h-6 px-2 hover:scale-110 transition-transform"
+                                    title="حذف پیام"
                                   >
                                     <Trash2 className="w-3 h-3" />
                                   </Button>
@@ -669,22 +684,24 @@ const Chat = () => {
                     value={messageInput}
                     onChange={(e) => setMessageInput(e.target.value)}
                     onKeyPress={(e) => e.key === "Enter" && sendMessage()}
-                    placeholder={editingId ? "ویرایش پیام..." : "پیام خود را بنویسید..."}
-                    className="flex-1"
+                    placeholder={editingId ? "✏️ ویرایش پیام..." : "💬 پیام خود را بنویسید..."}
+                    className="flex-1 glassmorphism"
                   />
                   {editingId && (
-                    <Button variant="outline" onClick={() => { setEditingId(null); setMessageInput(""); }}>
+                    <Button variant="outline" className="hover-lift" onClick={() => { setEditingId(null); setMessageInput(""); }}>
                       انصراف
                     </Button>
                   )}
-                  <Button onClick={sendMessage}>
-                    {editingId ? "ویرایش" : "ارسال"}
+                  <Button onClick={sendMessage} className="gradient-primary hover-lift shadow-glow">
+                    {editingId ? "✅ ویرایش" : "🚀 ارسال"}
                   </Button>
                 </div>
               </>
             ) : (
-              <div className="flex-1 flex items-center justify-center text-muted-foreground">
-                یک گفتگو را انتخاب کنید
+              <div className="flex-1 flex flex-col items-center justify-center text-muted-foreground">
+                <MessageSquare className="w-16 h-16 mb-4 text-primary/30 animate-bounce-slow" />
+                <p className="text-lg">یک گفتگو را انتخاب کنید</p>
+                <p className="text-sm text-muted-foreground/70 mt-2">برای شروع پیام رسانی، از لیست سمت راست انتخاب کنید</p>
               </div>
             )}
           </Card>
