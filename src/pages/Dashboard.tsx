@@ -248,36 +248,8 @@ const Dashboard = () => {
           </Card>
         </div>
 
-        {/* AI Planning Section - Prominent */}
-        <Card className="mb-6 md:mb-8 glassmorphism-card border-secondary/30 shadow-glow animate-fade-in bg-gradient-to-br from-secondary/5 to-transparent" style={{ animationDelay: '0.2s' }}>
-          <CardHeader className="p-4 md:p-6">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-              <div className="flex items-center gap-3 md:gap-4">
-                <div className="gradient-primary p-3 md:p-4 rounded-xl md:rounded-2xl shadow-neon animate-pulse-glow">
-                  <Brain className="w-6 h-6 md:w-8 md:h-8 text-white" />
-                </div>
-                <div>
-                  <CardTitle className="text-xl md:text-2xl text-gradient mb-1">برنامه‌ریزی هوشمند با AI</CardTitle>
-                  <CardDescription className="text-sm md:text-base">
-                    بذار هوش مصنوعی برنامه مطالعاتی شخصی برای تو بسازه
-                  </CardDescription>
-                </div>
-              </div>
-              <Button
-                size="lg"
-                variant="hero"
-                onClick={() => navigate("/study-plan")}
-                className="shadow-glow text-sm md:text-base hover-lift w-full sm:w-auto"
-              >
-                <Sparkles className="ml-2 w-5 h-5" />
-                شروع برنامه‌ریزی
-              </Button>
-            </div>
-          </CardHeader>
-        </Card>
-
         {/* Feature Cards Grid */}
-        <div>
+        <div className="mb-8 md:mb-12">
           <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-6 text-gradient flex items-center gap-2">
             <Sparkles className="w-6 h-6" />
             ابزارهای یادگیری
@@ -412,6 +384,59 @@ const Dashboard = () => {
             </Card>
           </div>
         </div>
+
+        {/* About Section */}
+        <Card className="glassmorphism-card border-primary/20 shadow-glow animate-fade-in mt-8 md:mt-12" style={{ animationDelay: '0.7s' }}>
+          <CardHeader className="p-6 md:p-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+              <div>
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="gradient-primary p-3 rounded-xl shadow-neon">
+                    <Sparkles className="w-6 h-6 text-white" />
+                  </div>
+                  <CardTitle className="text-xl md:text-2xl text-gradient">درباره ایزی درس</CardTitle>
+                </div>
+                <CardDescription className="text-sm md:text-base leading-relaxed">
+                  ایزی درس با هدف تسهیل یادگیری و افزایش کارایی مطالعه دانش‌آموزان ایرانی ساخته شده است. 
+                  این پلتفرم با استفاده از هوش مصنوعی پیشرفته، تجربه‌ای نوین از یادگیری را برای شما فراهم می‌کند 
+                  و با ارائه ابزارهای هوشمند، مسیر موفقیت تحصیلی شما را هموار می‌سازد.
+                </CardDescription>
+              </div>
+              
+              <div className="bg-card/50 backdrop-blur-sm p-4 md:p-6 rounded-xl border border-border/30">
+                <h3 className="font-bold text-lg md:text-xl mb-4 flex items-center gap-2">
+                  <User className="w-5 h-5 text-primary" />
+                  تیم مدیریت
+                </h3>
+                <div className="space-y-3">
+                  <div className="flex items-start gap-3">
+                    <div className="gradient-primary p-2 rounded-lg shadow-neon">
+                      <User className="w-4 h-4 text-white" />
+                    </div>
+                    <div>
+                      <p className="font-semibold">مهدی رنجبر</p>
+                      <p className="text-sm text-muted-foreground">مدیر و توسعه‌دهنده</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="gradient-secondary p-2 rounded-lg shadow-neon">
+                      <MessageSquare className="w-4 h-4 text-white" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-muted-foreground">ایمیل تماس:</p>
+                      <a 
+                        href="mailto:Ing59659@gmail.com" 
+                        className="text-sm font-medium hover:text-primary transition-colors"
+                      >
+                        Ing59659@gmail.com
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </CardHeader>
+        </Card>
       </main>
     </div>
   );

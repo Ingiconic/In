@@ -44,17 +44,21 @@ All colors MUST be HSL.
 
     --radius: 1rem;
 
-    --gradient-primary: linear-gradient(135deg, hsl(248 73% 62%) 0%, hsl(280 60% 50%) 100%);
-    --gradient-secondary: linear-gradient(135deg, hsl(164 73% 60%) 0%, hsl(164 60% 45%) 100%);
+    --gradient-primary: linear-gradient(135deg, hsl(248 73% 62%) 0%, hsl(248 85% 70%) 100%);
+    --gradient-secondary: linear-gradient(135deg, hsl(164 73% 60%) 0%, hsl(164 85% 70%) 100%);
     --gradient-accent: linear-gradient(135deg, hsl(340 100% 60%) 0%, hsl(320 100% 55%) 50%, hsl(300 100% 60%) 100%);
     --gradient-hero: linear-gradient(135deg, hsl(248 73% 62%) 0%, hsl(164 73% 60%) 100%);
     --gradient-neon: linear-gradient(45deg, hsl(248 73% 62%), hsl(280 60% 50%), hsl(164 73% 60%));
+    --gradient-mesh: radial-gradient(circle at 20% 30%, hsl(248 73% 62% / 0.15) 0%, transparent 50%),
+                     radial-gradient(circle at 80% 70%, hsl(164 73% 60% / 0.15) 0%, transparent 50%),
+                     radial-gradient(circle at 50% 50%, hsl(340 100% 60% / 0.1) 0%, transparent 50%);
 
     --shadow-sm: 0 1px 2px 0 hsl(280 100% 65% / 0.2);
     --shadow: 0 4px 6px -1px hsl(280 100% 65% / 0.3);
     --shadow-lg: 0 10px 15px -3px hsl(280 100% 65% / 0.4);
-    --shadow-glow: 0 0 30px hsl(280 100% 65% / 0.6), 0 0 60px hsl(280 100% 65% / 0.3);
-    --shadow-neon: 0 0 20px hsl(340 100% 60% / 0.8), 0 0 40px hsl(340 100% 60% / 0.4);
+    --shadow-glow: 0 0 30px hsl(248 73% 62% / 0.4), 0 8px 16px hsl(248 73% 62% / 0.2);
+    --shadow-neon: 0 0 20px hsl(248 73% 62% / 0.6), 0 0 40px hsl(248 73% 62% / 0.3), 0 0 60px hsl(164 73% 60% / 0.2);
+    --shadow-card: 0 4px 6px -1px hsl(248 73% 62% / 0.1), 0 2px 4px -1px hsl(248 73% 62% / 0.06);
 
     --transition-smooth: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   }
@@ -189,10 +193,19 @@ All colors MUST be HSL.
   }
 
   .glassmorphism-card {
-    background: rgba(255, 255, 255, 0.03);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: var(--shadow-card);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .glassmorphism-card:hover {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04));
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: var(--shadow-glow);
+    transform: translateY(-2px);
   }
 
   .animate-typing {
@@ -235,12 +248,15 @@ All colors MUST be HSL.
   }
 
   .hover-lift {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
+                box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                border-color 0.3s ease;
   }
 
   .hover-lift:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-glow);
+    transform: translateY(-6px) scale(1.02);
+    box-shadow: 0 12px 30px hsl(248 73% 62% / 0.3), 
+                0 6px 12px hsl(248 73% 62% / 0.15);
   }
 
   /* Loading dots animation */
