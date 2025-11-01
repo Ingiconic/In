@@ -15,6 +15,7 @@ import StepByStep from "./pages/StepByStep";
 import Exam from "./pages/Exam";
 import Chat from "./pages/Chat";
 import ChatFriends from "./pages/ChatFriends";
+import Admin from "./pages/Admin";
 import Progress from "./pages/Progress";
 import About from "./pages/About";
 import NotFound from "./pages/NotFound";
@@ -40,6 +41,7 @@ const App = () => (
           <Route path="/exam" element={<Exam />} />
           <Route path="/chat" element={<Chat />} />
           <Route path="/chat/friends" element={<ChatFriends />} />
+          <Route path="/admin" element={<Admin />} />
           <Route path="/progress" element={<Progress />} />
           <Route path="/about" element={<About />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

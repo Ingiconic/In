@@ -1,21 +1,26 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { ArrowRight, Sparkles, FileText, Loader2, Image } from "lucide-react";
+import { ArrowRight, Sparkles, FileText, Loader2, Image, Mic, MicOff } from "lucide-react";
+import { usePageView } from "@/hooks/usePageView";
 
 const Summarize = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  usePageView();
   const [content, setContent] = useState("");
   const [result, setResult] = useState("");
   const [loading, setLoading] = useState(false);
   const [type, setType] = useState<"summarize" | "explain">("summarize");
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>("");
+  const [isRecording, setIsRecording] = useState(false);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -24,6 +29,61 @@ const Summarize = () => {
       const reader = new FileReader();
       reader.onloadend = () => setImagePreview(reader.result as string);
       reader.readAsDataURL(file);
+    }
+  };
+
+  const startRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mediaRecorderRef.current = new MediaRecorder(stream);
+      audioChunksRef.current = [];
+
+      mediaRecorderRef.current.ondataavailable = (event) => {
+        audioChunksRef.current.push(event.data);
+      };
+
+      mediaRecorderRef.current.onstop = async () => {
+        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+        await transcribeAudio(audioBlob);
+        stream.getTracks().forEach(track => track.stop());
+      };
+
+      mediaRecorderRef.current.start();
+      setIsRecording(true);
+      toast({ title: "ضبط صدا", description: "صدای شما در حال ضبط است..." });
+    } catch (error) {
+      toast({ title: "خطا", description: "دسترسی به میکروفون ممکن نیست", variant: "destructive" });
+    }
+  };
+
+  const stopRecording = () => {
+    if (mediaRecorderRef.current && isRecording) {
+      mediaRecorderRef.current.stop();
+      setIsRecording(false);
+    }
+  };
+
+  const transcribeAudio = async (audioBlob: Blob) => {
+    setLoading(true);
+    try {
+      const reader = new FileReader();
+      reader.readAsDataURL(audioBlob);
+      reader.onloadend = async () => {
+        const base64Audio = reader.result?.toString().split(',')[1];
+        
+        const { data, error } = await supabase.functions.invoke('voice-to-text', {
+          body: { audio: base64Audio }
+        });
+
+        if (error) throw error;
+        
+        setContent(prev => prev + (prev ? ' ' : '') + data.text);
+        toast({ title: "موفق! 🎤", description: "صدا به متن تبدیل شد" });
+      };
+    } catch (error: any) {
+      toast({ title: "خطا", description: error.message, variant: "destructive" });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -99,13 +159,34 @@ const Summarize = () => {
             <Textarea
               value={content}
               onChange={(e) => setContent(e.target.value)}
-              placeholder={imageFile ? "توضیحات اضافی..." : "متن درسی خود را اینجا بنویسید..."}
+              placeholder={imageFile ? "توضیحات اضافی..." : "متن درسی خود را اینجا بنویسید یا از ضبط صدا استفاده کنید..."}
               className="min-h-[300px] resize-none mb-4 bg-input border-border/50 focus:border-primary/50"
             />
 
+            <div className="flex gap-2 mb-4">
+              <Button
+                onClick={isRecording ? stopRecording : startRecording}
+                disabled={loading}
+                variant={isRecording ? "destructive" : "outline"}
+                className="flex-1"
+              >
+                {isRecording ? (
+                  <>
+                    <MicOff className="ml-2 w-4 h-4" />
+                    توقف ضبط
+                  </>
+                ) : (
+                  <>
+                    <Mic className="ml-2 w-4 h-4" />
+                    ضبط صدا
+                  </>
+                )}
+              </Button>
+            </div>
+
             <Button
               onClick={handleSummarize}
-              disabled={loading}
+              disabled={loading || isRecording}
               className="w-full shadow-glow"
               size="lg"
             >

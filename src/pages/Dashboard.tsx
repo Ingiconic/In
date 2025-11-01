@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
+import { usePageView } from "@/hooks/usePageView";
 import {
   BookOpen,
   MessageSquare,
@@ -17,14 +18,17 @@ import {
   Brain,
   MessagesSquare,
   Info,
+  Shield,
 } from "lucide-react";
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  usePageView();
   const [user, setUser] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
@@ -57,6 +61,15 @@ const Dashboard = () => {
 
       if (error) throw error;
       setProfile(data);
+
+      const { data: roles } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", userId)
+        .eq("role", "admin")
+        .single();
+      
+      if (roles) setIsAdmin(true);
     } catch (error) {
       console.error("Error loading profile:", error);
     } finally {
@@ -182,6 +195,11 @@ const Dashboard = () => {
             <Button variant="ghost" size="sm" onClick={() => navigate("/chat")} className="hover:shadow-glow">
               <MessagesSquare className="w-4 h-4" />
             </Button>
+            {isAdmin && (
+              <Button variant="ghost" size="sm" onClick={() => navigate("/admin")} className="hover:shadow-glow">
+                <Shield className="w-4 h-4 text-primary" />
+              </Button>
+            )}
             <Button variant="ghost" size="sm" onClick={handleLogout} className="hover:bg-destructive/10 text-destructive">
               <LogOut className="w-4 h-4" />
             </Button>

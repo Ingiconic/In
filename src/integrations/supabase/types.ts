@@ -322,6 +322,27 @@ export type Database = {
         }
         Relationships: []
       }
+      page_views: {
+        Row: {
+          id: string
+          page_path: string
+          user_id: string | null
+          viewed_at: string | null
+        }
+        Insert: {
+          id?: string
+          page_path: string
+          user_id?: string | null
+          viewed_at?: string | null
+        }
+        Update: {
+          id?: string
+          page_path?: string
+          user_id?: string | null
+          viewed_at?: string | null
+        }
+        Relationships: []
+      }
       points_history: {
         Row: {
           created_at: string | null
@@ -426,6 +447,30 @@ export type Database = {
           id?: string
           question?: string
           subject?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      saved_messages: {
+        Row: {
+          id: string
+          message_id: string
+          message_type: string
+          saved_at: string | null
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          message_id: string
+          message_type: string
+          saved_at?: string | null
+          user_id: string
+        }
+        Update: {
+          id?: string
+          message_id?: string
+          message_type?: string
+          saved_at?: string | null
           user_id?: string
         }
         Relationships: []
@@ -565,6 +610,27 @@ export type Database = {
         }
         Relationships: []
       }
+      user_roles: {
+        Row: {
+          created_at: string | null
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -575,6 +641,13 @@ export type Database = {
         Returns: undefined
       }
       create_friendship: { Args: { request_id: string }; Returns: undefined }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
       is_channel_member: {
         Args: { _channel_id: string; _user_id: string }
         Returns: boolean
@@ -585,7 +658,7 @@ export type Database = {
       }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -712,6 +785,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "user"],
+    },
   },
 } as const

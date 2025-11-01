@@ -4,21 +4,25 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar } from "@/components/ui/avatar";
-import { ArrowRight, MessageSquare, Users, Radio, Search, Plus, Hash, User } from "lucide-react";
+import { ArrowRight, MessageSquare, Users, Radio, Search, Plus, User, Edit2, Trash2, Bookmark, BookmarkCheck } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { messageSchema } from "@/lib/validation";
 import { useToast } from "@/hooks/use-toast";
+import { usePageView } from "@/hooks/usePageView";
 
 const Chat = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  usePageView();
   const [searchQuery, setSearchQuery] = useState("");
   const [conversations, setConversations] = useState<any[]>([]);
   const [profile, setProfile] = useState<any>(null);
   const [selectedConversation, setSelectedConversation] = useState<any>(null);
   const [messages, setMessages] = useState<any[]>([]);
   const [messageInput, setMessageInput] = useState("");
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [savedMessageIds, setSavedMessageIds] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     loadProfile();
@@ -28,9 +32,24 @@ const Chat = () => {
   useEffect(() => {
     if (selectedConversation) {
       loadMessages();
+      loadSavedMessages();
       subscribeToMessages();
     }
   }, [selectedConversation]);
+
+  const loadSavedMessages = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { data } = await supabase
+      .from("saved_messages")
+      .select("message_id")
+      .eq("user_id", user.id);
+
+    if (data) {
+      setSavedMessageIds(new Set(data.map(s => s.message_id)));
+    }
+  };
 
   const loadProfile = async () => {
     const { data: { user } } = await supabase.auth.getUser();
@@ -209,45 +228,65 @@ const Chat = () => {
     if (!messageInput.trim()) return;
 
     try {
-      // Validate message
       const validatedMessage = messageSchema.parse({ content: messageInput });
-
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      if (selectedConversation.type === 'channel') {
-        const { data: channel } = await supabase
-          .from("channels")
-          .select("owner_id")
-          .eq("id", selectedConversation.id)
-          .single();
-
-        if (channel?.owner_id !== user.id) {
-          toast({
-            title: "خطا",
-            description: "فقط صاحب کانال می‌تواند پیام بفرستد",
-            variant: "destructive",
-          });
-          return;
+      if (editingId) {
+        // Update existing message
+        if (selectedConversation.type === 'channel') {
+          await supabase
+            .from("channel_messages")
+            .update({ content: validatedMessage.content, is_edited: true })
+            .eq("id", editingId);
+        } else if (selectedConversation.type === 'group') {
+          await supabase
+            .from("group_messages")
+            .update({ content: validatedMessage.content, is_edited: true })
+            .eq("id", editingId);
+        } else {
+          await supabase
+            .from("direct_messages")
+            .update({ content: validatedMessage.content, is_edited: true })
+            .eq("id", editingId);
         }
-
-        await supabase.from("channel_messages").insert({
-          channel_id: selectedConversation.id,
-          user_id: user.id,
-          content: validatedMessage.content,
-        });
-      } else if (selectedConversation.type === 'group') {
-        await supabase.from("group_messages").insert({
-          group_id: selectedConversation.id,
-          user_id: user.id,
-          content: validatedMessage.content,
-        });
+        setEditingId(null);
       } else {
-        await supabase.from("direct_messages").insert({
-          sender_id: user.id,
-          receiver_id: selectedConversation.id,
-          content: validatedMessage.content,
-        });
+        // Insert new message
+        if (selectedConversation.type === 'channel') {
+          const { data: channel } = await supabase
+            .from("channels")
+            .select("owner_id")
+            .eq("id", selectedConversation.id)
+            .single();
+
+          if (channel?.owner_id !== user.id) {
+            toast({
+              title: "خطا",
+              description: "فقط صاحب کانال می‌تواند پیام بفرستد",
+              variant: "destructive",
+            });
+            return;
+          }
+
+          await supabase.from("channel_messages").insert({
+            channel_id: selectedConversation.id,
+            user_id: user.id,
+            content: validatedMessage.content,
+          });
+        } else if (selectedConversation.type === 'group') {
+          await supabase.from("group_messages").insert({
+            group_id: selectedConversation.id,
+            user_id: user.id,
+            content: validatedMessage.content,
+          });
+        } else {
+          await supabase.from("direct_messages").insert({
+            sender_id: user.id,
+            receiver_id: selectedConversation.id,
+            content: validatedMessage.content,
+          });
+        }
       }
 
       setMessageInput("");
@@ -257,6 +296,55 @@ const Chat = () => {
         description: error.message,
         variant: "destructive",
       });
+    }
+  };
+
+  const deleteMessage = async (messageId: string) => {
+    try {
+      if (selectedConversation.type === 'channel') {
+        await supabase.from("channel_messages").delete().eq("id", messageId);
+      } else if (selectedConversation.type === 'group') {
+        await supabase.from("group_messages").delete().eq("id", messageId);
+      } else {
+        await supabase.from("direct_messages").delete().eq("id", messageId);
+      }
+      toast({ title: "موفق", description: "پیام حذف شد" });
+    } catch (error: any) {
+      toast({ title: "خطا", description: error.message, variant: "destructive" });
+    }
+  };
+
+  const startEdit = (msg: any) => {
+    setEditingId(msg.id);
+    setMessageInput(msg.content);
+  };
+
+  const toggleSaveMessage = async (messageId: string) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    if (savedMessageIds.has(messageId)) {
+      await supabase
+        .from("saved_messages")
+        .delete()
+        .eq("message_id", messageId)
+        .eq("user_id", user.id);
+      
+      setSavedMessageIds(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(messageId);
+        return newSet;
+      });
+      toast({ title: "موفق", description: "پیام از ذخیره شده‌ها حذف شد" });
+    } else {
+      await supabase.from("saved_messages").insert({
+        user_id: user.id,
+        message_id: messageId,
+        message_type: selectedConversation.type,
+      });
+      
+      setSavedMessageIds(prev => new Set(prev).add(messageId));
+      toast({ title: "موفق", description: "پیام ذخیره شد" });
     }
   };
 
@@ -364,6 +452,7 @@ const Chat = () => {
                   <div className="space-y-3">
                     {messages.map((msg) => {
                       const isOwn = msg.user_id === profile?.id || msg.sender_id === profile?.id;
+                      const isSaved = savedMessageIds.has(msg.id);
                       return (
                         <div key={msg.id} className={`flex ${isOwn ? "justify-end" : "justify-start"}`}>
                           <Card className={`p-3 max-w-[70%] ${isOwn ? "bg-primary text-primary-foreground" : ""}`}>
@@ -373,6 +462,43 @@ const Chat = () => {
                               </p>
                             )}
                             <p className="text-sm break-words">{msg.content}</p>
+                            {msg.is_edited && (
+                              <p className="text-xs opacity-70 mt-1">ویرایش شده</p>
+                            )}
+                            <div className="flex gap-1 mt-2">
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => toggleSaveMessage(msg.id)}
+                                className="h-6 px-2"
+                              >
+                                {isSaved ? (
+                                  <BookmarkCheck className="w-3 h-3" />
+                                ) : (
+                                  <Bookmark className="w-3 h-3" />
+                                )}
+                              </Button>
+                              {isOwn && (
+                                <>
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    onClick={() => startEdit(msg)}
+                                    className="h-6 px-2"
+                                  >
+                                    <Edit2 className="w-3 h-3" />
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    onClick={() => deleteMessage(msg.id)}
+                                    className="h-6 px-2"
+                                  >
+                                    <Trash2 className="w-3 h-3" />
+                                  </Button>
+                                </>
+                              )}
+                            </div>
                           </Card>
                         </div>
                       );
@@ -385,10 +511,17 @@ const Chat = () => {
                     value={messageInput}
                     onChange={(e) => setMessageInput(e.target.value)}
                     onKeyPress={(e) => e.key === "Enter" && sendMessage()}
-                    placeholder="پیام خود را بنویسید..."
+                    placeholder={editingId ? "ویرایش پیام..." : "پیام خود را بنویسید..."}
                     className="flex-1"
                   />
-                  <Button onClick={sendMessage}>ارسال</Button>
+                  {editingId && (
+                    <Button variant="outline" onClick={() => { setEditingId(null); setMessageInput(""); }}>
+                      انصراف
+                    </Button>
+                  )}
+                  <Button onClick={sendMessage}>
+                    {editingId ? "ویرایش" : "ارسال"}
+                  </Button>
                 </div>
               </>
             ) : (
