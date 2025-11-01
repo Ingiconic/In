@@ -14,11 +14,11 @@ import {
   HelpCircle,
   Sparkles,
   TrendingUp,
-  BookCheck,
   Brain,
   MessagesSquare,
   Info,
   Shield,
+  User as UserIcon,
 } from "lucide-react";
 
 const Dashboard = () => {
@@ -136,36 +136,20 @@ const Dashboard = () => {
       delay: "0.15s",
     },
     {
-      title: "جزوات درسی",
-      description: "دسترسی به جزوات همه دروس",
-      icon: BookOpen,
-      gradient: "gradient-secondary",
-      path: "/study-books",
-      delay: "0.2s",
-    },
-    {
-      title: "گام به گام",
-      description: "پاسخ‌های تشریحی سوالات کتاب",
-      icon: BookCheck,
-      gradient: "gradient-accent",
-      path: "/step-by-step",
-      delay: "0.25s",
-    },
-    {
       title: "آزمون هوشمند",
       description: "ایجاد آزمون با هوش مصنوعی",
       icon: Brain,
-      gradient: "gradient-primary",
+      gradient: "gradient-secondary",
       path: "/exam",
-      delay: "0.3s",
+      delay: "0.2s",
     },
     {
-      title: "چت و ارتباطات",
+      title: "پیام‌رسان",
       description: "گفتگو با دوستان و عضویت در کانال‌ها",
       icon: MessagesSquare,
-      gradient: "gradient-secondary",
+      gradient: "gradient-accent",
       path: "/chat",
-      delay: "0.35s",
+      delay: "0.25s",
     },
   ];
 
@@ -194,6 +178,9 @@ const Dashboard = () => {
             </Button>
             <Button variant="ghost" size="sm" onClick={() => navigate("/chat")} className="hover:shadow-glow">
               <MessagesSquare className="w-4 h-4" />
+            </Button>
+            <Button variant="ghost" size="sm" onClick={() => navigate("/profile")} className="hover:shadow-glow">
+              <UserIcon className="w-4 h-4" />
             </Button>
             {isAdmin && (
               <Button variant="ghost" size="sm" onClick={() => navigate("/admin")} className="hover:shadow-glow">

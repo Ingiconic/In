@@ -4,12 +4,15 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar } from "@/components/ui/avatar";
-import { ArrowRight, MessageSquare, Users, Radio, Search, Plus, User, Edit2, Trash2, Bookmark, BookmarkCheck } from "lucide-react";
+import { ArrowRight, MessageSquare, Users, Radio, Search, Plus, User, Edit2, Trash2, Bookmark, BookmarkCheck, Hash, UserPlus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { messageSchema } from "@/lib/validation";
+import { messageSchema, channelNameSchema, groupNameSchema, descriptionSchema } from "@/lib/validation";
 import { useToast } from "@/hooks/use-toast";
 import { usePageView } from "@/hooks/usePageView";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 
 const Chat = () => {
   const navigate = useNavigate();
@@ -23,6 +26,12 @@ const Chat = () => {
   const [messageInput, setMessageInput] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
   const [savedMessageIds, setSavedMessageIds] = useState<Set<string>>(new Set());
+  const [showCreateChannel, setShowCreateChannel] = useState(false);
+  const [showCreateGroup, setShowCreateGroup] = useState(false);
+  const [newChannelName, setNewChannelName] = useState("");
+  const [newChannelDesc, setNewChannelDesc] = useState("");
+  const [newGroupName, setNewGroupName] = useState("");
+  const [newGroupDesc, setNewGroupDesc] = useState("");
 
   useEffect(() => {
     loadProfile();
@@ -319,6 +328,81 @@ const Chat = () => {
     setMessageInput(msg.content);
   };
 
+  const createChannel = async () => {
+    if (!newChannelName.trim()) return;
+
+    try {
+      const validatedName = channelNameSchema.parse(newChannelName);
+      const validatedDesc = descriptionSchema.parse(newChannelDesc);
+
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("لطفاً وارد شوید");
+
+      const { data, error } = await supabase
+        .from("channels")
+        .insert({
+          name: validatedName,
+          description: validatedDesc,
+          owner_id: user.id,
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      await supabase.from("channel_members").insert({
+        channel_id: data.id,
+        user_id: user.id,
+      });
+
+      toast({ title: "موفق! ✨", description: "کانال ایجاد شد" });
+      setNewChannelName("");
+      setNewChannelDesc("");
+      setShowCreateChannel(false);
+      loadConversations();
+    } catch (error: any) {
+      toast({ title: "خطا", description: error.message, variant: "destructive" });
+    }
+  };
+
+  const createGroup = async () => {
+    if (!newGroupName.trim()) return;
+
+    try {
+      const validatedName = groupNameSchema.parse(newGroupName);
+      const validatedDesc = descriptionSchema.parse(newGroupDesc);
+
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("لطفاً وارد شوید");
+
+      const { data, error } = await supabase
+        .from("groups")
+        .insert({
+          name: validatedName,
+          description: validatedDesc,
+          owner_id: user.id,
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      await supabase.from("group_members").insert({
+        group_id: data.id,
+        user_id: user.id,
+        is_admin: true,
+      });
+
+      toast({ title: "موفق! ✨", description: "گروه ایجاد شد" });
+      setNewGroupName("");
+      setNewGroupDesc("");
+      setShowCreateGroup(false);
+      loadConversations();
+    } catch (error: any) {
+      toast({ title: "خطا", description: error.message, variant: "destructive" });
+    }
+  };
+
   const toggleSaveMessage = async (messageId: string) => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
@@ -369,7 +453,7 @@ const Chat = () => {
               <div className="gradient-primary p-2 rounded-lg shadow-glow">
                 <MessageSquare className="w-6 h-6 text-white" />
               </div>
-              <h1 className="text-xl font-bold text-gradient">چت ایزی درس</h1>
+              <h1 className="text-xl font-bold text-gradient">پیام‌رسان ایزی درس</h1>
             </div>
           </div>
         </div>
@@ -380,10 +464,84 @@ const Chat = () => {
           {/* Conversations List */}
           <Card className="p-4 flex flex-col">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-bold">گفتگوها</h2>
-              <Button size="sm" variant="ghost" onClick={() => navigate("/chat/friends")}>
-                <Plus className="w-4 h-4" />
-              </Button>
+              <h2 className="text-lg font-bold">پیام‌رسان</h2>
+              <div className="flex gap-1">
+                <Dialog open={showCreateChannel} onOpenChange={setShowCreateChannel}>
+                  <DialogTrigger asChild>
+                    <Button size="sm" variant="ghost">
+                      <Hash className="w-4 h-4" />
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>ایجاد کانال جدید</DialogTitle>
+                    </DialogHeader>
+                    <div className="space-y-4 mt-4">
+                      <div>
+                        <Label>نام کانال</Label>
+                        <Input
+                          value={newChannelName}
+                          onChange={(e) => setNewChannelName(e.target.value)}
+                          placeholder="نام کانال"
+                          dir="rtl"
+                        />
+                      </div>
+                      <div>
+                        <Label>توضیحات</Label>
+                        <Textarea
+                          value={newChannelDesc}
+                          onChange={(e) => setNewChannelDesc(e.target.value)}
+                          placeholder="توضیحات کانال"
+                          dir="rtl"
+                        />
+                      </div>
+                      <Button onClick={createChannel} className="w-full">
+                        ایجاد کانال
+                      </Button>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+
+                <Dialog open={showCreateGroup} onOpenChange={setShowCreateGroup}>
+                  <DialogTrigger asChild>
+                    <Button size="sm" variant="ghost">
+                      <Users className="w-4 h-4" />
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>ایجاد گروه جدید</DialogTitle>
+                    </DialogHeader>
+                    <div className="space-y-4 mt-4">
+                      <div>
+                        <Label>نام گروه</Label>
+                        <Input
+                          value={newGroupName}
+                          onChange={(e) => setNewGroupName(e.target.value)}
+                          placeholder="نام گروه"
+                          dir="rtl"
+                        />
+                      </div>
+                      <div>
+                        <Label>توضیحات</Label>
+                        <Textarea
+                          value={newGroupDesc}
+                          onChange={(e) => setNewGroupDesc(e.target.value)}
+                          placeholder="توضیحات گروه"
+                          dir="rtl"
+                        />
+                      </div>
+                      <Button onClick={createGroup} className="w-full">
+                        ایجاد گروه
+                      </Button>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+
+                <Button size="sm" variant="ghost" onClick={() => navigate("/chat/friends")}>
+                  <UserPlus className="w-4 h-4" />
+                </Button>
+              </div>
             </div>
 
             <div className="relative mb-4">
