@@ -13,6 +13,7 @@ import StudyPlan from "./pages/StudyPlan";
 import Exam from "./pages/Exam";
 import Chat from "./pages/Chat";
 import ChatFriends from "./pages/ChatFriends";
+import StepByStep from "./pages/StepByStep";
 import Admin from "./pages/Admin";
 import Profile from "./pages/Profile";
 import Progress from "./pages/Progress";
@@ -35,9 +36,10 @@ const App = () => (
           <Route path="/questions" element={<Questions />} />
           <Route path="/consultation" element={<Consultation />} />
           <Route path="/study-plan" element={<StudyPlan />} />
+          <Route path="/step-by-step" element={<StepByStep />} />
           <Route path="/exam" element={<Exam />} />
           <Route path="/chat" element={<Chat />} />
-          <Route path="/chat/friends" element={<ChatFriends />} />
+          <Route path="/chat-friends" element={<ChatFriends />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/progress" element={<Progress />} />

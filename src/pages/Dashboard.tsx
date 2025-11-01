@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { MessageSquare, Users, Calendar, FileText, ArrowRight, BookOpen, CheckSquare, HelpCircle, Sparkles, LogOut, User, Trophy, Star, Zap, Target, Clock, Brain, TrendingUp, BookMarked, PenTool } from "lucide-react";
+import { MessageSquare, Users, Calendar, FileText, ArrowRight, BookOpen, CheckSquare, HelpCircle, Sparkles, LogOut, User, Trophy, Star, Zap, Target, Clock, Brain, TrendingUp, BookMarked, PenTool, Info, Award, TrendingDown } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { usePageView } from "@/hooks/usePageView";
@@ -81,22 +81,28 @@ const Dashboard = () => {
     );
   }
 
+  const userLevel = profile?.points ? Math.floor(profile.points / 100) + 1 : 1;
+  const progressInLevel = profile?.points ? (profile.points % 100) : 0;
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="glassmorphism border-b border-border/30 sticky top-0 z-50 animate-fade-in">
-        <div className="container mx-auto px-4 py-3 md:py-4">
+        <div className="container mx-auto px-3 md:px-6 py-3 md:py-4">
           <div className="flex items-center justify-between gap-2">
-            <div className="flex items-center gap-2 md:gap-3">
-              <div className="gradient-primary p-1.5 md:p-2 rounded-lg md:rounded-xl shadow-glow animate-pulse-glow">
-                <Sparkles className="w-4 h-4 md:w-6 md:h-6 text-white" />
+            <div className="flex items-center gap-2 md:gap-4">
+              <div className="gradient-primary p-2 md:p-3 rounded-xl md:rounded-2xl shadow-glow animate-pulse-glow">
+                <Sparkles className="w-5 h-5 md:w-7 md:h-7 text-white" />
               </div>
-              <h1 className="text-lg md:text-2xl font-bold text-gradient animate-neon-pulse">ایزی درس</h1>
+              <div>
+                <h1 className="text-xl md:text-3xl font-bold text-gradient animate-neon-pulse">ایزی درس</h1>
+                <p className="text-xs md:text-sm text-muted-foreground hidden sm:block">پلتفرم یادگیری هوشمند</p>
+              </div>
             </div>
             <div className="flex items-center gap-1.5 md:gap-3">
-              <div className="hidden sm:flex items-center gap-1.5 md:gap-2 bg-card/50 backdrop-blur-sm px-2 md:px-4 py-1.5 md:py-2 rounded-lg md:rounded-xl border border-border/30 shadow-glow">
-                <Trophy className="w-3.5 h-3.5 md:w-5 md:h-5 text-primary animate-pulse" />
-                <span className="font-bold text-gradient text-xs md:text-base">سطح {profile?.points ? Math.floor(profile.points / 100) + 1 : 1}</span>
+              <div className="hidden lg:flex items-center gap-2 bg-card/50 backdrop-blur-sm px-4 py-2 rounded-xl border border-border/30 shadow-glow">
+                <Trophy className="w-5 h-5 text-primary animate-pulse" />
+                <span className="font-bold text-gradient">سطح {userLevel}</span>
               </div>
               <div className="flex items-center gap-1.5 md:gap-2 bg-card/50 backdrop-blur-sm px-2 md:px-4 py-1.5 md:py-2 rounded-lg md:rounded-xl border border-border/30 shadow-glow">
                 <Star className="w-3.5 h-3.5 md:w-5 md:h-5 text-secondary animate-pulse" />
@@ -105,8 +111,27 @@ const Dashboard = () => {
               <Button
                 variant="ghost"
                 size="sm"
+                onClick={() => navigate("/about")}
+                className="hover:shadow-glow hover-lift p-1.5 md:p-2.5"
+                title="درباره ما"
+              >
+                <Info className="w-4 h-4 md:w-5 md:h-5" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => navigate("/progress")}
+                className="hover:shadow-glow hover-lift p-1.5 md:p-2.5"
+                title="پیشرفت"
+              >
+                <TrendingUp className="w-4 h-4 md:w-5 md:h-5" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
                 onClick={() => navigate("/profile")}
-                className="hover:shadow-glow hover-lift p-1.5 md:p-2"
+                className="hover:shadow-glow hover-lift p-1.5 md:p-2.5"
+                title="پروفایل"
               >
                 <User className="w-4 h-4 md:w-5 md:h-5" />
               </Button>
@@ -114,7 +139,8 @@ const Dashboard = () => {
                 variant="ghost"
                 size="sm"
                 onClick={handleLogout}
-                className="hover:shadow-glow hover-lift text-destructive p-1.5 md:p-2"
+                className="hover:shadow-glow hover-lift text-destructive p-1.5 md:p-2.5"
+                title="خروج"
               >
                 <LogOut className="w-4 h-4 md:w-5 md:h-5" />
               </Button>
@@ -124,191 +150,267 @@ const Dashboard = () => {
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-3 md:px-4 py-4 md:py-8">
-        {/* Welcome Card */}
-        <Card className="mb-4 md:mb-8 glassmorphism-card border-primary/20 shadow-glow animate-fade-in overflow-hidden relative">
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5" />
-          <CardHeader className="relative p-4 md:p-6">
-            <div className="flex items-center gap-2 md:gap-3 mb-2">
-              <div className="gradient-primary p-2 md:p-3 rounded-lg md:rounded-xl shadow-neon animate-pulse-glow">
-                <Sparkles className="w-5 h-5 md:w-6 md:h-6 text-white" />
-              </div>
-              <div>
-                <CardTitle className="text-lg md:text-2xl text-gradient animate-neon-pulse">
-                  سلام {profile?.full_name} 👋
-                </CardTitle>
-                <CardDescription className="text-xs md:text-base">
-                  آماده برای یادگیری امروز؟
-                </CardDescription>
-              </div>
-            </div>
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 md:gap-4 mt-3 md:mt-4">
-              <div className="flex items-center gap-1.5 md:gap-2 bg-primary/10 px-2 md:px-4 py-1.5 md:py-2 rounded-lg border border-primary/20 w-full sm:w-auto">
-                <Zap className="w-4 h-4 md:w-5 md:h-5 text-primary flex-shrink-0" />
-                <span className="font-bold text-xs md:text-base">امتحان‌ها: {profile?.exams_taken || 0}</span>
-              </div>
-              <div className="flex items-center gap-1.5 md:gap-2 bg-secondary/10 px-2 md:px-4 py-1.5 md:py-2 rounded-lg border border-secondary/20 w-full sm:w-auto">
-                <Target className="w-4 h-4 md:w-5 md:h-5 text-secondary flex-shrink-0" />
-                <span className="font-bold text-xs md:text-base">پیشرفت: {profile?.points ? Math.floor((profile.points % 100)) : 0}%</span>
-              </div>
-            </div>
-          </CardHeader>
-        </Card>
-
-        {/* AI Planning Section - Floating Card */}
-        <Card className="mb-4 md:mb-6 glassmorphism-card border-secondary/30 shadow-glow animate-fade-in bg-gradient-to-br from-secondary/5 to-transparent">
-          <CardHeader className="p-3 md:p-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="gradient-primary p-1.5 md:p-2 rounded-lg shadow-neon animate-pulse-glow">
-                  <Brain className="w-4 h-4 md:w-5 md:h-5 text-white" />
+      <main className="container mx-auto px-3 md:px-6 py-4 md:py-8 max-w-7xl">
+        {/* Welcome Section - Larger and More Attractive */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6 mb-6 md:mb-10">
+          {/* Main Welcome Card */}
+          <Card className="lg:col-span-2 glassmorphism-card border-primary/20 shadow-glow animate-fade-in overflow-hidden relative">
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-secondary/10" />
+            <div className="absolute top-0 left-0 w-64 h-64 bg-primary/20 rounded-full blur-3xl animate-pulse" />
+            <div className="absolute bottom-0 right-0 w-64 h-64 bg-secondary/20 rounded-full blur-3xl animate-pulse delay-500" />
+            
+            <CardHeader className="relative p-5 md:p-8">
+              <div className="flex items-start justify-between mb-4">
+                <div className="flex items-center gap-3 md:gap-4">
+                  <div className="gradient-primary p-3 md:p-4 rounded-xl md:rounded-2xl shadow-neon animate-pulse-glow">
+                    <Sparkles className="w-6 h-6 md:w-8 md:h-8 text-white" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-2xl md:text-4xl text-gradient animate-neon-pulse mb-1">
+                      سلام {profile?.full_name} 👋
+                    </CardTitle>
+                    <CardDescription className="text-sm md:text-lg">
+                      امروز آماده‌ای برای یادگیری جدید؟
+                    </CardDescription>
+                  </div>
                 </div>
-                <CardTitle className="text-sm md:text-base text-gradient">برنامه‌ریزی هوشمند</CardTitle>
+              </div>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 mt-4 md:mt-6">
+                <div className="flex items-center gap-3 bg-primary/10 px-4 py-3 rounded-xl border border-primary/20 hover:border-primary/40 transition-all hover-lift">
+                  <div className="gradient-primary p-2 rounded-lg shadow-neon">
+                    <Zap className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground">آزمون‌های تکمیل شده</p>
+                    <p className="text-xl md:text-2xl font-bold">{profile?.exams_taken || 0}</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-center gap-3 bg-secondary/10 px-4 py-3 rounded-xl border border-secondary/20 hover:border-secondary/40 transition-all hover-lift">
+                  <div className="gradient-secondary p-2 rounded-lg shadow-neon">
+                    <Trophy className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground">سطح فعلی</p>
+                    <p className="text-xl md:text-2xl font-bold">سطح {userLevel}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Progress Bar */}
+              <div className="mt-4 md:mt-6">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs md:text-sm text-muted-foreground">پیشرفت تا سطح بعدی</span>
+                  <span className="text-xs md:text-sm font-bold text-gradient">{progressInLevel}%</span>
+                </div>
+                <div className="h-2 md:h-3 bg-card/50 rounded-full overflow-hidden border border-border/30">
+                  <div 
+                    className="h-full gradient-primary transition-all duration-1000 shadow-glow"
+                    style={{ width: `${progressInLevel}%` }}
+                  />
+                </div>
+              </div>
+            </CardHeader>
+          </Card>
+
+          {/* Quick Stats Card */}
+          <Card className="glassmorphism-card border-primary/20 shadow-glow animate-fade-in" style={{ animationDelay: '0.1s' }}>
+            <CardHeader className="p-5 md:p-6">
+              <CardTitle className="text-lg md:text-xl mb-4 text-gradient flex items-center gap-2">
+                <Award className="w-5 h-5" />
+                آمار سریع
+              </CardTitle>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between p-3 bg-card/50 rounded-lg border border-border/30 hover-lift">
+                  <div className="flex items-center gap-2">
+                    <Star className="w-4 h-4 text-secondary" />
+                    <span className="text-sm">امتیاز کل</span>
+                  </div>
+                  <span className="font-bold text-gradient">{profile?.points || 0}</span>
+                </div>
+                <div className="flex items-center justify-between p-3 bg-card/50 rounded-lg border border-border/30 hover-lift">
+                  <div className="flex items-center gap-2">
+                    <Trophy className="w-4 h-4 text-primary" />
+                    <span className="text-sm">سطح</span>
+                  </div>
+                  <span className="font-bold">{userLevel}</span>
+                </div>
+                <div className="flex items-center justify-between p-3 bg-card/50 rounded-lg border border-border/30 hover-lift">
+                  <div className="flex items-center gap-2">
+                    <CheckSquare className="w-4 h-4 text-accent" />
+                    <span className="text-sm">آزمون‌ها</span>
+                  </div>
+                  <span className="font-bold">{profile?.exams_taken || 0}</span>
+                </div>
+              </div>
+            </CardHeader>
+          </Card>
+        </div>
+
+        {/* AI Planning Section - Prominent */}
+        <Card className="mb-6 md:mb-8 glassmorphism-card border-secondary/30 shadow-glow animate-fade-in bg-gradient-to-br from-secondary/5 to-transparent" style={{ animationDelay: '0.2s' }}>
+          <CardHeader className="p-4 md:p-6">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div className="flex items-center gap-3 md:gap-4">
+                <div className="gradient-primary p-3 md:p-4 rounded-xl md:rounded-2xl shadow-neon animate-pulse-glow">
+                  <Brain className="w-6 h-6 md:w-8 md:h-8 text-white" />
+                </div>
+                <div>
+                  <CardTitle className="text-xl md:text-2xl text-gradient mb-1">برنامه‌ریزی هوشمند با AI</CardTitle>
+                  <CardDescription className="text-sm md:text-base">
+                    بذار هوش مصنوعی برنامه مطالعاتی شخصی برای تو بسازه
+                  </CardDescription>
+                </div>
               </div>
               <Button
-                size="sm"
+                size="lg"
                 variant="hero"
                 onClick={() => navigate("/study-plan")}
-                className="text-xs md:text-sm shadow-glow hover-lift"
+                className="shadow-glow text-sm md:text-base hover-lift w-full sm:w-auto"
               >
-                ایجاد برنامه
+                <Sparkles className="ml-2 w-5 h-5" />
+                شروع برنامه‌ریزی
               </Button>
             </div>
-            <CardDescription className="text-xs md:text-sm mt-2">
-              هوش مصنوعی برنامه مطالعاتی شخصی‌سازی شده برای شما می‌سازد
-            </CardDescription>
           </CardHeader>
         </Card>
 
-        {/* Feature Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-6">
-          <Card 
-            className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group animate-scale-in border-primary/20"
-            onClick={() => navigate("/chat")}
-            style={{ animationDelay: '0.1s' }}
-          >
-            <CardHeader className="p-4 md:p-6">
-              <div className="flex items-center gap-2 md:gap-3 mb-2">
-                <div className="gradient-primary p-2 md:p-3 rounded-lg md:rounded-xl shadow-neon group-hover:shadow-glow group-hover:scale-110 transition-all">
-                  <MessageSquare className="w-5 h-5 md:w-6 md:h-6 text-white" />
+        {/* Feature Cards Grid */}
+        <div>
+          <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-6 text-gradient flex items-center gap-2">
+            <Sparkles className="w-6 h-6" />
+            ابزارهای یادگیری
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+            <Card 
+              className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group animate-scale-in border-primary/20"
+              onClick={() => navigate("/chat")}
+              style={{ animationDelay: '0.3s' }}
+            >
+              <CardHeader className="p-5 md:p-6">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="gradient-primary p-3 rounded-xl shadow-neon group-hover:shadow-glow group-hover:scale-110 transition-all">
+                    <MessageSquare className="w-6 h-6 text-white" />
+                  </div>
+                  <CardTitle className="text-lg md:text-xl group-hover:text-gradient transition-all">پیام‌رسان</CardTitle>
                 </div>
-                <CardTitle className="text-base md:text-xl group-hover:text-gradient transition-all">پیام‌رسان</CardTitle>
-              </div>
-              <CardDescription className="text-xs md:text-sm">چت با دوستان و کانال‌ها</CardDescription>
-            </CardHeader>
-          </Card>
+                <CardDescription className="text-sm">چت با دوستان و عضویت در کانال‌ها</CardDescription>
+              </CardHeader>
+            </Card>
 
-          <Card 
-            className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group animate-scale-in border-primary/20"
-            onClick={() => navigate("/chat-friends")}
-            style={{ animationDelay: '0.2s' }}
-          >
-            <CardHeader className="p-4 md:p-6">
-              <div className="flex items-center gap-2 md:gap-3 mb-2">
-                <div className="gradient-primary p-2 md:p-3 rounded-lg md:rounded-xl shadow-neon group-hover:shadow-glow group-hover:scale-110 transition-all">
-                  <Users className="w-5 h-5 md:w-6 md:h-6 text-white" />
+            <Card 
+              className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group animate-scale-in border-primary/20"
+              onClick={() => navigate("/chat-friends")}
+              style={{ animationDelay: '0.35s' }}
+            >
+              <CardHeader className="p-5 md:p-6">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="gradient-primary p-3 rounded-xl shadow-neon group-hover:shadow-glow group-hover:scale-110 transition-all">
+                    <Users className="w-6 h-6 text-white" />
+                  </div>
+                  <CardTitle className="text-lg md:text-xl group-hover:text-gradient transition-all">دوستان</CardTitle>
                 </div>
-                <CardTitle className="text-base md:text-xl group-hover:text-gradient transition-all">دوستان</CardTitle>
-              </div>
-              <CardDescription className="text-xs md:text-sm">مدیریت دوستان</CardDescription>
-            </CardHeader>
-          </Card>
+                <CardDescription className="text-sm">مدیریت دوستان و ارتباطات</CardDescription>
+              </CardHeader>
+            </Card>
 
-          <Card 
-            className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group animate-scale-in border-primary/20"
-            onClick={() => navigate("/questions")}
-            style={{ animationDelay: '0.3s' }}
-          >
-            <CardHeader className="p-4 md:p-6">
-              <div className="flex items-center gap-2 md:gap-3 mb-2">
-                <div className="gradient-primary p-2 md:p-3 rounded-lg md:rounded-xl shadow-neon group-hover:shadow-glow group-hover:scale-110 transition-all">
-                  <HelpCircle className="w-5 h-5 md:w-6 md:h-6 text-white" />
+            <Card 
+              className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group animate-scale-in border-primary/20"
+              onClick={() => navigate("/questions")}
+              style={{ animationDelay: '0.4s' }}
+            >
+              <CardHeader className="p-5 md:p-6">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="gradient-primary p-3 rounded-xl shadow-neon group-hover:shadow-glow group-hover:scale-110 transition-all">
+                    <HelpCircle className="w-6 h-6 text-white" />
+                  </div>
+                  <CardTitle className="text-lg md:text-xl group-hover:text-gradient transition-all">پرسش درسی</CardTitle>
                 </div>
-                <CardTitle className="text-base md:text-xl group-hover:text-gradient transition-all">سوال و جواب</CardTitle>
-              </div>
-              <CardDescription className="text-xs md:text-sm">پرسش از هوش مصنوعی</CardDescription>
-            </CardHeader>
-          </Card>
+                <CardDescription className="text-sm">پاسخ به سوالات با هوش مصنوعی</CardDescription>
+              </CardHeader>
+            </Card>
 
-          <Card 
-            className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group animate-scale-in border-primary/20"
-            onClick={() => navigate("/summarize")}
-            style={{ animationDelay: '0.4s' }}
-          >
-            <CardHeader className="p-4 md:p-6">
-              <div className="flex items-center gap-2 md:gap-3 mb-2">
-                <div className="gradient-primary p-2 md:p-3 rounded-lg md:rounded-xl shadow-neon group-hover:shadow-glow group-hover:scale-110 transition-all">
-                  <FileText className="w-5 h-5 md:w-6 md:h-6 text-white" />
+            <Card 
+              className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group animate-scale-in border-primary/20"
+              onClick={() => navigate("/summarize")}
+              style={{ animationDelay: '0.45s' }}
+            >
+              <CardHeader className="p-5 md:p-6">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="gradient-primary p-3 rounded-xl shadow-neon group-hover:shadow-glow group-hover:scale-110 transition-all">
+                    <FileText className="w-6 h-6 text-white" />
+                  </div>
+                  <CardTitle className="text-lg md:text-xl group-hover:text-gradient transition-all">خلاصه‌سازی</CardTitle>
                 </div>
-                <CardTitle className="text-base md:text-xl group-hover:text-gradient transition-all">خلاصه‌سازی</CardTitle>
-              </div>
-              <CardDescription className="text-xs md:text-sm">خلاصه مطالب درسی</CardDescription>
-            </CardHeader>
-          </Card>
+                <CardDescription className="text-sm">خلاصه مطالب درسی با AI</CardDescription>
+              </CardHeader>
+            </Card>
 
-          <Card 
-            className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group animate-scale-in border-primary/20"
-            onClick={() => navigate("/exam")}
-            style={{ animationDelay: '0.5s' }}
-          >
-            <CardHeader className="p-4 md:p-6">
-              <div className="flex items-center gap-2 md:gap-3 mb-2">
-                <div className="gradient-primary p-2 md:p-3 rounded-lg md:rounded-xl shadow-neon group-hover:shadow-glow group-hover:scale-110 transition-all">
-                  <CheckSquare className="w-5 h-5 md:w-6 md:h-6 text-white" />
+            <Card 
+              className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group animate-scale-in border-primary/20"
+              onClick={() => navigate("/exam")}
+              style={{ animationDelay: '0.5s' }}
+            >
+              <CardHeader className="p-5 md:p-6">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="gradient-primary p-3 rounded-xl shadow-neon group-hover:shadow-glow group-hover:scale-110 transition-all">
+                    <CheckSquare className="w-6 h-6 text-white" />
+                  </div>
+                  <CardTitle className="text-lg md:text-xl group-hover:text-gradient transition-all">آزمون ساز</CardTitle>
                 </div>
-                <CardTitle className="text-base md:text-xl group-hover:text-gradient transition-all">آزمون ساز</CardTitle>
-              </div>
-              <CardDescription className="text-xs md:text-sm">ایجاد آزمون با هوش مصنوعی</CardDescription>
-            </CardHeader>
-          </Card>
+                <CardDescription className="text-sm">ایجاد آزمون با هوش مصنوعی</CardDescription>
+              </CardHeader>
+            </Card>
 
-          <Card 
-            className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group animate-scale-in border-primary/20"
-            onClick={() => navigate("/step-by-step")}
-            style={{ animationDelay: '0.6s' }}
-          >
-            <CardHeader className="p-4 md:p-6">
-              <div className="flex items-center gap-2 md:gap-3 mb-2">
-                <div className="gradient-primary p-2 md:p-3 rounded-lg md:rounded-xl shadow-neon group-hover:shadow-glow group-hover:scale-110 transition-all">
-                  <PenTool className="w-5 h-5 md:w-6 md:h-6 text-white" />
+            <Card 
+              className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group animate-scale-in border-primary/20"
+              onClick={() => navigate("/step-by-step")}
+              style={{ animationDelay: '0.55s' }}
+            >
+              <CardHeader className="p-5 md:p-6">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="gradient-primary p-3 rounded-xl shadow-neon group-hover:shadow-glow group-hover:scale-110 transition-all">
+                    <PenTool className="w-6 h-6 text-white" />
+                  </div>
+                  <CardTitle className="text-lg md:text-xl group-hover:text-gradient transition-all">حل تمرین</CardTitle>
                 </div>
-                <CardTitle className="text-base md:text-xl group-hover:text-gradient transition-all">حل تمرین</CardTitle>
-              </div>
-              <CardDescription className="text-xs md:text-sm">حل گام به گام</CardDescription>
-            </CardHeader>
-          </Card>
+                <CardDescription className="text-sm">حل گام به گام تمرینات</CardDescription>
+              </CardHeader>
+            </Card>
 
-          <Card 
-            className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group animate-scale-in border-primary/20"
-            onClick={() => navigate("/study-books")}
-            style={{ animationDelay: '0.7s' }}
-          >
-            <CardHeader className="p-4 md:p-6">
-              <div className="flex items-center gap-2 md:gap-3 mb-2">
-                <div className="gradient-primary p-2 md:p-3 rounded-lg md:rounded-xl shadow-neon group-hover:shadow-glow group-hover:scale-110 transition-all">
-                  <BookMarked className="w-5 h-5 md:w-6 md:h-6 text-white" />
+            <Card 
+              className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group animate-scale-in border-primary/20"
+              onClick={() => navigate("/progress")}
+              style={{ animationDelay: '0.6s' }}
+            >
+              <CardHeader className="p-5 md:p-6">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="gradient-primary p-3 rounded-xl shadow-neon group-hover:shadow-glow group-hover:scale-110 transition-all">
+                    <TrendingUp className="w-6 h-6 text-white" />
+                  </div>
+                  <CardTitle className="text-lg md:text-xl group-hover:text-gradient transition-all">پیشرفت من</CardTitle>
                 </div>
-                <CardTitle className="text-base md:text-xl group-hover:text-gradient transition-all">جزوات درسی</CardTitle>
-              </div>
-              <CardDescription className="text-xs md:text-sm">مطالعه منظم</CardDescription>
-            </CardHeader>
-          </Card>
+                <CardDescription className="text-sm">آمار و نمودار پیشرفت</CardDescription>
+              </CardHeader>
+            </Card>
 
-          <Card 
-            className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group animate-scale-in border-primary/20"
-            onClick={() => navigate("/consultation")}
-            style={{ animationDelay: '0.8s' }}
-          >
-            <CardHeader className="p-4 md:p-6">
-              <div className="flex items-center gap-2 md:gap-3 mb-2">
-                <div className="gradient-primary p-2 md:p-3 rounded-lg md:rounded-xl shadow-neon group-hover:shadow-glow group-hover:scale-110 transition-all">
-                  <Brain className="w-5 h-5 md:w-6 md:h-6 text-white" />
+            <Card 
+              className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group animate-scale-in border-primary/20"
+              onClick={() => navigate("/consultation")}
+              style={{ animationDelay: '0.65s' }}
+            >
+              <CardHeader className="p-5 md:p-6">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="gradient-primary p-3 rounded-xl shadow-neon group-hover:shadow-glow group-hover:scale-110 transition-all">
+                    <Brain className="w-6 h-6 text-white" />
+                  </div>
+                  <CardTitle className="text-lg md:text-xl group-hover:text-gradient transition-all">مشاور هوشمند</CardTitle>
                 </div>
-                <CardTitle className="text-base md:text-xl group-hover:text-gradient transition-all">مشاور هوشمند</CardTitle>
-              </div>
-              <CardDescription className="text-xs md:text-sm">مشاوره تحصیلی</CardDescription>
-            </CardHeader>
-          </Card>
+                <CardDescription className="text-sm">مشاوره تحصیلی هوشمند</CardDescription>
+              </CardHeader>
+            </Card>
+          </div>
         </div>
       </main>
     </div>

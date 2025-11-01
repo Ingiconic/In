@@ -346,7 +346,8 @@ const Chat = () => {
         .insert({
           name: validatedName,
           description: validatedDesc || null,
-        } as any)
+          owner_id: user.id,
+        })
         .select()
         .single();
 
@@ -385,7 +386,8 @@ const Chat = () => {
         .insert({
           name: validatedName,
           description: validatedDesc || null,
-        } as any)
+          owner_id: user.id,
+        })
         .select()
         .single();
 

@@ -22,19 +22,24 @@ serve(async (req) => {
       throw new Error('کلید API پیکربندی نشده است');
     }
 
-    const systemPrompt = `شما یک مشاور تحصیلی حرفه‌ای هستید که برنامه مطالعاتی شخصی‌سازی شده برای دانش‌آموزان طراحی می‌کنید.
-برنامه باید شامل زمان مطالعه، استراحت، مرور و نکات انگیزشی باشد.`;
+    const systemPrompt = `تو یک مشاور تحصیلی هوشمند و حرفه‌ای هستی که برنامه‌های مطالعاتی شخصی‌سازی شده می‌سازی.
+برنامه‌ای دقیق و عملی بساز که شامل:
+- تقسیم زمان روزانه برای هر درس
+- اولویت‌بندی مباحث
+- زمان استراحت و تفریح
+- نکات مطالعه موثر
+- هدف‌گذاری هفتگی
 
-    const userName = studentName ? `${studentName} عزیز` : 'دانش‌آموز عزیز';
-    const userPrompt = `سلام ${userName}! 
-لطفا یک برنامه مطالعاتی کامل از تاریخ ${startDate} تا ${endDate} برای پایه ${grade || 'نامشخص'} با دروس زیر طراحی کن:
-${subjects.join('، ')}
+برنامه را به صورت ساختار یافته و مرحله به مرحله بنویس.`;
 
-برنامه باید شامل:
-- تقسیم‌بندی زمانی روزانه
-- زمان‌های مطالعه و استراحت
-- نکات انگیزشی
-- پیشنهادات برای مرور مطالب`;
+    const userName = studentName || 'دانش‌آموز';
+    const userPrompt = `دانش‌آموز: ${userName}
+پایه: ${grade || 'نامشخص'}
+دروس: ${subjects.join('، ')}
+تاریخ شروع: ${startDate}
+تاریخ پایان: ${endDate}
+
+یک برنامه مطالعاتی کامل و عملی برای این دوره زمانی بساز.`;
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
@@ -52,6 +57,8 @@ ${subjects.join('، ')}
     });
 
     if (!response.ok) {
+      console.error('AI gateway error:', response.status);
+      
       if (response.status === 429) {
         return new Response(JSON.stringify({ error: 'محدودیت تعداد درخواست. لطفا کمی صبر کنید.' }), {
           status: 429,
@@ -64,15 +71,16 @@ ${subjects.join('، ')}
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
       }
-      const errorText = await response.text();
-      console.error('AI gateway error:', response.status, errorText);
+      
       throw new Error('خطا در ارتباط با سرویس هوش مصنوعی');
     }
 
     const data = await response.json();
-    const result = data.choices?.[0]?.message?.content;
+    const studyPlan = data.choices?.[0]?.message?.content;
 
-    return new Response(JSON.stringify({ plan: result }), {
+    console.log('Study plan generated successfully');
+
+    return new Response(JSON.stringify({ studyPlan }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error) {
