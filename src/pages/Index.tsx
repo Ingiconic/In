@@ -3,13 +3,10 @@ import { Card } from "@/components/ui/card";
 import { Brain, BookOpen, Target, Sparkles, MessageSquare, CheckCircle, TrendingUp, Users, Award, Zap, GraduationCap } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { usePageView } from "@/hooks/usePageView";
-
 const Index = () => {
   const navigate = useNavigate();
   usePageView();
-
-  return (
-    <div className="min-h-screen bg-background">
+  return <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border/50">
         <div className="container mx-auto px-4 py-3">
@@ -21,18 +18,10 @@ const Index = () => {
               <span className="text-2xl font-bold text-gradient">Easy Dars</span>
             </div>
             <div className="flex items-center gap-3">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => navigate("/auth")}
-              >
+              <Button variant="ghost" size="sm" onClick={() => navigate("/auth")}>
                 ورود
               </Button>
-              <Button
-                size="sm"
-                className="gradient-primary shadow-glow"
-                onClick={() => navigate("/auth")}
-              >
+              <Button size="sm" className="gradient-primary shadow-glow" onClick={() => navigate("/auth")}>
                 ثبت‌نام رایگان
               </Button>
             </div>
@@ -44,7 +33,9 @@ const Index = () => {
       <section className="relative overflow-hidden pt-32 pb-20 md:pt-40 md:pb-32">
         <div className="absolute inset-0 bg-grid-slate-900/[0.04] bg-[size:32px_32px]"></div>
         <div className="absolute top-20 right-10 w-72 h-72 bg-primary/10 rounded-full blur-3xl animate-float"></div>
-        <div className="absolute bottom-20 left-10 w-96 h-96 bg-secondary/10 rounded-full blur-3xl animate-float" style={{ animationDelay: "2s" }}></div>
+        <div className="absolute bottom-20 left-10 w-96 h-96 bg-secondary/10 rounded-full blur-3xl animate-float" style={{
+        animationDelay: "2s"
+      }}></div>
         
         <div className="container relative mx-auto px-4">
           <div className="grid md:grid-cols-2 gap-12 items-center">
@@ -67,23 +58,11 @@ const Index = () => {
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4">
-                <Button 
-                  size="lg" 
-                  className="gradient-primary hover:opacity-90 shadow-glow text-lg px-8"
-                  onClick={() => navigate("/auth")}
-                >
+                <Button size="lg" className="gradient-primary hover:opacity-90 shadow-glow text-lg px-8" onClick={() => navigate("/auth")}>
                   شروع یادگیری
                   <Sparkles className="w-5 h-5 mr-2" />
                 </Button>
-                <Button 
-                  size="lg" 
-                  variant="outline" 
-                  className="text-lg px-8 hover-lift border-2"
-                  onClick={() => navigate("/dashboard")}
-                >
-                  مشاهده دمو
-                  <Brain className="w-5 h-5 mr-2" />
-                </Button>
+                
               </div>
 
               <div className="flex items-center gap-6 pt-4 flex-wrap">
@@ -255,11 +234,7 @@ const Index = () => {
             <p className="text-lg md:text-xl text-muted-foreground">
               همین حالا ثبت‌نام کن و از قدرت هوش مصنوعی برای یادگیری بهتر استفاده کن
             </p>
-            <Button 
-              size="lg" 
-              className="gradient-primary hover:opacity-90 shadow-glow text-lg px-12 py-6"
-              onClick={() => navigate("/auth")}
-            >
+            <Button size="lg" className="gradient-primary hover:opacity-90 shadow-glow text-lg px-12 py-6" onClick={() => navigate("/auth")}>
               شروع رایگان
               <GraduationCap className="w-6 h-6 mr-2" />
             </Button>
@@ -289,8 +264,6 @@ const Index = () => {
           </div>
         </div>
       </footer>
-    </div>
-  );
+    </div>;
 };
-
 export default Index;
