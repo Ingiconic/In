@@ -13,6 +13,7 @@ import { usePageView } from "@/hooks/usePageView";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import SavedMessages from "@/components/chat/SavedMessages";
 
 const Chat = () => {
   const navigate = useNavigate();
@@ -32,6 +33,7 @@ const Chat = () => {
   const [newChannelDesc, setNewChannelDesc] = useState("");
   const [newGroupName, setNewGroupName] = useState("");
   const [newGroupDesc, setNewGroupDesc] = useState("");
+  const [showSavedMessages, setShowSavedMessages] = useState(false);
 
   useEffect(() => {
     loadProfile();
@@ -547,6 +549,19 @@ const Chat = () => {
                 <Button size="sm" variant="ghost" className="hover-lift hover:shadow-glow" onClick={() => navigate("/chat/friends")} title="مدیریت دوستان">
                   <UserPlus className="w-4 h-4" />
                 </Button>
+                
+                <Button 
+                  size="sm" 
+                  variant="ghost" 
+                  className="hover-lift hover:shadow-glow" 
+                  onClick={() => {
+                    setShowSavedMessages(!showSavedMessages);
+                    setSelectedConversation(null);
+                  }}
+                  title="پیام‌های ذخیره شده"
+                >
+                  <BookmarkCheck className="w-4 h-4" />
+                </Button>
               </div>
             </div>
 
@@ -608,7 +623,9 @@ const Chat = () => {
 
           {/* Messages Area */}
           <Card className="md:col-span-2 p-4 flex flex-col glassmorphism-card animate-scale-in">
-            {selectedConversation ? (
+            {showSavedMessages ? (
+              <SavedMessages />
+            ) : selectedConversation ? (
               <>
                 <div className="border-b pb-3 mb-4">
                   <h2 className="text-lg font-bold">{selectedConversation.name}</h2>

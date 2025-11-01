@@ -214,38 +214,6 @@ const Dashboard = () => {
             </CardHeader>
           </Card>
 
-          {/* Quick Stats Card */}
-          <Card className="glassmorphism-card border-primary/20 shadow-glow animate-fade-in" style={{ animationDelay: '0.1s' }}>
-            <CardHeader className="p-5 md:p-6">
-              <CardTitle className="text-lg md:text-xl mb-4 text-gradient flex items-center gap-2">
-                <Award className="w-5 h-5" />
-                آمار سریع
-              </CardTitle>
-              <div className="space-y-4">
-                <div className="flex items-center justify-between p-3 bg-card/50 rounded-lg border border-border/30 hover-lift">
-                  <div className="flex items-center gap-2">
-                    <Star className="w-4 h-4 text-secondary" />
-                    <span className="text-sm">امتیاز کل</span>
-                  </div>
-                  <span className="font-bold text-gradient">{profile?.points || 0}</span>
-                </div>
-                <div className="flex items-center justify-between p-3 bg-card/50 rounded-lg border border-border/30 hover-lift">
-                  <div className="flex items-center gap-2">
-                    <Trophy className="w-4 h-4 text-primary" />
-                    <span className="text-sm">سطح</span>
-                  </div>
-                  <span className="font-bold">{userLevel}</span>
-                </div>
-                <div className="flex items-center justify-between p-3 bg-card/50 rounded-lg border border-border/30 hover-lift">
-                  <div className="flex items-center gap-2">
-                    <CheckSquare className="w-4 h-4 text-accent" />
-                    <span className="text-sm">آزمون‌ها</span>
-                  </div>
-                  <span className="font-bold">{profile?.exams_taken || 0}</span>
-                </div>
-              </div>
-            </CardHeader>
-          </Card>
         </div>
 
         {/* Feature Cards Grid */}
