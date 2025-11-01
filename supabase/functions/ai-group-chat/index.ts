@@ -12,11 +12,61 @@ serve(async (req) => {
   }
 
   try {
-    const { prompt, groupId, userId } = await req.json();
-    console.log("AI chat request:", { prompt, groupId, userId });
+    // 1. Verify JWT authentication
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      return new Response(
+        JSON.stringify({ error: 'احراز هویت مورد نیاز است' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
-    if (!prompt || !groupId || !userId) {
-      throw new Error("Missing required parameters");
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
+    const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+      global: { headers: { Authorization: authHeader } }
+    });
+
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    if (userError || !user) {
+      return new Response(
+        JSON.stringify({ error: 'احراز هویت نامعتبر' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // 2. Parse and validate input (don't trust userId from client)
+    const { prompt, groupId } = await req.json();
+    console.log("AI chat request:", { prompt, groupId, userId: user.id });
+
+    // 3. Validate prompt
+    if (!prompt || typeof prompt !== 'string' || prompt.length > 2000 || prompt.length < 1) {
+      return new Response(
+        JSON.stringify({ error: 'پرامپت نامعتبر است (حداکثر ۲۰۰۰ کاراکتر)' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    if (!groupId) {
+      return new Response(
+        JSON.stringify({ error: 'شناسه گروه الزامی است' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // 4. Verify group membership
+    const { data: membership } = await supabase
+      .from('group_members')
+      .select('id')
+      .eq('group_id', groupId)
+      .eq('user_id', user.id)
+      .single();
+    
+    if (!membership) {
+      return new Response(
+        JSON.stringify({ error: 'شما عضو این گروه نیستید' }),
+        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
@@ -68,15 +118,14 @@ serve(async (req) => {
     const aiResponse = data.choices[0].message.content;
     console.log("AI response:", aiResponse);
 
-    // Save AI response to group
-    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    // Save AI response to group (use service role to bypass RLS)
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+    const supabaseService = createClient(supabaseUrl, supabaseServiceKey);
 
     // Create a system user ID for AI messages (using a fixed UUID)
     const AI_USER_ID = "00000000-0000-0000-0000-000000000000";
 
-    const { error: insertError } = await supabase.from("group_messages").insert({
+    const { error: insertError } = await supabaseService.from("group_messages").insert({
       group_id: groupId,
       user_id: AI_USER_ID,
       content: `🤖 ${aiResponse}`,

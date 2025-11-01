@@ -8,6 +8,7 @@ import { ArrowRight, MessageSquare, Edit2, Trash2, Send, Sparkles } from "lucide
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { messageSchema } from "@/lib/validation";
+import { aiPromptSchema } from "@/lib/ai-validation";
 import { useToast } from "@/hooks/use-toast";
 import { usePageView } from "@/hooks/usePageView";
 
@@ -133,10 +134,13 @@ const Chat = () => {
       // Check if message starts with ! for AI
       if (messageInput.trim().startsWith("!")) {
         const prompt = messageInput.trim().substring(1).trim();
-        if (!prompt) {
+        
+        // Validate AI prompt
+        const validation = aiPromptSchema.safeParse({ prompt });
+        if (!validation.success) {
           toast({
             title: "خطا",
-            description: "لطفاً بعد از ! متنی وارد کنید",
+            description: validation.error.errors[0]?.message || "پرامپت نامعتبر است",
             variant: "destructive",
           });
           return;
@@ -152,12 +156,11 @@ const Chat = () => {
         setMessageInput("");
         setIsAiProcessing(true);
 
-        // Call AI function
+        // Call AI function (don't send userId, it will be verified from JWT)
         const { error: aiError } = await supabase.functions.invoke("ai-group-chat", {
           body: {
             prompt,
             groupId: publicGroupId,
-            userId: user.id,
           },
         });
 
