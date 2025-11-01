@@ -118,18 +118,22 @@ const StudyPlan = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="border-b border-border/50 bg-card/50 backdrop-blur-lg sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <Button variant="ghost" onClick={() => navigate("/dashboard")} size="sm">
-            <ArrowRight className="ml-2 w-4 h-4" />
-            بازگشت
+      <header className="glassmorphism border-b border-border/30 sticky top-0 z-50 animate-fade-in">
+        <div className="container mx-auto px-3 md:px-4 py-3 md:py-4 flex items-center gap-3">
+          <Button variant="ghost" onClick={() => navigate("/dashboard")} size="sm" className="hover:shadow-glow p-2">
+            <ArrowRight className="w-4 h-4 md:w-5 md:h-5" />
           </Button>
-          <h1 className="text-xl font-bold text-gradient">برنامه مطالعه</h1>
+          <div className="flex items-center gap-2 md:gap-3">
+            <div className="gradient-primary p-1.5 md:p-2 rounded-lg md:rounded-xl shadow-glow animate-pulse-glow">
+              <Calendar className="w-4 h-4 md:w-6 md:h-6 text-white" />
+            </div>
+            <h1 className="text-lg md:text-xl font-bold text-gradient animate-neon-pulse">برنامه مطالعه هوشمند</h1>
+          </div>
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-8 max-w-6xl">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
+      <main className="container mx-auto px-3 md:px-4 py-4 md:py-8 max-w-6xl">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 md:gap-4 mb-4 md:mb-8">
           <div>
             <h2 className="text-2xl font-bold mb-1">برنامه‌های مطالعاتی من</h2>
             <p className="text-muted-foreground">مدیریت و برنامه‌ریزی مطالعه</p>

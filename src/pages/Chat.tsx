@@ -463,12 +463,12 @@ const Chat = () => {
         </div>
       </header>
 
-      <div className="container mx-auto p-4">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 h-[calc(100vh-120px)]">
+      <div className="container mx-auto p-2 md:p-4">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 md:gap-4 h-[calc(100vh-100px)] md:h-[calc(100vh-120px)]">
           {/* Conversations List */}
-          <Card className="p-4 flex flex-col glassmorphism-card animate-scale-in">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-bold text-gradient">پیام‌رسان</h2>
+          <Card className="p-3 md:p-4 flex flex-col glassmorphism-card animate-scale-in">
+            <div className="flex items-center justify-between mb-3 md:mb-4">
+              <h2 className="text-base md:text-lg font-bold text-gradient">پیام‌رسان</h2>
               <div className="flex gap-1">
                 <Dialog open={showCreateChannel} onOpenChange={setShowCreateChannel}>
                   <DialogTrigger asChild>
@@ -548,13 +548,13 @@ const Chat = () => {
               </div>
             </div>
 
-            <div className="relative mb-4">
+            <div className="relative mb-3 md:mb-4">
               <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input
+                className="text-sm md:text-base h-9 md:h-10 pr-10"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="جستجو..."
-                className="pr-10"
               />
             </div>
 
