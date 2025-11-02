@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ArrowRight, BookCheck, Search } from "lucide-react";
+import { logger } from "@/lib/logger";
 
 const StepByStep = () => {
   const navigate = useNavigate();
@@ -37,7 +38,7 @@ const StepByStep = () => {
       if (error) throw error;
       setSolutions(data || []);
     } catch (error) {
-      console.error('Error loading solutions:', error);
+      logger.error('Failed to load solutions', error);
     } finally {
       setLoading(false);
     }

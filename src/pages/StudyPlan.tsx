@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { ArrowRight, Calendar, Plus, Trash2, CheckCircle, Sparkles, Brain, Loader2 } from "lucide-react";
 import { Label } from "@/components/ui/label";
+import { logger } from "@/lib/logger";
 
 interface StudyPlan {
   id: string;
@@ -56,7 +57,7 @@ const StudyPlan = () => {
         setGrade(data.grade || "");
       }
     } catch (error) {
-      console.error("Error loading profile:", error);
+      logger.error("Failed to load profile", error);
     }
   };
 
@@ -74,7 +75,7 @@ const StudyPlan = () => {
       if (error) throw error;
       setPlans(data || []);
     } catch (error) {
-      console.error("Error loading plans:", error);
+      logger.error("Failed to load plans", error);
     } finally {
       setLoading(false);
     }
@@ -134,11 +135,12 @@ const StudyPlan = () => {
       setEndDate("");
       setShowForm(false);
       loadPlans();
-    } catch (error: any) {
-      console.error("Error generating AI plan:", error);
+    } catch (error) {
+      logger.error("Failed to generate AI plan", error);
+      const message = error instanceof Error ? error.message : "مشکلی در تولید برنامه پیش آمد";
       toast({
         title: "خطا",
-        description: error.message || "مشکلی در تولید برنامه پیش آمد",
+        description: message,
         variant: "destructive",
       });
     } finally {

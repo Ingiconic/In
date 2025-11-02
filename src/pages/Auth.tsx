@@ -7,6 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { BookOpen, GraduationCap, Sparkles } from "lucide-react";
 import { usernameSchema } from "@/lib/validation";
+import { logger } from "@/lib/logger";
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -88,10 +89,12 @@ const Auth = () => {
           description: "حساب کاربری شما ایجاد شد",
         });
       }
-    } catch (error: any) {
+    } catch (error) {
+      logger.error("Authentication failed", error);
+      const message = error instanceof Error ? error.message : "مشکلی پیش آمد";
       toast({
         title: "خطا",
-        description: error.message || "مشکلی پیش آمد",
+        description: message,
         variant: "destructive",
       });
     } finally {

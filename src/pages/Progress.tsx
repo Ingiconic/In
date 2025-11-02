@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ArrowRight, Trophy, Target, BookOpen, Award, TrendingUp, Star, Zap } from "lucide-react";
+import { logger } from "@/lib/logger";
 
 const Progress = () => {
   const navigate = useNavigate();
@@ -31,7 +32,7 @@ const Progress = () => {
       if (error) throw error;
       setProfile(data);
     } catch (error) {
-      console.error("Error loading profile:", error);
+      logger.error("Failed to load profile", error);
     } finally {
       setLoading(false);
     }

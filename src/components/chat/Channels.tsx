@@ -7,6 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Plus, Send, Edit2, Trash2 } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { messageSchema, channelNameSchema, descriptionSchema } from "@/lib/validation";
+import { logger } from "@/lib/logger";
 
 interface Channel {
   id: string;
@@ -163,10 +164,12 @@ const Channels = () => {
       setNewChannelDesc("");
       setShowCreateForm(false);
       loadChannels();
-    } catch (error: any) {
+    } catch (error) {
+      logger.error("Failed to create channel", error);
+      const message = error instanceof Error ? error.message : "خطا در ایجاد کانال";
       toast({
         title: "خطا",
-        description: error.message,
+        description: message,
         variant: "destructive",
       });
     }
@@ -209,10 +212,12 @@ const Channels = () => {
 
       setMessage("");
       loadMessages();
-    } catch (error: any) {
+    } catch (error) {
+      logger.error("Failed to send channel message", error);
+      const message = error instanceof Error ? error.message : "خطا در ارسال پیام";
       toast({
         title: "خطا",
-        description: error.message,
+        description: message,
         variant: "destructive",
       });
     }
@@ -227,10 +232,12 @@ const Channels = () => {
 
       if (error) throw error;
       loadMessages();
-    } catch (error: any) {
+    } catch (error) {
+      logger.error("Failed to delete channel message", error);
+      const message = error instanceof Error ? error.message : "خطا در حذف پیام";
       toast({
         title: "خطا",
-        description: error.message,
+        description: message,
         variant: "destructive",
       });
     }

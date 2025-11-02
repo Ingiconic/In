@@ -6,6 +6,7 @@ import { MessageSquare, Users, Calendar, FileText, ArrowRight, BookOpen, CheckSq
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { usePageView } from "@/hooks/usePageView";
+import { logger } from "@/lib/logger";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -47,7 +48,7 @@ const Dashboard = () => {
       if (error) throw error;
       setProfile(data);
     } catch (error) {
-      console.error("Error loading profile:", error);
+      logger.error("Failed to load profile", error);
     } finally {
       setLoading(false);
     }

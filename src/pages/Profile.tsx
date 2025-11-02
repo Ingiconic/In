@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowRight, User, Save } from "lucide-react";
 import { usePageView } from "@/hooks/usePageView";
+import { logger } from "@/lib/logger";
 
 const Profile = () => {
   const navigate = useNavigate();

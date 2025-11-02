@@ -7,6 +7,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowRight, Brain, FileText, Loader2 } from "lucide-react";
+import { logger } from "@/lib/logger";
+import type { ExamQuestion } from "@/lib/types";
 
 const Exam = () => {
   const navigate = useNavigate();
@@ -78,11 +80,12 @@ const Exam = () => {
         title: "آزمون ثبت شد! 🎉",
         description: `نمره: ${percentageScore} | امتیاز کسب شده: ${pointsAwarded}`,
       });
-    } catch (error: any) {
-      console.error("Error submitting exam:", error);
+    } catch (error) {
+      logger.error("Failed to submit exam", error);
+      const message = error instanceof Error ? error.message : "لطفا دوباره تلاش کنید";
       toast({
         title: "خطا",
-        description: error.message || "لطفا دوباره تلاش کنید",
+        description: message,
         variant: "destructive",
       });
     }
@@ -188,7 +191,7 @@ const Exam = () => {
               </p>
             </Card>
 
-            {exam.questions.map((question: any, index: number) => (
+            {exam.questions.map((question: ExamQuestion, index: number) => (
               <Card
                 key={index}
                 className="p-6 shadow-glow hover:border-primary/50 transition-all animate-fade-in"
@@ -208,9 +211,9 @@ const Exam = () => {
                         onClick={() => !showResults && setAnswers({ ...answers, [index]: option })}
                         disabled={showResults}
                         className={`w-full text-right p-3 rounded-lg border transition-all ${
-                          showResults
-                            ? option === question.correct_answer
-                              ? 'border-green-500 bg-green-500/10'
+                      showResults
+                        ? option === (question.correct_answer?.toString() ?? question.correctAnswer.toString())
+                          ? 'border-green-500 bg-green-500/10'
                               : answers[index] === option
                               ? 'border-red-500 bg-red-500/10'
                               : 'border-border'

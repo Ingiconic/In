@@ -7,6 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Send, Edit2, Trash2 } from "lucide-react";
 import { useSearchParams } from "react-router-dom";
 import { messageSchema } from "@/lib/validation";
+import { logger } from "@/lib/logger";
 
 interface Message {
   id: string;
@@ -111,10 +112,12 @@ const DirectMessages = () => {
 
       setMessage("");
       loadMessages();
-    } catch (error: any) {
+    } catch (error) {
+      logger.error("Failed to send direct message", error);
+      const message = error instanceof Error ? error.message : "خطا در ارسال پیام";
       toast({
         title: "خطا",
-        description: error.message,
+        description: message,
         variant: "destructive",
       });
     }
@@ -129,10 +132,12 @@ const DirectMessages = () => {
 
       if (error) throw error;
       loadMessages();
-    } catch (error: any) {
+    } catch (error) {
+      logger.error("Failed to delete direct message", error);
+      const message = error instanceof Error ? error.message : "خطا در حذف پیام";
       toast({
         title: "خطا",
-        description: error.message,
+        description: message,
         variant: "destructive",
       });
     }

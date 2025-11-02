@@ -7,6 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { ArrowRight, Sparkles, FileText, Loader2, Image, Mic, MicOff } from "lucide-react";
 import { usePageView } from "@/hooks/usePageView";
+import { logger } from "@/lib/logger";
 
 const Summarize = () => {
   const navigate = useNavigate();
@@ -80,8 +81,10 @@ const Summarize = () => {
         setContent(prev => prev + (prev ? ' ' : '') + data.text);
         toast({ title: "موفق! 🎤", description: "صدا به متن تبدیل شد" });
       };
-    } catch (error: any) {
-      toast({ title: "خطا", description: error.message, variant: "destructive" });
+    } catch (error) {
+      logger.error("Failed to transcribe voice", error);
+      const message = error instanceof Error ? error.message : "خطا در تبدیل صدا به متن";
+      toast({ title: "خطا", description: message, variant: "destructive" });
     } finally {
       setLoading(false);
     }
@@ -109,8 +112,10 @@ const Summarize = () => {
         setResult(data.result);
       }
       toast({ title: "موفق! ✨", description: imageFile ? "تحلیل تصویر انجام شد" : "خلاصه‌سازی انجام شد" });
-    } catch (error: any) {
-      toast({ title: "خطا", description: error.message, variant: "destructive" });
+    } catch (error) {
+      logger.error("Failed to process content", error);
+      const message = error instanceof Error ? error.message : "خطا در پردازش";
+      toast({ title: "خطا", description: message, variant: "destructive" });
     } finally {
       setLoading(false);
     }

@@ -37,7 +37,6 @@ serve(async (req) => {
 
     // 2. Parse and validate input (don't trust userId from client)
     const { prompt, groupId } = await req.json();
-    console.log("AI chat request:", { prompt, groupId, userId: user.id });
 
     // 3. Validate prompt
     if (!prompt || typeof prompt !== 'string' || prompt.length > 2000 || prompt.length < 1) {
@@ -109,14 +108,11 @@ serve(async (req) => {
           { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
-      const errorText = await response.text();
-      console.error("AI gateway error:", response.status, errorText);
       throw new Error("خطا در ارتباط با هوش مصنوعی");
     }
 
     const data = await response.json();
     const aiResponse = data.choices[0].message.content;
-    console.log("AI response:", aiResponse);
 
     // Save AI response to group (use service role to bypass RLS)
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -132,7 +128,6 @@ serve(async (req) => {
     });
 
     if (insertError) {
-      console.error("Error inserting AI message:", insertError);
       throw new Error("خطا در ذخیره پیام هوش مصنوعی");
     }
 
@@ -141,7 +136,6 @@ serve(async (req) => {
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (error) {
-    console.error("Error in ai-group-chat:", error);
     return new Response(
       JSON.stringify({ error: error instanceof Error ? error.message : "خطای ناشناخته" }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }

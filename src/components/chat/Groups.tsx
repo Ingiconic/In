@@ -7,6 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Plus, Send, Edit2, Trash2 } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { messageSchema, groupNameSchema, descriptionSchema } from "@/lib/validation";
+import { logger } from "@/lib/logger";
 
 interface Group {
   id: string;
@@ -148,10 +149,12 @@ const Groups = () => {
       setNewGroupDesc("");
       setShowCreateForm(false);
       loadGroups();
-    } catch (error: any) {
+    } catch (error) {
+      logger.error("Failed to create group", error);
+      const message = error instanceof Error ? error.message : "خطا در ایجاد گروه";
       toast({
         title: "خطا",
-        description: error.message,
+        description: message,
         variant: "destructive",
       });
     }
@@ -184,10 +187,12 @@ const Groups = () => {
 
       setMessage("");
       loadMessages();
-    } catch (error: any) {
+    } catch (error) {
+      logger.error("Failed to send group message", error);
+      const message = error instanceof Error ? error.message : "خطا در ارسال پیام";
       toast({
         title: "خطا",
-        description: error.message,
+        description: message,
         variant: "destructive",
       });
     }
@@ -202,10 +207,12 @@ const Groups = () => {
 
       if (error) throw error;
       loadMessages();
-    } catch (error: any) {
+    } catch (error) {
+      logger.error("Failed to delete group message", error);
+      const message = error instanceof Error ? error.message : "خطا در حذف پیام";
       toast({
         title: "خطا",
-        description: error.message,
+        description: message,
         variant: "destructive",
       });
     }

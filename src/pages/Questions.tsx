@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { ArrowRight, Send, Brain, Loader2, MessageCircle, Image } from "lucide-react";
+import { logger } from "@/lib/logger";
 
 const Questions = () => {
   const navigate = useNavigate();

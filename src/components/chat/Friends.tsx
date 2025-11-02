@@ -7,6 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import { UserPlus, Check, X, MessageSquare } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { usernameSchema } from "@/lib/validation";
+import { logger } from "@/lib/logger";
 
 interface FriendRequest {
   id: string;
@@ -115,10 +116,12 @@ const Friends = () => {
         description: "درخواست دوستی ارسال شد",
       });
       setUsername("");
-    } catch (error: any) {
+    } catch (error) {
+      logger.error("Failed to send friend request", error);
+      const message = error instanceof Error ? error.message : "خطا در ارسال درخواست دوستی";
       toast({
         title: "خطا",
-        description: error.message,
+        description: message,
         variant: "destructive",
       });
     } finally {
@@ -146,10 +149,12 @@ const Friends = () => {
 
       loadFriendRequests();
       loadFriends();
-    } catch (error: any) {
+    } catch (error) {
+      logger.error("Failed to respond to friend request", error);
+      const message = error instanceof Error ? error.message : "خطا در پاسخ به درخواست";
       toast({
         title: "خطا",
-        description: error.message,
+        description: message,
         variant: "destructive",
       });
     }

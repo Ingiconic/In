@@ -10,6 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { messageSchema } from "@/lib/validation";
 import { aiPromptSchema } from "@/lib/ai-validation";
 import { useToast } from "@/hooks/use-toast";
+import { logger } from "@/lib/logger";
 import { usePageView } from "@/hooks/usePageView";
 
 interface Message {
@@ -167,7 +168,7 @@ const Chat = () => {
         setIsAiProcessing(false);
 
         if (aiError) {
-          console.error("AI error:", aiError);
+          logger.error("AI group chat request failed", aiError);
           toast({
             title: "خطا",
             description: "خطا در پردازش درخواست هوش مصنوعی",
@@ -192,7 +193,8 @@ const Chat = () => {
       }
 
       setMessageInput("");
-    } catch (error: any) {
+    } catch (error) {
+      logger.error("Failed to send message", error);
       toast({
         title: "خطا",
         description: error.message,
@@ -205,8 +207,10 @@ const Chat = () => {
     try {
       await supabase.from("group_messages").delete().eq("id", messageId);
       toast({ title: "موفق", description: "پیام حذف شد" });
-    } catch (error: any) {
-      toast({ title: "خطا", description: error.message, variant: "destructive" });
+    } catch (error) {
+      logger.error("Failed to delete message", error);
+      const message = error instanceof Error ? error.message : "خطا در حذف پیام";
+      toast({ title: "خطا", description: message, variant: "destructive" });
     }
   };
 
