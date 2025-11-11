@@ -127,7 +127,11 @@ ${content}
     }
 
     const data = await response.json();
-    const content_text = data.choices[0].message.content;
+    let content_text = data.choices[0].message.content;
+    
+    // Remove markdown code fences if present
+    content_text = content_text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+    
     const examData = JSON.parse(content_text);
 
     console.log('Exam generated successfully');
