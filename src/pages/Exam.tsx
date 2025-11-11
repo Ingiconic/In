@@ -1,18 +1,21 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowRight, Brain, FileText, Loader2 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { Brain, Loader2, FileText } from "lucide-react";
+import { ExamQuestion } from "@/lib/types";
 import { logger } from "@/lib/logger";
-import type { ExamQuestion } from "@/lib/types";
+import { usePageView } from "@/hooks/usePageView";
+import AppLayout from "@/components/layout/AppLayout";
 
 const Exam = () => {
-  const navigate = useNavigate();
   const { toast } = useToast();
+  usePageView();
   const [content, setContent] = useState("");
   const [questionCount, setQuestionCount] = useState(10);
   const [difficulty, setDifficulty] = useState("متوسط");
@@ -62,7 +65,6 @@ const Exam = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('لطفا ابتدا وارد شوید');
 
-      // Call secure edge function to submit exam
       const { data, error } = await supabase.functions.invoke('submit-exam', {
         body: {
           examQuestions: exam.questions,
@@ -78,7 +80,7 @@ const Exam = () => {
       setShowResults(true);
       toast({
         title: "آزمون ثبت شد! 🎉",
-        description: `نمره: ${percentageScore} | امتیاز کسب شده: ${pointsAwarded}`,
+        description: `نمره: ${percentageScore} | امتیاز: ${pointsAwarded}`,
       });
     } catch (error) {
       logger.error("Failed to submit exam", error);
@@ -92,66 +94,58 @@ const Exam = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="border-b border-border/50 bg-card/50 backdrop-blur-lg sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center gap-4">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => navigate("/dashboard")}
-              className="hover:shadow-glow"
-            >
-              <ArrowRight className="w-4 h-4" />
-            </Button>
-            <div className="flex items-center gap-3">
-              <div className="gradient-accent p-2 rounded-lg shadow-glow">
+    <AppLayout>
+      <div className="container mx-auto px-4 py-6 max-w-4xl">
+        {/* Header */}
+        <div className="mb-6">
+          <div className="bg-gradient-to-br from-primary/5 to-secondary/5 rounded-xl p-6 border border-border/30">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="gradient-primary p-2.5 rounded-xl shadow-glow">
                 <Brain className="w-6 h-6 text-white" />
               </div>
-              <h1 className="text-xl font-bold text-gradient">آزمون هوشمند</h1>
+              <h1 className="text-2xl font-bold">آزمون ساز هوشمند</h1>
             </div>
+            <p className="text-sm text-muted-foreground">
+              آزمون شخصی‌سازی شده با هوش مصنوعی
+            </p>
           </div>
         </div>
-      </header>
 
-      <main className="container mx-auto px-4 py-8 max-w-4xl">
         {!exam ? (
-          <Card className="p-8 shadow-glow border-primary/20 animate-fade-in">
-            <div className="flex items-center gap-3 mb-6">
-              <FileText className="w-8 h-8 text-primary" />
-              <h2 className="text-2xl font-bold text-gradient">ایجاد آزمون جدید</h2>
-            </div>
-
+          <Card className="p-6 glassmorphism-card border-primary/10">
             <div className="space-y-6">
               <div>
-                <label className="text-sm font-medium mb-2 block">محتوای درسی</label>
+                <Label htmlFor="content">محتوای درسی</Label>
                 <Textarea
+                  id="content"
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
                   placeholder="محتوای درسی یا محدوده امتحان را وارد کنید..."
-                  className="min-h-[200px] bg-input border-border/50 focus:border-primary/50"
+                  className="min-h-[200px]"
+                  dir="rtl"
                 />
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm font-medium mb-2 block">تعداد سوالات</label>
+                  <Label htmlFor="count">تعداد سوالات</Label>
                   <Input
+                    id="count"
                     type="number"
                     value={questionCount}
                     onChange={(e) => setQuestionCount(parseInt(e.target.value))}
                     min="5"
                     max="30"
-                    className="bg-input border-border/50"
                   />
                 </div>
 
                 <div>
-                  <label className="text-sm font-medium mb-2 block">سطح دشواری</label>
+                  <Label htmlFor="difficulty">سطح دشواری</Label>
                   <select
+                    id="difficulty"
                     value={difficulty}
                     onChange={(e) => setDifficulty(e.target.value)}
-                    className="flex h-10 w-full rounded-md border border-input bg-input px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                   >
                     <option value="آسان">آسان</option>
                     <option value="متوسط">متوسط</option>
@@ -163,18 +157,18 @@ const Exam = () => {
               <Button
                 onClick={generateExam}
                 disabled={loading}
-                className="w-full shadow-glow hover:shadow-neon"
+                className="w-full gradient-primary shadow-glow"
                 size="lg"
               >
                 {loading ? (
                   <>
-                    <Loader2 className="ml-2 h-4 w-4 animate-spin" />
+                    <Loader2 className="w-5 h-5 animate-spin ml-2" />
                     در حال ایجاد آزمون...
                   </>
                 ) : (
                   <>
-                    <Brain className="ml-2 h-4 w-4" />
-                    ایجاد آزمون با هوش مصنوعی
+                    <Brain className="w-5 h-5 ml-2" />
+                    ایجاد آزمون
                   </>
                 )}
               </Button>
@@ -182,26 +176,20 @@ const Exam = () => {
           </Card>
         ) : (
           <div className="space-y-6">
-            <Card className="p-6 shadow-glow border-primary/20 animate-fade-in">
-              <h2 className="text-2xl font-bold text-gradient mb-4">
+            <Card className="p-6 glassmorphism-card border-primary/10">
+              <h2 className="text-xl font-bold mb-2">
                 {showResults ? "نتایج آزمون" : "آزمون شما"}
               </h2>
-              <p className="text-muted-foreground">
+              <p className="text-sm text-muted-foreground">
                 تعداد سوالات: {exam.questions.length}
               </p>
             </Card>
 
             {exam.questions.map((question: ExamQuestion, index: number) => (
-              <Card
-                key={index}
-                className="p-6 shadow-glow hover:border-primary/50 transition-all animate-fade-in"
-                style={{ animationDelay: `${index * 0.05}s` }}
-              >
-                <div className="mb-4">
-                  <h3 className="text-lg font-bold mb-2">
-                    سوال {index + 1}: {question.question}
-                  </h3>
-                </div>
+              <Card key={index} className="p-6 glassmorphism-card border-primary/10">
+                <h3 className="font-bold mb-4">
+                  سوال {index + 1}: {question.question}
+                </h3>
 
                 {question.type === 'multiple_choice' && (
                   <div className="space-y-2">
@@ -211,9 +199,9 @@ const Exam = () => {
                         onClick={() => !showResults && setAnswers({ ...answers, [index]: option })}
                         disabled={showResults}
                         className={`w-full text-right p-3 rounded-lg border transition-all ${
-                      showResults
-                        ? option === (question.correct_answer?.toString() ?? question.correctAnswer.toString())
-                          ? 'border-green-500 bg-green-500/10'
+                          showResults
+                            ? option === (question.correct_answer?.toString() ?? question.correctAnswer.toString())
+                              ? 'border-green-500 bg-green-500/10'
                               : answers[index] === option
                               ? 'border-red-500 bg-red-500/10'
                               : 'border-border'
@@ -240,7 +228,7 @@ const Exam = () => {
             {!showResults && (
               <Button
                 onClick={submitExam}
-                className="w-full shadow-glow hover:shadow-neon"
+                className="w-full gradient-primary shadow-glow"
                 size="lg"
               >
                 ثبت و مشاهده نتایج
@@ -254,7 +242,7 @@ const Exam = () => {
                   setAnswers({});
                   setShowResults(false);
                 }}
-                className="w-full shadow-glow hover:shadow-neon"
+                className="w-full gradient-primary shadow-glow"
                 size="lg"
               >
                 ایجاد آزمون جدید
@@ -262,8 +250,8 @@ const Exam = () => {
             )}
           </div>
         )}
-      </main>
-    </div>
+      </div>
+    </AppLayout>
   );
 };
 
