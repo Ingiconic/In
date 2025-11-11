@@ -10,6 +10,7 @@ import { Brain, Loader2, CheckCircle, XCircle, AlertCircle, Coins } from "lucide
 import { usePageView } from "@/hooks/usePageView";
 import AppLayout from "@/components/layout/AppLayout";
 import { Badge } from "@/components/ui/badge";
+import ResourceSelector from "@/components/ResourceSelector";
 
 const ExamV2 = () => {
   const { toast } = useToast();
@@ -22,12 +23,13 @@ const ExamV2 = () => {
   const [exam, setExam] = useState<any>(null);
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const [evaluation, setEvaluation] = useState<any>(null);
+  const [selectedResource, setSelectedResource] = useState<any>(null);
 
   const generateExam = async () => {
-    if (!content.trim()) {
+    if (!content.trim() && !selectedResource) {
       toast({
         title: "خطا",
-        description: "لطفا محتوا را وارد کنید",
+        description: "لطفا محتوا را وارد کنید یا منبعی انتخاب کنید",
         variant: "destructive",
       });
       return;
@@ -35,9 +37,15 @@ const ExamV2 = () => {
 
     setLoading(true);
     try {
+      let finalContent = content;
+      
+      if (selectedResource) {
+        finalContent = `بر اساس منبع "${selectedResource.title}"، ${content || "آزمونی جامع بساز"}`;
+      }
+
       const { data, error } = await supabase.functions.invoke('ai-exam-generator-v2', {
         body: { 
-          content, 
+          content: finalContent, 
           questionCount, 
           difficulty,
           questionTypes: {
@@ -133,9 +141,9 @@ const ExamV2 = () => {
                   <Brain className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h1 className="text-2xl font-bold">آزمون ساز هوشمند V2</h1>
+                  <h1 className="text-2xl font-bold">آزمون ساز هوشمند V2 (5 سکه)</h1>
                   <p className="text-sm text-muted-foreground">
-                    سوالات چند گزینه‌ای، جای خالی و تشریحی با ارزیابی هوشمند
+                    سوالات متنوع با ارزیابی هوشمند - محتوا یا منبع را انتخاب کنید
                   </p>
                 </div>
               </div>
@@ -190,24 +198,38 @@ const ExamV2 = () => {
                 </div>
               </div>
 
-              <Button
-                onClick={generateExam}
-                disabled={loading}
-                className="w-full gradient-primary shadow-glow"
-                size="lg"
-              >
-                {loading ? (
-                  <>
-                    <Loader2 className="w-5 h-5 animate-spin ml-2" />
-                    در حال ایجاد آزمون...
-                  </>
-                ) : (
-                  <>
-                    <Brain className="w-5 h-5 ml-2" />
-                    ایجاد آزمون
-                  </>
-                )}
-              </Button>
+              {selectedResource && (
+                <Card className="p-3 bg-primary/5 border-primary/20">
+                  <p className="text-sm">
+                    <span className="font-bold">منبع انتخاب شده:</span> {selectedResource.title}
+                  </p>
+                </Card>
+              )}
+
+              <div className="flex gap-2">
+                <ResourceSelector
+                  onResourceSelect={setSelectedResource}
+                  selectedResource={selectedResource}
+                />
+                <Button
+                  onClick={generateExam}
+                  disabled={loading || (!content.trim() && !selectedResource)}
+                  className="flex-1 gradient-primary shadow-glow"
+                  size="lg"
+                >
+                  {loading ? (
+                    <>
+                      <Loader2 className="w-5 h-5 animate-spin ml-2" />
+                      در حال ایجاد آزمون...
+                    </>
+                  ) : (
+                    <>
+                      <Brain className="w-5 h-5 ml-2" />
+                      ایجاد آزمون
+                    </>
+                  )}
+                </Button>
+              </div>
             </div>
           </Card>
         ) : !evaluation ? (

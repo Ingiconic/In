@@ -5,6 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/lib/supabase";
 import { Sparkles, FileText, Loader2, Image, Mic, MicOff } from "lucide-react";
+import ResourceSelector from "@/components/ResourceSelector";
 import { usePageView } from "@/hooks/usePageView";
 import { logger } from "@/lib/logger";
 import AppLayout from "@/components/layout/AppLayout";
@@ -19,6 +20,7 @@ const Summarize = () => {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>("");
   const [isRecording, setIsRecording] = useState(false);
+  const [selectedResource, setSelectedResource] = useState<any>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
 
@@ -87,8 +89,8 @@ const Summarize = () => {
   };
 
   const handleSummarize = async () => {
-    if (!content.trim() && !imageFile) {
-      toast({ title: "خطا", description: "لطفا محتوا را وارد کنید", variant: "destructive" });
+    if (!content.trim() && !imageFile && !selectedResource) {
+      toast({ title: "خطا", description: "لطفا محتوا را وارد کنید یا منبعی انتخاب کنید", variant: "destructive" });
       return;
     }
 
@@ -96,6 +98,12 @@ const Summarize = () => {
     setResult("");
 
     try {
+      let finalContent = content;
+      
+      if (selectedResource) {
+        finalContent = `بر اساس منبع "${selectedResource.title}"، ${content || "خلاصه‌ای کامل بده"}`;
+      }
+
       if (imageFile) {
         const { data, error } = await supabase.functions.invoke('ai-image-analysis', {
           body: { image: imagePreview, prompt: 'لطفا این تصویر را خلاصه کن و توضیح بده.' }
@@ -104,7 +112,7 @@ const Summarize = () => {
         setResult(data.result);
       } else {
         const { data, error } = await supabase.functions.invoke("ai-summarize", {
-          body: { content, type },
+          body: { content: finalContent, type },
         });
         if (error) throw error;
         setResult(data.summary);
@@ -128,11 +136,16 @@ const Summarize = () => {
               <div className="gradient-primary p-2.5 rounded-xl shadow-glow">
                 <FileText className="w-6 h-6 text-white" />
               </div>
-              <h1 className="text-2xl font-bold">خلاصه‌سازی با AI</h1>
+              <h1 className="text-2xl font-bold">خلاصه‌سازی با AI (2 سکه)</h1>
             </div>
             <p className="text-sm text-muted-foreground">
-              متن، تصویر یا صدا رو آپلود کنید تا خلاصه بشه
+              متن، تصویر، صدا یا منبع خود را انتخاب کنید
             </p>
+            {selectedResource && (
+              <Card className="mt-3 p-2 bg-primary/5 border-primary/20">
+                <p className="text-xs"><span className="font-bold">منبع:</span> {selectedResource.title}</p>
+              </Card>
+            )}
           </div>
         </div>
 
@@ -154,9 +167,13 @@ const Summarize = () => {
           </Button>
         </div>
 
-        {/* Image Upload */}
+        {/* Upload Options */}
         <Card className="p-4 mb-4 glassmorphism-card border-primary/10">
           <div className="flex gap-2 mb-4">
+            <ResourceSelector
+              onResourceSelect={setSelectedResource}
+              selectedResource={selectedResource}
+            />
             <label htmlFor="image-upload" className="flex-1">
               <Button variant="outline" className="w-full" asChild>
                 <span>
@@ -199,16 +216,21 @@ const Summarize = () => {
         {/* Submit Button */}
         <Button
           onClick={handleSummarize}
-          disabled={loading || (!content.trim() && !imageFile)}
+          disabled={loading || (!content.trim() && !imageFile && !selectedResource)}
           className="w-full gradient-primary shadow-glow mb-4"
           size="lg"
         >
           {loading ? (
-            <Loader2 className="w-5 h-5 animate-spin ml-2" />
+            <>
+              <Loader2 className="w-5 h-5 animate-spin ml-2" />
+              در حال پردازش...
+            </>
           ) : (
-            <Sparkles className="w-5 h-5 ml-2" />
+            <>
+              <Sparkles className="w-5 h-5 ml-2" />
+              خلاصه‌سازی
+            </>
           )}
-          {loading ? "در حال پردازش..." : "خلاصه‌سازی"}
         </Button>
 
         {/* Result */}

@@ -11,6 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import { BookOpen, Plus, Trash2, RotateCw, CheckCircle } from "lucide-react";
 import AppLayout from "@/components/layout/AppLayout";
 import { usePageView } from "@/hooks/usePageView";
+import ResourceSelector from "@/components/ResourceSelector";
 
 interface Deck {
   id: string;
@@ -39,6 +40,8 @@ const Flashcards = () => {
   const [showNewDeckDialog, setShowNewDeckDialog] = useState(false);
   const [showNewCardDialog, setShowNewCardDialog] = useState(false);
   const [studyMode, setStudyMode] = useState(false);
+  const [selectedResource, setSelectedResource] = useState<any>(null);
+  const [generatingCards, setGeneratingCards] = useState(false);
 
   const [newDeck, setNewDeck] = useState({ title: "", description: "" });
   const [newCard, setNewCard] = useState({
@@ -202,17 +205,22 @@ const Flashcards = () => {
                   <BookOpen className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <h2 className="text-lg font-bold">فلش کارت‌ها</h2>
-                  <p className="text-xs text-muted-foreground">با کارت‌های آموزشی مطالعه کنید</p>
+                  <h2 className="text-lg font-bold">فلش کارت‌ها (3 سکه)</h2>
+                  <p className="text-xs text-muted-foreground">کارت‌های آموزشی از محتوا یا منابع</p>
                 </div>
               </div>
-              <Dialog open={showNewDeckDialog} onOpenChange={setShowNewDeckDialog}>
-                <DialogTrigger asChild>
-                  <Button className="gradient-primary">
-                    <Plus className="w-4 h-4 ml-1" />
-                    دسته جدید
-                  </Button>
-                </DialogTrigger>
+              <div className="flex gap-2">
+                <ResourceSelector
+                  onResourceSelect={setSelectedResource}
+                  selectedResource={selectedResource}
+                />
+                <Dialog open={showNewDeckDialog} onOpenChange={setShowNewDeckDialog}>
+                  <DialogTrigger asChild>
+                    <Button className="gradient-primary">
+                      <Plus className="w-4 h-4 ml-1" />
+                      دسته جدید
+                    </Button>
+                  </DialogTrigger>
                 <DialogContent>
                   <DialogHeader>
                     <DialogTitle>ایجاد دسته جدید</DialogTitle>
@@ -243,6 +251,7 @@ const Flashcards = () => {
                   </div>
                 </DialogContent>
               </Dialog>
+              </div>
             </div>
           </div>
         </div>

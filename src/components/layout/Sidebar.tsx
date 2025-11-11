@@ -74,12 +74,12 @@ const Sidebar = ({ profile }: SidebarProps) => {
   const menuItems = [
     { icon: LayoutDashboard, label: "داشبورد", path: "/dashboard", coins: 0 },
     { icon: FileText, label: "منابع من", path: "/resources", coins: 0 },
-    { icon: HelpCircle, label: "پرسش درسی", path: "/questions", coins: 10 },
-    { icon: FileText, label: "خلاصه‌سازی", path: "/summarize", coins: 20 },
-    { icon: CheckSquare, label: "آزمون ساز", path: "/exam", coins: 50 },
-    { icon: PenTool, label: "حل تمرین", path: "/step-by-step", coins: 15 },
-    { icon: Brain, label: "مشاور هوشمند", path: "/consultation", coins: 30 },
-    { icon: Lightbulb, label: "نقشه ذهنی", path: "/mind-map", coins: 25 },
+    { icon: HelpCircle, label: "پرسش درسی", path: "/questions", coins: 2 },
+    { icon: FileText, label: "خلاصه‌سازی", path: "/summarize", coins: 2 },
+    { icon: CheckSquare, label: "آزمون ساز", path: "/exam-v2", coins: 5 },
+    { icon: PenTool, label: "فلش کارت", path: "/flashcards", coins: 3 },
+    { icon: Brain, label: "نقشه ذهنی", path: "/mindmap", coins: 4 },
+    { icon: Lightbulb, label: "برنامه مطالعاتی", path: "/study-plan", coins: 3 },
     { icon: TrendingUp, label: "پیشرفت من", path: "/progress", coins: 0 },
   ];
 

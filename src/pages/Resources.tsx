@@ -188,9 +188,12 @@ export default function Resources() {
               <label className="block text-sm font-medium mb-2">فایل</label>
               <Input
                 type="file"
-                accept=".pdf,.doc,.docx,.txt"
+                accept=".pdf,.doc,.docx,.txt,.mp3,.wav,.m4a,.ogg"
                 onChange={(e) => setFile(e.target.files?.[0] || null)}
               />
+              <p className="text-xs text-muted-foreground mt-1">
+                فرمت‌های پشتیبانی شده: PDF, Word, Text, MP3, WAV, M4A
+              </p>
             </div>
             <Button
               onClick={handleUpload}

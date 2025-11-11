@@ -14,12 +14,11 @@ import ExamV2 from "./pages/ExamV2";
 import AdminPanel from "./pages/AdminPanel";
 import Chat from "./pages/Chat";
 import ChatFriends from "./pages/ChatFriends";
-import StepByStep from "./pages/StepByStep";
 import Admin from "./pages/Admin";
 import Profile from "./pages/Profile";
 import Progress from "./pages/Progress";
 import About from "./pages/About";
-import MindMap from "./pages/MindMap";
+import MindMapAI from "./pages/MindMapAI";
 import Flashcards from "./pages/Flashcards";
 import Resources from "./pages/Resources";
 import CoinShop from "./pages/CoinShop";
@@ -41,13 +40,13 @@ const App = () => (
           <Route path="/questions" element={<Questions />} />
           <Route path="/consultation" element={<Consultation />} />
           <Route path="/study-plan" element={<StudyPlan />} />
-          <Route path="/step-by-step" element={<StepByStep />} />
           <Route path="/exam" element={<ExamV2 />} />
+          <Route path="/exam-v2" element={<ExamV2 />} />
           <Route path="/admin" element={<AdminPanel />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/progress" element={<Progress />} />
           <Route path="/about" element={<About />} />
-          <Route path="/mind-map" element={<MindMap />} />
+          <Route path="/mindmap" element={<MindMapAI />} />
           <Route path="/flashcards" element={<Flashcards />} />
           <Route path="/resources" element={<Resources />} />
           <Route path="/coin-shop" element={<CoinShop />} />

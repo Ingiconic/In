@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/lib/supabase";
 import { Send, Brain, Loader2, Image } from "lucide-react";
+import ResourceSelector from "@/components/ResourceSelector";
 import { logger } from "@/lib/logger";
 import AppLayout from "@/components/layout/AppLayout";
 
@@ -15,6 +16,7 @@ const Questions = () => {
   const [loading, setLoading] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>("");
+  const [selectedResource, setSelectedResource] = useState<any>(null);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -27,13 +29,18 @@ const Questions = () => {
   };
 
   const handleAsk = async () => {
-    if (!question.trim() && !imageFile) {
+    if (!question.trim() && !imageFile && !selectedResource) {
       toast({
         title: "خطا",
-        description: "لطفا سوال خود را بنویسید یا تصویر آپلود کنید",
+        description: "لطفا سوال خود را بنویسید، تصویر آپلود کنید یا منبعی انتخاب کنید",
         variant: "destructive",
       });
       return;
+    }
+
+    let finalQuestion = question;
+    if (selectedResource) {
+      finalQuestion = `بر اساس منبع "${selectedResource.title}"، ${question}`;
     }
 
     const userMessage = { role: "user", content: question };
@@ -44,7 +51,7 @@ const Questions = () => {
     try {
       if (imageFile) {
         const { data, error } = await supabase.functions.invoke('ai-image-analysis', {
-          body: { image: imagePreview, prompt: question || 'لطفا این تصویر را تحلیل کن.' }
+          body: { image: imagePreview, prompt: finalQuestion || 'لطفا این تصویر را تحلیل کن.' }
         });
         if (error) throw error;
         const aiMessage = { role: "assistant", content: data.result };
@@ -53,7 +60,7 @@ const Questions = () => {
         setImagePreview("");
       } else {
         const { data, error } = await supabase.functions.invoke("ai-answer", {
-          body: { question },
+          body: { question: finalQuestion },
         });
         if (error) throw error;
         const aiMessage = { role: "assistant", content: data.answer };
@@ -80,11 +87,16 @@ const Questions = () => {
               <div className="gradient-primary p-2.5 rounded-xl shadow-glow">
                 <Brain className="w-6 h-6 text-white" />
               </div>
-              <h1 className="text-2xl font-bold">پرسش درسی با AI</h1>
+              <h1 className="text-2xl font-bold">پرسش درسی با AI (2 سکه)</h1>
             </div>
             <p className="text-sm text-muted-foreground">
-              سوالات درسی خود را بپرسید یا تصویر آپلود کنید
+              سوال بپرسید، تصویر آپلود کنید یا از منابع استفاده کنید
             </p>
+            {selectedResource && (
+              <Card className="mt-3 p-2 bg-primary/5 border-primary/20">
+                <p className="text-xs"><span className="font-bold">منبع:</span> {selectedResource.title}</p>
+              </Card>
+            )}
           </div>
         </div>
 
@@ -135,6 +147,10 @@ const Questions = () => {
         {/* Input Area */}
         <Card className="p-4 glassmorphism-card border-primary/10">
           <div className="flex gap-2">
+            <ResourceSelector
+              onResourceSelect={setSelectedResource}
+              selectedResource={selectedResource}
+            />
             <label htmlFor="image-upload" className="cursor-pointer">
               <Button variant="outline" size="icon" asChild>
                 <span>
@@ -160,7 +176,7 @@ const Questions = () => {
             />
             <Button
               onClick={handleAsk}
-              disabled={loading || (!question.trim() && !imageFile)}
+              disabled={loading || (!question.trim() && !imageFile && !selectedResource)}
               className="gradient-primary shadow-glow"
             >
               {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
