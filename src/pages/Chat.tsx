@@ -97,6 +97,8 @@ const Chat = () => {
 
   const loadMessages = async () => {
     if (!publicGroupId) return;
+    
+    // Only load last 20 messages for performance
 
     const { data } = await supabase
       .from("group_messages")

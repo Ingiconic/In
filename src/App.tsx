@@ -10,7 +10,8 @@ import Summarize from "./pages/Summarize";
 import Questions from "./pages/Questions";
 import Consultation from "./pages/Consultation";
 import StudyPlan from "./pages/StudyPlan";
-import Exam from "./pages/Exam";
+import ExamV2 from "./pages/ExamV2";
+import AdminPanel from "./pages/AdminPanel";
 import Chat from "./pages/Chat";
 import ChatFriends from "./pages/ChatFriends";
 import StepByStep from "./pages/StepByStep";
@@ -41,7 +42,8 @@ const App = () => (
           <Route path="/consultation" element={<Consultation />} />
           <Route path="/study-plan" element={<StudyPlan />} />
           <Route path="/step-by-step" element={<StepByStep />} />
-          <Route path="/exam" element={<Exam />} />
+          <Route path="/exam" element={<ExamV2 />} />
+          <Route path="/admin" element={<AdminPanel />} />
           <Route path="/chat" element={<Chat />} />
           <Route path="/chat-friends" element={<ChatFriends />} />
           <Route path="/admin" element={<Admin />} />

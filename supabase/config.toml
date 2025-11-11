@@ -29,3 +29,9 @@ verify_jwt = true
 
 [functions.ai-flashcard-generator]
 verify_jwt = true
+
+[functions.ai-exam-generator-v2]
+verify_jwt = true
+
+[functions.ai-evaluate-exam]
+verify_jwt = true

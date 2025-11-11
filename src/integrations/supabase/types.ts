@@ -812,6 +812,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_adjust_user_coins: {
+        Args: {
+          adjustment_reason: string
+          coin_amount: number
+          target_user_id: string
+        }
+        Returns: undefined
+      }
       award_exam_points: {
         Args: { exam_id_param: string; points_to_award: number }
         Returns: undefined

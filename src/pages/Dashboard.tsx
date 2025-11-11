@@ -364,10 +364,10 @@ const Dashboard = () => {
               <Card className="glassmorphism-card border-primary/10">
                 <CardContent className="p-4">
                   <div className="flex flex-col items-center text-center">
-                    <div className="bg-gradient-to-br from-green-500 to-green-600 p-3 rounded-xl shadow-glow mb-2">
+                    <div className="bg-gradient-to-br from-purple-500 to-purple-600 p-3 rounded-xl shadow-glow mb-2">
                       <Users className="w-5 h-5 text-white" />
                     </div>
-                    <p className="text-2xl font-bold text-green-500">{stats.friendsCount}</p>
+                    <p className="text-2xl font-bold text-purple-500">{stats.friendsCount}</p>
                     <p className="text-xs text-muted-foreground mt-1">دوست</p>
                   </div>
                 </CardContent>
@@ -376,18 +376,31 @@ const Dashboard = () => {
               <Card className="glassmorphism-card border-primary/10">
                 <CardContent className="p-4">
                   <div className="flex flex-col items-center text-center">
-                    <div className="bg-gradient-to-br from-purple-500 to-purple-600 p-3 rounded-xl shadow-glow mb-2">
+                    <div className="bg-gradient-to-br from-orange-500 to-orange-600 p-3 rounded-xl shadow-glow mb-2">
                       <Calendar className="w-5 h-5 text-white" />
                     </div>
-                    <p className="text-2xl font-bold text-purple-500">{stats.studyPlansCount}</p>
+                    <p className="text-2xl font-bold text-orange-500">{stats.studyPlansCount}</p>
                     <p className="text-xs text-muted-foreground mt-1">برنامه مطالعاتی</p>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Coins Display */}
+              <Card className="glassmorphism-card border-yellow-500/20 col-span-2 md:col-span-1">
+                <CardContent className="p-4">
+                  <div className="flex flex-col items-center text-center">
+                    <div className="bg-gradient-to-br from-yellow-500 to-yellow-600 p-3 rounded-xl shadow-glow mb-2">
+                      <CreditCard className="w-5 h-5 text-white" />
+                    </div>
+                    <p className="text-2xl font-bold text-yellow-600">{profile?.coins || 0}</p>
+                    <p className="text-xs text-muted-foreground mt-1">سکه</p>
                   </div>
                 </CardContent>
               </Card>
             </div>
           </TabsContent>
 
-          {/* Recent Activity Tab */}
+          {/* Recent Activity Tab - REMOVED */}
           <TabsContent value="recent">
             <Card className="glassmorphism-card">
               <CardContent className="p-6">
