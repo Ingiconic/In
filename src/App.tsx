@@ -44,9 +44,6 @@ const App = () => (
           <Route path="/step-by-step" element={<StepByStep />} />
           <Route path="/exam" element={<ExamV2 />} />
           <Route path="/admin" element={<AdminPanel />} />
-          <Route path="/chat" element={<Chat />} />
-          <Route path="/chat-friends" element={<ChatFriends />} />
-          <Route path="/admin" element={<Admin />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/progress" element={<Progress />} />
           <Route path="/about" element={<About />} />

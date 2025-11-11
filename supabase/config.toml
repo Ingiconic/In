@@ -35,3 +35,6 @@ verify_jwt = true
 
 [functions.ai-evaluate-exam]
 verify_jwt = true
+
+[functions.ai-mindmap-generator-v2]
+verify_jwt = true

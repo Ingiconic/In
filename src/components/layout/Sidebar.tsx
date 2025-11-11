@@ -1,8 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { 
-  MessageSquare, 
-  Users, 
   HelpCircle, 
   FileText, 
   CheckSquare, 
@@ -17,11 +15,14 @@ import {
   Star,
   Trophy,
   Coins,
-  BookOpen
+  BookOpen,
+  Shield,
+  Lightbulb
 } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/hooks/use-toast";
+import { useEffect, useState } from "react";
 
 interface SidebarProps {
   profile: any;
@@ -31,6 +32,25 @@ const Sidebar = ({ profile }: SidebarProps) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { toast } = useToast();
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    checkAdmin();
+  }, []);
+
+  const checkAdmin = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { data } = await supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", user.id)
+      .eq("role", "admin")
+      .single();
+
+    setIsAdmin(!!data);
+  };
 
   const userLevel = profile?.points ? Math.floor(profile.points / 100) + 1 : 1;
 
@@ -52,16 +72,15 @@ const Sidebar = ({ profile }: SidebarProps) => {
   };
 
   const menuItems = [
-    { icon: LayoutDashboard, label: "داشبورد", path: "/dashboard" },
-    { icon: FileText, label: "منابع من", path: "/resources" },
-    { icon: MessageSquare, label: "پیام‌رسان", path: "/chat" },
-    { icon: Users, label: "دوستان", path: "/chat-friends" },
-    { icon: HelpCircle, label: "پرسش درسی", path: "/questions" },
-    { icon: FileText, label: "خلاصه‌سازی", path: "/summarize" },
-    { icon: CheckSquare, label: "آزمون ساز", path: "/exam" },
-    { icon: PenTool, label: "حل تمرین", path: "/step-by-step" },
-    { icon: Brain, label: "مشاور هوشمند", path: "/consultation" },
-    { icon: TrendingUp, label: "پیشرفت من", path: "/progress" },
+    { icon: LayoutDashboard, label: "داشبورد", path: "/dashboard", coins: 0 },
+    { icon: FileText, label: "منابع من", path: "/resources", coins: 0 },
+    { icon: HelpCircle, label: "پرسش درسی", path: "/questions", coins: 10 },
+    { icon: FileText, label: "خلاصه‌سازی", path: "/summarize", coins: 20 },
+    { icon: CheckSquare, label: "آزمون ساز", path: "/exam", coins: 50 },
+    { icon: PenTool, label: "حل تمرین", path: "/step-by-step", coins: 15 },
+    { icon: Brain, label: "مشاور هوشمند", path: "/consultation", coins: 30 },
+    { icon: Lightbulb, label: "نقشه ذهنی", path: "/mind-map", coins: 25 },
+    { icon: TrendingUp, label: "پیشرفت من", path: "/progress", coins: 0 },
   ];
 
   const isActive = (path: string) => location.pathname === path;
@@ -112,19 +131,41 @@ const Sidebar = ({ profile }: SidebarProps) => {
       {/* Navigation Menu */}
       <ScrollArea className="flex-1 px-3 py-4">
         <nav className="space-y-1">
+          {isAdmin && (
+            <Button
+              variant="ghost"
+              onClick={() => navigate("/admin")}
+              className={`w-full justify-start gap-3 h-11 px-3 rounded-xl transition-all mb-2 ${
+                isActive("/admin")
+                  ? "bg-yellow-500/10 text-yellow-500 border border-yellow-500/20"
+                  : "hover:bg-yellow-500/10 hover:text-yellow-500"
+              }`}
+            >
+              <Shield className="w-5 h-5" />
+              <span className="text-sm font-medium">پنل مدیریت</span>
+            </Button>
+          )}
           {menuItems.map((item) => (
             <Button
               key={item.path}
               variant="ghost"
               onClick={() => navigate(item.path)}
-              className={`w-full justify-start gap-3 h-11 px-3 rounded-xl transition-all ${
+              className={`w-full justify-between gap-3 h-11 px-3 rounded-xl transition-all ${
                 isActive(item.path)
                   ? "bg-primary/10 text-primary border border-primary/20 shadow-glow"
                   : "hover:bg-muted/50 text-muted-foreground hover:text-foreground"
               }`}
             >
-              <item.icon className="w-5 h-5" />
-              <span className="text-sm font-medium">{item.label}</span>
+              <div className="flex items-center gap-3">
+                <item.icon className="w-5 h-5" />
+                <span className="text-sm font-medium">{item.label}</span>
+              </div>
+              {item.coins > 0 && (
+                <div className="flex items-center gap-1 bg-yellow-500/10 px-2 py-0.5 rounded-md">
+                  <Coins className="w-3 h-3 text-yellow-500" />
+                  <span className="text-xs font-bold text-yellow-500">{item.coins}</span>
+                </div>
+              )}
             </Button>
           ))}
         </nav>

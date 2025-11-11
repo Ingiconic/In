@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { MessageSquare, Users, FileText, CheckSquare, HelpCircle, Sparkles, Trophy, PenTool, Brain, TrendingUp, Award, Target, BookOpen, Calendar, Lightbulb, CreditCard } from "lucide-react";
+import { MessageSquare, Users, FileText, CheckSquare, HelpCircle, Sparkles, Trophy, PenTool, Brain, TrendingUp, Award, Target, BookOpen, Calendar, Lightbulb, CreditCard, Coins } from "lucide-react";
 import { usePageView } from "@/hooks/usePageView";
 import AppLayout from "@/components/layout/AppLayout";
 import { Button } from "@/components/ui/button";
@@ -93,6 +93,13 @@ const Dashboard = () => {
             </div>
             <div className="hidden md:flex items-center gap-4">
               <div className="text-center">
+                <div className="bg-yellow-500/10 p-3 rounded-xl border border-yellow-500/30 mb-1">
+                  <Coins className="w-6 h-6 text-yellow-500" />
+                </div>
+                <p className="text-2xl font-bold text-yellow-500">{profile?.coins || 0}</p>
+                <p className="text-xs text-muted-foreground">سکه</p>
+              </div>
+              <div className="text-center">
                 <div className="gradient-primary p-3 rounded-xl shadow-glow mb-1">
                   <Trophy className="w-6 h-6 text-white" />
                 </div>
@@ -112,7 +119,7 @@ const Dashboard = () => {
 
         {/* Main Unified Interface */}
         <Tabs defaultValue="tools" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 mb-6">
+          <TabsList className="grid w-full grid-cols-2 mb-6">
             <TabsTrigger value="tools">
               <Sparkles className="w-4 h-4 ml-1" />
               ابزارها
@@ -120,10 +127,6 @@ const Dashboard = () => {
             <TabsTrigger value="stats">
               <TrendingUp className="w-4 h-4 ml-1" />
               آمار
-            </TabsTrigger>
-            <TabsTrigger value="recent">
-              <Calendar className="w-4 h-4 ml-1" />
-              فعالیت‌ها
             </TabsTrigger>
           </TabsList>
 
@@ -262,60 +265,6 @@ const Dashboard = () => {
                       <CardTitle className="text-base group-hover:text-gradient transition-colors">برنامه مطالعاتی</CardTitle>
                     </div>
                     <CardDescription className="text-xs">برنامه‌ریزی یادگیری</CardDescription>
-                  </CardHeader>
-                </Card>
-              </div>
-            </div>
-
-            {/* Social Tools */}
-            <div>
-              <div className="flex items-center gap-2 mb-4">
-                <Users className="w-5 h-5 text-blue-500" />
-                <h3 className="text-xl font-bold">ارتباطات و همکاری</h3>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                <Card 
-                  className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group border-blue-500/10"
-                  onClick={() => navigate("/chat")}
-                >
-                  <CardHeader className="p-5">
-                    <div className="flex items-center gap-3 mb-2">
-                      <div className="bg-gradient-to-br from-blue-500 to-blue-600 p-2.5 rounded-xl shadow-glow group-hover:scale-110 transition-transform">
-                        <MessageSquare className="w-5 h-5 text-white" />
-                      </div>
-                      <CardTitle className="text-base group-hover:text-gradient transition-colors">پیام‌رسان</CardTitle>
-                    </div>
-                    <CardDescription className="text-xs">چت با دوستان و کانال‌ها</CardDescription>
-                  </CardHeader>
-                </Card>
-
-                <Card 
-                  className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group border-blue-500/10"
-                  onClick={() => navigate("/chat-friends")}
-                >
-                  <CardHeader className="p-5">
-                    <div className="flex items-center gap-3 mb-2">
-                      <div className="bg-gradient-to-br from-blue-500 to-blue-600 p-2.5 rounded-xl shadow-glow group-hover:scale-110 transition-transform">
-                        <Users className="w-5 h-5 text-white" />
-                      </div>
-                      <CardTitle className="text-base group-hover:text-gradient transition-colors">دوستان</CardTitle>
-                    </div>
-                    <CardDescription className="text-xs">مدیریت دوستان</CardDescription>
-                  </CardHeader>
-                </Card>
-
-                <Card 
-                  className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group border-blue-500/10"
-                  onClick={() => navigate("/progress")}
-                >
-                  <CardHeader className="p-5">
-                    <div className="flex items-center gap-3 mb-2">
-                      <div className="bg-gradient-to-br from-blue-500 to-blue-600 p-2.5 rounded-xl shadow-glow group-hover:scale-110 transition-transform">
-                        <TrendingUp className="w-5 h-5 text-white" />
-                      </div>
-                      <CardTitle className="text-base group-hover:text-gradient transition-colors">پیشرفت من</CardTitle>
-                    </div>
-                    <CardDescription className="text-xs">آمار و نمودار پیشرفت</CardDescription>
                   </CardHeader>
                 </Card>
               </div>
