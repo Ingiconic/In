@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/lib/supabase";
 import { ArrowRight, Calendar, Plus, Trash2, CheckCircle, Sparkles, Brain, Loader2 } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { logger } from "@/lib/logger";

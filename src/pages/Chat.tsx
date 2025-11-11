@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar } from "@/components/ui/avatar";
 import { Send, Sparkles, Edit2, Trash2 } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/lib/supabase";
 import { messageSchema } from "@/lib/validation";
 import { aiPromptSchema } from "@/lib/ai-validation";
 import { useToast } from "@/hooks/use-toast";

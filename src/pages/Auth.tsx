@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/lib/supabase";
 import { BookOpen, GraduationCap, Sparkles } from "lucide-react";
 import { usernameSchema } from "@/lib/validation";
 import { logger } from "@/lib/logger";

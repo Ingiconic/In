@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/lib/supabase";
 import { Send, Brain, Loader2, Image } from "lucide-react";
 import { logger } from "@/lib/logger";
 import AppLayout from "@/components/layout/AppLayout";

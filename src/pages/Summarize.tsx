@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/lib/supabase";
 import { Sparkles, FileText, Loader2, Image, Mic, MicOff } from "lucide-react";
 import { usePageView } from "@/hooks/usePageView";
 import { logger } from "@/lib/logger";
