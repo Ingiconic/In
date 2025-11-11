@@ -18,6 +18,8 @@ import Admin from "./pages/Admin";
 import Profile from "./pages/Profile";
 import Progress from "./pages/Progress";
 import About from "./pages/About";
+import MindMap from "./pages/MindMap";
+import Flashcards from "./pages/Flashcards";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -44,6 +46,8 @@ const App = () => (
           <Route path="/profile" element={<Profile />} />
           <Route path="/progress" element={<Progress />} />
           <Route path="/about" element={<About />} />
+          <Route path="/mind-map" element={<MindMap />} />
+          <Route path="/flashcards" element={<Flashcards />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

@@ -177,6 +177,72 @@ export type Database = {
         }
         Relationships: []
       }
+      flashcard_decks: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      flashcards: {
+        Row: {
+          answer: string
+          created_at: string
+          deck_id: string
+          difficulty: string | null
+          id: string
+          last_reviewed: string | null
+          next_review: string | null
+          question: string
+          review_count: number | null
+          updated_at: string
+        }
+        Insert: {
+          answer: string
+          created_at?: string
+          deck_id: string
+          difficulty?: string | null
+          id?: string
+          last_reviewed?: string | null
+          next_review?: string | null
+          question: string
+          review_count?: number | null
+          updated_at?: string
+        }
+        Update: {
+          answer?: string
+          created_at?: string
+          deck_id?: string
+          difficulty?: string | null
+          id?: string
+          last_reviewed?: string | null
+          next_review?: string | null
+          question?: string
+          review_count?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       friend_requests: {
         Row: {
           created_at: string | null
@@ -319,6 +385,36 @@ export type Database = {
           name?: string
           owner_id?: string
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      mind_maps: {
+        Row: {
+          created_at: string
+          edges: Json
+          id: string
+          nodes: Json
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          edges?: Json
+          id?: string
+          nodes?: Json
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          edges?: Json
+          id?: string
+          nodes?: Json
+          title?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
