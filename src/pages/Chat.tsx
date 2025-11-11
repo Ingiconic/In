@@ -4,14 +4,14 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar } from "@/components/ui/avatar";
-import { ArrowRight, MessageSquare, Edit2, Trash2, Send, Sparkles } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Send, Sparkles, Edit2, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { messageSchema } from "@/lib/validation";
 import { aiPromptSchema } from "@/lib/ai-validation";
 import { useToast } from "@/hooks/use-toast";
 import { logger } from "@/lib/logger";
 import { usePageView } from "@/hooks/usePageView";
+import AppLayout from "@/components/layout/AppLayout";
 
 interface Message {
   id: string;
@@ -26,19 +26,18 @@ interface Message {
 }
 
 const Chat = () => {
-  const navigate = useNavigate();
   const { toast } = useToast();
   usePageView();
-  const [profile, setProfile] = useState<any>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [messageInput, setMessageInput] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
   const [publicGroupId, setPublicGroupId] = useState<string | null>(null);
   const [isAiProcessing, setIsAiProcessing] = useState(false);
+  const [profile, setProfile] = useState<any>(null);
 
   useEffect(() => {
-    loadProfile();
     loadPublicGroup();
+    loadProfile();
   }, []);
 
   useEffect(() => {
@@ -222,64 +221,56 @@ const Chat = () => {
   const AI_USER_ID = "00000000-0000-0000-0000-000000000000";
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="glassmorphism border-b border-border/30 sticky top-0 z-50 animate-fade-in">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center gap-4">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => navigate("/dashboard")}
-              className="hover:shadow-glow hover-lift transition-all"
-            >
-              <ArrowRight className="w-4 h-4" />
-            </Button>
+    <AppLayout>
+      <div className="container mx-auto px-4 py-4 max-w-4xl h-full flex flex-col">
+        {/* Chat Header */}
+        <div className="mb-4">
+          <div className="bg-gradient-to-br from-primary/5 to-secondary/5 rounded-xl p-4 border border-border/30">
             <div className="flex items-center gap-3">
-              <div className="gradient-primary p-2 rounded-xl shadow-glow animate-pulse-glow">
-                <MessageSquare className="w-6 h-6 text-white" />
+              <div className="gradient-primary p-2 rounded-xl shadow-glow">
+                <Sparkles className="w-5 h-5 text-white" />
               </div>
               <div>
-                <h1 className="text-xl font-bold text-gradient animate-neon-pulse">چت عمومی ایزی درس</h1>
+                <h2 className="text-lg font-bold">چت عمومی ایزی درس</h2>
                 <p className="text-xs text-muted-foreground">برای صحبت با هوش مصنوعی از ! استفاده کنید</p>
               </div>
             </div>
           </div>
         </div>
-      </header>
 
-      <div className="container mx-auto p-2 md:p-4 max-w-4xl">
-        <Card className="p-4 flex flex-col glassmorphism-card animate-scale-in h-[calc(100vh-180px)]">
+        {/* Messages Area */}
+        <Card className="flex-1 glassmorphism-card border-primary/10 flex flex-col overflow-hidden">
           {profile && (
-            <Card className="p-3 mb-4 glassmorphism border-primary/30 hover-lift">
+            <div className="p-3 border-b border-border/30 bg-card/50">
               <div className="flex items-center gap-2">
-                <Avatar className="w-8 h-8 gradient-primary text-white shadow-glow">
-                  <div className="w-full h-full flex items-center justify-center font-bold">
+                <Avatar className="w-8 h-8 gradient-primary text-white">
+                  <div className="w-full h-full flex items-center justify-center font-bold text-sm">
                     {profile.full_name?.[0]}
                   </div>
                 </Avatar>
                 <div className="flex-1">
                   <p className="font-bold text-sm">{profile.full_name}</p>
-                  <p className="text-xs text-primary animate-pulse">
+                  <p className="text-xs text-primary">
                     {profile.points || 0} امتیاز ⭐
                   </p>
                 </div>
               </div>
-            </Card>
+            </div>
           )}
 
-          <ScrollArea className="flex-1 mb-4">
+          <ScrollArea className="flex-1 p-4">
             <div className="space-y-3">
               {messages.map((msg) => {
                 const isOwn = msg.user_id === profile?.id;
                 const isAI = msg.user_id === AI_USER_ID;
                 
                 return (
-                  <div key={msg.id} className={`flex ${isOwn ? "justify-end" : "justify-start"} animate-scale-in`}>
-                    <Card className={`p-3 max-w-[70%] hover-lift ${
+                  <div key={msg.id} className={`flex ${isOwn ? "justify-end" : "justify-start"}`}>
+                    <Card className={`p-3 max-w-[75%] ${
                       isAI
-                        ? "gradient-secondary text-white shadow-neon border-accent/50"
+                        ? "gradient-secondary text-white border-accent/30"
                         : isOwn 
-                        ? "gradient-primary text-white shadow-glow" 
+                        ? "gradient-primary text-white" 
                         : "glassmorphism-card"
                     }`}>
                       {!isOwn && !isAI && (
@@ -289,7 +280,7 @@ const Chat = () => {
                       )}
                       {isAI && (
                         <div className="flex items-center gap-2 mb-1">
-                          <Sparkles className="w-4 h-4 animate-pulse" />
+                          <Sparkles className="w-4 h-4" />
                           <p className="text-xs font-bold">دستیار هوشمند</p>
                         </div>
                       )}
@@ -303,8 +294,7 @@ const Chat = () => {
                             size="sm"
                             variant="ghost"
                             onClick={() => startEdit(msg)}
-                            className="h-6 px-2 hover:scale-110 transition-transform"
-                            title="ویرایش پیام"
+                            className="h-6 px-2"
                           >
                             <Edit2 className="w-3 h-3" />
                           </Button>
@@ -312,8 +302,7 @@ const Chat = () => {
                             size="sm"
                             variant="ghost"
                             onClick={() => deleteMessage(msg.id)}
-                            className="h-6 px-2 hover:scale-110 transition-transform"
-                            title="حذف پیام"
+                            className="h-6 px-2"
                           >
                             <Trash2 className="w-3 h-3" />
                           </Button>
@@ -324,8 +313,8 @@ const Chat = () => {
                 );
               })}
               {isAiProcessing && (
-                <div className="flex justify-start animate-scale-in">
-                  <Card className="p-3 max-w-[70%] gradient-secondary text-white shadow-neon border-accent/50">
+                <div className="flex justify-start">
+                  <Card className="p-3 gradient-secondary text-white border-accent/30">
                     <div className="flex items-center gap-2">
                       <Sparkles className="w-4 h-4 animate-pulse" />
                       <p className="text-sm">در حال پردازش...</p>
@@ -336,27 +325,41 @@ const Chat = () => {
             </div>
           </ScrollArea>
 
-          <div className="flex gap-2">
-            <Input
-              value={messageInput}
-              onChange={(e) => setMessageInput(e.target.value)}
-              onKeyPress={(e) => e.key === "Enter" && sendMessage()}
-              placeholder={editingId ? "✏️ ویرایش پیام..." : "💬 پیام خود را بنویسید... (! برای AI)"}
-              className="flex-1 glassmorphism"
-              dir="rtl"
-            />
-            {editingId && (
-              <Button variant="outline" className="hover-lift" onClick={() => { setEditingId(null); setMessageInput(""); }}>
-                انصراف
+          {/* Input Area */}
+          <div className="p-3 border-t border-border/30 bg-card/50">
+            <div className="flex gap-2">
+              <Input
+                value={messageInput}
+                onChange={(e) => setMessageInput(e.target.value)}
+                onKeyPress={(e) => e.key === "Enter" && sendMessage()}
+                placeholder={editingId ? "✏️ ویرایش پیام..." : "💬 پیام خود را بنویسید... (! برای AI)"}
+                className="flex-1"
+                dir="rtl"
+                disabled={isAiProcessing}
+              />
+              {editingId && (
+                <Button 
+                  variant="outline" 
+                  onClick={() => { 
+                    setEditingId(null); 
+                    setMessageInput(""); 
+                  }}
+                >
+                  انصراف
+                </Button>
+              )}
+              <Button 
+                onClick={sendMessage} 
+                className="gradient-primary shadow-glow" 
+                disabled={isAiProcessing}
+              >
+                {editingId ? "✅" : <Send className="w-4 h-4" />}
               </Button>
-            )}
-            <Button onClick={sendMessage} className="gradient-primary hover-lift shadow-glow" disabled={isAiProcessing}>
-              {editingId ? "✅ ویرایش" : <Send className="w-4 h-4" />}
-            </Button>
+            </div>
           </div>
         </Card>
       </div>
-    </div>
+    </AppLayout>
   );
 };
 

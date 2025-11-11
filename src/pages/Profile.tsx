@@ -6,9 +6,10 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowRight, User, Save } from "lucide-react";
+import { User, Save } from "lucide-react";
 import { usePageView } from "@/hooks/usePageView";
 import { logger } from "@/lib/logger";
+import AppLayout from "@/components/layout/AppLayout";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -85,10 +86,9 @@ const Profile = () => {
       if (error) throw error;
 
       toast({
-        title: "موفق! ✅",
-        description: "اطلاعات پروفایل شما ذخیره شد",
+        title: "موفق",
+        description: "پروفایل با موفقیت بروزرسانی شد",
       });
-      
       loadProfile();
     } catch (error: any) {
       toast({
@@ -103,125 +103,117 @@ const Profile = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <p className="text-muted-foreground">در حال بارگذاری...</p>
-      </div>
+      <AppLayout>
+        <div className="flex items-center justify-center h-full">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-primary"></div>
+        </div>
+      </AppLayout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="border-b border-border/50 bg-card/50 backdrop-blur-lg sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center gap-4">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => navigate("/dashboard")}
-            >
-              <ArrowRight className="w-4 h-4" />
-            </Button>
-            <div className="flex items-center gap-3">
-              <div className="gradient-primary p-2 rounded-lg shadow-glow">
+    <AppLayout>
+      <div className="container mx-auto px-4 py-6 max-w-2xl">
+        {/* Header */}
+        <div className="mb-6">
+          <div className="bg-gradient-to-br from-primary/5 to-secondary/5 rounded-xl p-6 border border-border/30">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="gradient-primary p-2.5 rounded-xl shadow-glow">
                 <User className="w-6 h-6 text-white" />
               </div>
-              <h1 className="text-xl font-bold text-gradient">پروفایل من</h1>
+              <h1 className="text-2xl font-bold">پروفایل کاربری</h1>
             </div>
+            <p className="text-sm text-muted-foreground">
+              اطلاعات خود را ویرایش کنید
+            </p>
           </div>
         </div>
-      </header>
 
-      <main className="container mx-auto px-4 py-8 max-w-2xl">
-        <Card className="p-6 shadow-glow">
-          <div className="space-y-6">
-            <div className="text-center mb-6">
-              <div className="w-24 h-24 rounded-full gradient-primary flex items-center justify-center text-white text-3xl font-bold mx-auto mb-4">
-                {formData.full_name?.[0] || "؟"}
-              </div>
-              <p className="text-sm text-muted-foreground">
-                امتیاز: {profile?.points || 0} | آزمون‌های انجام شده: {profile?.exams_taken || 0}
-              </p>
+        {/* Profile Form */}
+        <Card className="p-6 glassmorphism-card border-primary/10">
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="full_name">نام و نام خانوادگی</Label>
+              <Input
+                id="full_name"
+                value={formData.full_name}
+                onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
+                dir="rtl"
+              />
             </div>
 
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="full_name">نام و نام خانوادگی</Label>
-                <Input
-                  id="full_name"
-                  value={formData.full_name}
-                  onChange={(e) =>
-                    setFormData({ ...formData, full_name: e.target.value })
-                  }
-                  placeholder="نام خود را وارد کنید"
-                  dir="rtl"
-                />
-              </div>
+            <div>
+              <Label htmlFor="username">نام کاربری</Label>
+              <Input
+                id="username"
+                value={formData.username}
+                onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+                dir="rtl"
+              />
+            </div>
 
-              <div>
-                <Label htmlFor="username">نام کاربری</Label>
-                <Input
-                  id="username"
-                  value={formData.username}
-                  onChange={(e) =>
-                    setFormData({ ...formData, username: e.target.value })
-                  }
-                  placeholder="نام کاربری"
-                  dir="rtl"
-                />
-              </div>
+            <div>
+              <Label htmlFor="birth_date">تاریخ تولد</Label>
+              <Input
+                id="birth_date"
+                type="date"
+                value={formData.birth_date}
+                onChange={(e) => setFormData({ ...formData, birth_date: e.target.value })}
+              />
+            </div>
 
-              <div>
-                <Label htmlFor="birth_date">تاریخ تولد</Label>
-                <Input
-                  id="birth_date"
-                  type="date"
-                  value={formData.birth_date}
-                  onChange={(e) =>
-                    setFormData({ ...formData, birth_date: e.target.value })
-                  }
-                />
-              </div>
+            <div>
+              <Label htmlFor="grade">پایه تحصیلی</Label>
+              <Input
+                id="grade"
+                value={formData.grade}
+                onChange={(e) => setFormData({ ...formData, grade: e.target.value })}
+                placeholder="مثلاً: دهم"
+                dir="rtl"
+              />
+            </div>
 
-              <div>
-                <Label htmlFor="grade">پایه تحصیلی</Label>
-                <Input
-                  id="grade"
-                  value={formData.grade}
-                  onChange={(e) =>
-                    setFormData({ ...formData, grade: e.target.value })
-                  }
-                  placeholder="مثلاً: 8، 9، 10"
-                  dir="rtl"
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="field">رشته</Label>
-                <Input
-                  id="field"
-                  value={formData.field || ""}
-                  onChange={(e) =>
-                    setFormData({ ...formData, field: e.target.value })
-                  }
-                  placeholder="مثلاً: تجربی، ریاضی، انسانی"
-                  dir="rtl"
-                />
-              </div>
+            <div>
+              <Label htmlFor="field">رشته تحصیلی</Label>
+              <Input
+                id="field"
+                value={formData.field}
+                onChange={(e) => setFormData({ ...formData, field: e.target.value })}
+                placeholder="مثلاً: ریاضی"
+                dir="rtl"
+              />
             </div>
 
             <Button
               onClick={handleSave}
               disabled={saving}
-              className="w-full shadow-glow"
+              className="w-full gradient-primary shadow-glow"
               size="lg"
             >
-              <Save className="w-4 h-4 ml-2" />
+              <Save className="w-5 h-5 ml-2" />
               {saving ? "در حال ذخیره..." : "ذخیره تغییرات"}
             </Button>
           </div>
         </Card>
-      </main>
-    </div>
+
+        {/* Stats Card */}
+        {profile && (
+          <Card className="p-6 glassmorphism-card border-primary/10 mt-6">
+            <h3 className="font-bold text-lg mb-4">آمار کاربری</h3>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="bg-primary/10 p-4 rounded-xl">
+                <p className="text-sm text-muted-foreground mb-1">امتیاز کل</p>
+                <p className="text-2xl font-bold text-primary">{profile.points || 0}</p>
+              </div>
+              <div className="bg-secondary/10 p-4 rounded-xl">
+                <p className="text-sm text-muted-foreground mb-1">آزمون‌های انجام شده</p>
+                <p className="text-2xl font-bold text-secondary">{profile.exams_taken || 0}</p>
+              </div>
+            </div>
+          </Card>
+        )}
+      </div>
+    </AppLayout>
   );
 };
 

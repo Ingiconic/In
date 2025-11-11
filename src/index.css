@@ -295,4 +295,9 @@ All colors MUST be HSL.
       transform: scale(1.2);
     }
   }
+
+  /* Safe Area Bottom Padding for Mobile */
+  .safe-area-pb {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
 }
