@@ -9,6 +9,7 @@ import ResourceSelector from "@/components/ResourceSelector";
 import { usePageView } from "@/hooks/usePageView";
 import { logger } from "@/lib/logger";
 import AppLayout from "@/components/layout/AppLayout";
+import MathText from "@/components/MathText";
 
 const Summarize = () => {
   const { toast } = useToast();
@@ -240,7 +241,7 @@ const Summarize = () => {
               <Sparkles className="w-5 h-5 text-primary" />
               نتیجه
             </h3>
-            <p className="text-sm leading-relaxed whitespace-pre-wrap">{result}</p>
+            <MathText content={result} className="text-sm leading-relaxed" />
           </Card>
         )}
       </div>

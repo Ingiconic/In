@@ -46,7 +46,7 @@ const App = () => (
           <Route path="/profile" element={<Profile />} />
           <Route path="/progress" element={<Progress />} />
           <Route path="/about" element={<About />} />
-          <Route path="/mindmap" element={<MindMapAI />} />
+          <Route path="/mind-map" element={<MindMapAI />} />
           <Route path="/flashcards" element={<Flashcards />} />
           <Route path="/resources" element={<Resources />} />
           <Route path="/coin-shop" element={<CoinShop />} />

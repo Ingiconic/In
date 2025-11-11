@@ -8,6 +8,7 @@ import { Send, Brain, Loader2, Image } from "lucide-react";
 import ResourceSelector from "@/components/ResourceSelector";
 import { logger } from "@/lib/logger";
 import AppLayout from "@/components/layout/AppLayout";
+import MathText from "@/components/MathText";
 
 const Questions = () => {
   const { toast } = useToast();
@@ -111,7 +112,11 @@ const Questions = () => {
                   : "glassmorphism-card ml-auto max-w-[80%]"
               }`}
             >
-              <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
+              {msg.role === "user" ? (
+                <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
+              ) : (
+                <MathText content={msg.content} className="text-sm" />
+              )}
             </Card>
           ))}
           {loading && (

@@ -11,6 +11,7 @@ import { usePageView } from "@/hooks/usePageView";
 import AppLayout from "@/components/layout/AppLayout";
 import { Badge } from "@/components/ui/badge";
 import ResourceSelector from "@/components/ResourceSelector";
+import MathText from "@/components/MathText";
 
 const ExamV2 = () => {
   const { toast } = useToast();
@@ -249,9 +250,10 @@ const ExamV2 = () => {
                     {question.type === 'fill_blank' && 'جای خالی'}
                     {question.type === 'essay' && 'تشریحی'}
                   </Badge>
-                  <h3 className="font-bold flex-1">
-                    سوال {index + 1}: {question.question}
-                  </h3>
+                  <div className="flex-1">
+                    <h3 className="font-bold">سوال {index + 1}:</h3>
+                    <MathText content={question.question} className="mt-1" />
+                  </div>
                 </div>
 
                 {question.type === 'multiple_choice' && (

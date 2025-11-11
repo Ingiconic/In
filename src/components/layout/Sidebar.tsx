@@ -78,7 +78,7 @@ const Sidebar = ({ profile }: SidebarProps) => {
     { icon: FileText, label: "خلاصه‌سازی", path: "/summarize", coins: 2 },
     { icon: CheckSquare, label: "آزمون ساز", path: "/exam-v2", coins: 5 },
     { icon: PenTool, label: "فلش کارت", path: "/flashcards", coins: 3 },
-    { icon: Brain, label: "نقشه ذهنی", path: "/mindmap", coins: 4 },
+    { icon: Brain, label: "نقشه ذهنی", path: "/mind-map", coins: 4 },
     { icon: Lightbulb, label: "برنامه مطالعاتی", path: "/study-plan", coins: 3 },
     { icon: TrendingUp, label: "پیشرفت من", path: "/progress", coins: 0 },
   ];
@@ -89,9 +89,7 @@ const Sidebar = ({ profile }: SidebarProps) => {
     <div className="hidden lg:flex h-screen w-64 flex-col border-l border-border/30 bg-background/95 backdrop-blur-xl">
       {/* Logo & Brand */}
       <div className="flex items-center gap-3 p-6 border-b border-border/30">
-        <div className="gradient-primary p-2.5 rounded-xl shadow-glow">
-          <Sparkles className="w-6 h-6 text-white" />
-        </div>
+        <img src="/logo.png" alt="ایزی درس" className="w-12 h-12" />
         <div>
           <h2 className="text-xl font-bold text-gradient">ایزی درس</h2>
           <p className="text-xs text-muted-foreground">یادگیری هوشمند</p>

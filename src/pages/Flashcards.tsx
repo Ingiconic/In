@@ -12,6 +12,7 @@ import { BookOpen, Plus, Trash2, RotateCw, CheckCircle } from "lucide-react";
 import AppLayout from "@/components/layout/AppLayout";
 import { usePageView } from "@/hooks/usePageView";
 import ResourceSelector from "@/components/ResourceSelector";
+import MathText from "@/components/MathText";
 
 interface Deck {
   id: string;
@@ -392,9 +393,7 @@ const Flashcards = () => {
                         {!isFlipped ? (
                           <div>
                             <p className="text-sm text-muted-foreground mb-4">سوال</p>
-                            <p className="text-xl font-bold" dir="rtl">
-                              {currentCard.question}
-                            </p>
+                            <MathText content={currentCard.question} className="text-xl font-bold" />
                             <p className="text-sm text-muted-foreground mt-6">
                               کلیک کنید تا جواب را ببینید
                             </p>
@@ -402,9 +401,7 @@ const Flashcards = () => {
                         ) : (
                           <div>
                             <p className="text-sm text-muted-foreground mb-4">جواب</p>
-                            <p className="text-xl font-bold" dir="rtl">
-                              {currentCard.answer}
-                            </p>
+                            <MathText content={currentCard.answer} className="text-xl font-bold" />
                             <div className="mt-4 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs inline-block">
                               {currentCard.difficulty === "easy" && "آسان"}
                               {currentCard.difficulty === "medium" && "متوسط"}
