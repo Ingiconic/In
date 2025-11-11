@@ -53,7 +53,7 @@ serve(async (req) => {
       }
     });
 
-    const response = await fetch('https://api.lovable.app/v1/chat/completions', {
+    const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${lovableApiKey}`,
@@ -74,7 +74,6 @@ serve(async (req) => {
 }` }
         ],
         response_format: { type: 'json_object' },
-        temperature: 0.5,
       }),
     });
 
@@ -83,7 +82,12 @@ serve(async (req) => {
     }
 
     const data = await response.json();
-    const evaluation = JSON.parse(data.choices[0].message.content);
+    let content = data.choices[0].message.content;
+    
+    // Remove markdown code fences if present
+    content = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+    
+    const evaluation = JSON.parse(content);
 
     return new Response(
       JSON.stringify(evaluation),
