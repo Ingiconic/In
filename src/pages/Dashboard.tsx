@@ -138,19 +138,19 @@ const Dashboard = () => {
                 <Brain className="w-5 h-5 text-primary" />
                 <h3 className="text-xl font-bold">ابزارهای هوش مصنوعی</h3>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                 <Card 
                   className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group border-primary/10"
                   onClick={() => navigate("/questions")}
                 >
-                  <CardHeader className="p-5">
-                    <div className="flex items-center gap-3 mb-2">
-                      <div className="gradient-primary p-2.5 rounded-xl shadow-glow group-hover:scale-110 transition-transform">
-                        <HelpCircle className="w-5 h-5 text-white" />
+                  <CardHeader className="p-3 md:p-5">
+                    <div className="flex flex-col items-center gap-2 text-center">
+                      <div className="gradient-primary p-2 md:p-2.5 rounded-xl shadow-glow group-hover:scale-110 transition-transform">
+                        <HelpCircle className="w-4 h-4 md:w-5 md:h-5 text-white" />
                       </div>
-                      <CardTitle className="text-base group-hover:text-gradient transition-colors">پرسش درسی</CardTitle>
+                      <CardTitle className="text-xs md:text-base group-hover:text-gradient transition-colors">پرسش درسی</CardTitle>
+                      <CardDescription className="text-[10px] md:text-xs">2 سکه</CardDescription>
                     </div>
-                    <CardDescription className="text-xs">پاسخ به سوالات با AI</CardDescription>
                   </CardHeader>
                 </Card>
 
@@ -158,14 +158,14 @@ const Dashboard = () => {
                   className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group border-primary/10"
                   onClick={() => navigate("/summarize")}
                 >
-                  <CardHeader className="p-5">
-                    <div className="flex items-center gap-3 mb-2">
-                      <div className="gradient-primary p-2.5 rounded-xl shadow-glow group-hover:scale-110 transition-transform">
-                        <FileText className="w-5 h-5 text-white" />
+                  <CardHeader className="p-3 md:p-5">
+                    <div className="flex flex-col items-center gap-2 text-center">
+                      <div className="gradient-primary p-2 md:p-2.5 rounded-xl shadow-glow group-hover:scale-110 transition-transform">
+                        <FileText className="w-4 h-4 md:w-5 md:h-5 text-white" />
                       </div>
-                      <CardTitle className="text-base group-hover:text-gradient transition-colors">خلاصه‌سازی</CardTitle>
+                      <CardTitle className="text-xs md:text-base group-hover:text-gradient transition-colors">خلاصه‌سازی</CardTitle>
+                      <CardDescription className="text-[10px] md:text-xs">2 سکه</CardDescription>
                     </div>
-                    <CardDescription className="text-xs">خلاصه مطالب با AI</CardDescription>
                   </CardHeader>
                 </Card>
 
@@ -173,14 +173,14 @@ const Dashboard = () => {
                   className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group border-primary/10"
                   onClick={() => navigate("/exam")}
                 >
-                  <CardHeader className="p-5">
-                    <div className="flex items-center gap-3 mb-2">
-                      <div className="gradient-primary p-2.5 rounded-xl shadow-glow group-hover:scale-110 transition-transform">
-                        <CheckSquare className="w-5 h-5 text-white" />
+                  <CardHeader className="p-3 md:p-5">
+                    <div className="flex flex-col items-center gap-2 text-center">
+                      <div className="gradient-primary p-2 md:p-2.5 rounded-xl shadow-glow group-hover:scale-110 transition-transform">
+                        <CheckSquare className="w-4 h-4 md:w-5 md:h-5 text-white" />
                       </div>
-                      <CardTitle className="text-base group-hover:text-gradient transition-colors">آزمون ساز</CardTitle>
+                      <CardTitle className="text-xs md:text-base group-hover:text-gradient transition-colors">آزمون ساز</CardTitle>
+                      <CardDescription className="text-[10px] md:text-xs">5 سکه</CardDescription>
                     </div>
-                    <CardDescription className="text-xs">ایجاد آزمون با AI</CardDescription>
                   </CardHeader>
                 </Card>
 
@@ -188,14 +188,14 @@ const Dashboard = () => {
                   className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group border-primary/10"
                   onClick={() => navigate("/consultation")}
                 >
-                  <CardHeader className="p-5">
-                    <div className="flex items-center gap-3 mb-2">
-                      <div className="gradient-primary p-2.5 rounded-xl shadow-glow group-hover:scale-110 transition-transform">
-                        <Brain className="w-5 h-5 text-white" />
+                  <CardHeader className="p-3 md:p-5">
+                    <div className="flex flex-col items-center gap-2 text-center">
+                      <div className="gradient-primary p-2 md:p-2.5 rounded-xl shadow-glow group-hover:scale-110 transition-transform">
+                        <Brain className="w-4 h-4 md:w-5 md:h-5 text-white" />
                       </div>
-                      <CardTitle className="text-base group-hover:text-gradient transition-colors">مشاور هوشمند</CardTitle>
+                      <CardTitle className="text-xs md:text-base group-hover:text-gradient transition-colors">مشاور هوشمند</CardTitle>
+                      <CardDescription className="text-[10px] md:text-xs">رایگان</CardDescription>
                     </div>
-                    <CardDescription className="text-xs">مشاوره تحصیلی AI</CardDescription>
                   </CardHeader>
                 </Card>
               </div>
@@ -207,19 +207,19 @@ const Dashboard = () => {
                 <BookOpen className="w-5 h-5 text-secondary" />
                 <h3 className="text-xl font-bold">ابزارهای مطالعه</h3>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                 <Card 
                   className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group border-secondary/10"
                   onClick={() => navigate("/mind-map")}
                 >
-                  <CardHeader className="p-5">
-                    <div className="flex items-center gap-3 mb-2">
-                      <div className="gradient-secondary p-2.5 rounded-xl shadow-glow group-hover:scale-110 transition-transform">
-                        <Lightbulb className="w-5 h-5 text-white" />
+                  <CardHeader className="p-3 md:p-5">
+                    <div className="flex flex-col items-center gap-2 text-center">
+                      <div className="gradient-secondary p-2 md:p-2.5 rounded-xl shadow-glow group-hover:scale-110 transition-transform">
+                        <Lightbulb className="w-4 h-4 md:w-5 md:h-5 text-white" />
                       </div>
-                      <CardTitle className="text-base group-hover:text-gradient transition-colors">نقشه ذهنی</CardTitle>
+                      <CardTitle className="text-xs md:text-base group-hover:text-gradient transition-colors">نقشه ذهنی</CardTitle>
+                      <CardDescription className="text-[10px] md:text-xs">4 سکه</CardDescription>
                     </div>
-                    <CardDescription className="text-xs">سازماندهی بصری مفاهیم</CardDescription>
                   </CardHeader>
                 </Card>
 
@@ -227,29 +227,29 @@ const Dashboard = () => {
                   className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group border-secondary/10"
                   onClick={() => navigate("/flashcards")}
                 >
-                  <CardHeader className="p-5">
-                    <div className="flex items-center gap-3 mb-2">
-                      <div className="gradient-secondary p-2.5 rounded-xl shadow-glow group-hover:scale-110 transition-transform">
-                        <CreditCard className="w-5 h-5 text-white" />
+                  <CardHeader className="p-3 md:p-5">
+                    <div className="flex flex-col items-center gap-2 text-center">
+                      <div className="gradient-secondary p-2 md:p-2.5 rounded-xl shadow-glow group-hover:scale-110 transition-transform">
+                        <CreditCard className="w-4 h-4 md:w-5 md:h-5 text-white" />
                       </div>
-                      <CardTitle className="text-base group-hover:text-gradient transition-colors">فلش کارت</CardTitle>
+                      <CardTitle className="text-xs md:text-base group-hover:text-gradient transition-colors">فلش کارت</CardTitle>
+                      <CardDescription className="text-[10px] md:text-xs">3 سکه</CardDescription>
                     </div>
-                    <CardDescription className="text-xs">یادگیری با کارت‌های آموزشی</CardDescription>
                   </CardHeader>
                 </Card>
 
                 <Card 
                   className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group border-secondary/10"
-                  onClick={() => navigate("/step-by-step")}
+                  onClick={() => navigate("/resources")}
                 >
-                  <CardHeader className="p-5">
-                    <div className="flex items-center gap-3 mb-2">
-                      <div className="gradient-secondary p-2.5 rounded-xl shadow-glow group-hover:scale-110 transition-transform">
-                        <PenTool className="w-5 h-5 text-white" />
+                  <CardHeader className="p-3 md:p-5">
+                    <div className="flex flex-col items-center gap-2 text-center">
+                      <div className="gradient-secondary p-2 md:p-2.5 rounded-xl shadow-glow group-hover:scale-110 transition-transform">
+                        <BookOpen className="w-4 h-4 md:w-5 md:h-5 text-white" />
                       </div>
-                      <CardTitle className="text-base group-hover:text-gradient transition-colors">حل تمرین</CardTitle>
+                      <CardTitle className="text-xs md:text-base group-hover:text-gradient transition-colors">منابع</CardTitle>
+                      <CardDescription className="text-[10px] md:text-xs">رایگان</CardDescription>
                     </div>
-                    <CardDescription className="text-xs">حل گام به گام مسائل</CardDescription>
                   </CardHeader>
                 </Card>
 
@@ -257,14 +257,14 @@ const Dashboard = () => {
                   className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group border-secondary/10"
                   onClick={() => navigate("/study-plan")}
                 >
-                  <CardHeader className="p-5">
-                    <div className="flex items-center gap-3 mb-2">
-                      <div className="gradient-secondary p-2.5 rounded-xl shadow-glow group-hover:scale-110 transition-transform">
-                        <Calendar className="w-5 h-5 text-white" />
+                  <CardHeader className="p-3 md:p-5">
+                    <div className="flex flex-col items-center gap-2 text-center">
+                      <div className="gradient-secondary p-2 md:p-2.5 rounded-xl shadow-glow group-hover:scale-110 transition-transform">
+                        <Calendar className="w-4 h-4 md:w-5 md:h-5 text-white" />
                       </div>
-                      <CardTitle className="text-base group-hover:text-gradient transition-colors">برنامه مطالعاتی</CardTitle>
+                      <CardTitle className="text-xs md:text-base group-hover:text-gradient transition-colors">برنامه مطالعاتی</CardTitle>
+                      <CardDescription className="text-[10px] md:text-xs">3 سکه</CardDescription>
                     </div>
-                    <CardDescription className="text-xs">برنامه‌ریزی یادگیری</CardDescription>
                   </CardHeader>
                 </Card>
               </div>
