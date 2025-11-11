@@ -15,7 +15,9 @@ import {
   User,
   Info,
   Star,
-  Trophy
+  Trophy,
+  Coins,
+  BookOpen
 } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
@@ -51,6 +53,7 @@ const Sidebar = ({ profile }: SidebarProps) => {
 
   const menuItems = [
     { icon: LayoutDashboard, label: "داشبورد", path: "/dashboard" },
+    { icon: FileText, label: "منابع من", path: "/resources" },
     { icon: MessageSquare, label: "پیام‌رسان", path: "/chat" },
     { icon: Users, label: "دوستان", path: "/chat-friends" },
     { icon: HelpCircle, label: "پرسش درسی", path: "/questions" },
@@ -98,6 +101,10 @@ const Sidebar = ({ profile }: SidebarProps) => {
               <Star className="w-4 h-4 text-secondary" />
               <span className="text-xs font-bold">{profile?.points || 0}</span>
             </div>
+            <div className="flex items-center gap-1.5 bg-yellow-500/10 px-3 py-1.5 rounded-lg border border-yellow-500/30">
+              <Coins className="w-4 h-4 text-yellow-500" />
+              <span className="text-xs font-bold">{profile?.coins || 0}</span>
+            </div>
           </div>
         </div>
       </div>
@@ -125,6 +132,14 @@ const Sidebar = ({ profile }: SidebarProps) => {
 
       {/* Bottom Actions */}
       <div className="p-4 border-t border-border/30 space-y-2">
+        <Button
+          variant="ghost"
+          onClick={() => navigate("/coin-shop")}
+          className="w-full justify-start gap-3 h-10 rounded-xl hover:bg-yellow-500/10 hover:text-yellow-500"
+        >
+          <Coins className="w-5 h-5" />
+          <span className="text-sm">فروشگاه سکه</span>
+        </Button>
         <Button
           variant="ghost"
           onClick={() => navigate("/profile")}

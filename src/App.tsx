@@ -20,6 +20,8 @@ import Progress from "./pages/Progress";
 import About from "./pages/About";
 import MindMap from "./pages/MindMap";
 import Flashcards from "./pages/Flashcards";
+import Resources from "./pages/Resources";
+import CoinShop from "./pages/CoinShop";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -48,6 +50,8 @@ const App = () => (
           <Route path="/about" element={<About />} />
           <Route path="/mind-map" element={<MindMap />} />
           <Route path="/flashcards" element={<Flashcards />} />
+          <Route path="/resources" element={<Resources />} />
+          <Route path="/coin-shop" element={<CoinShop />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

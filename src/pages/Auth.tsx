@@ -5,11 +5,10 @@ import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/lib/supabase";
-import { BookOpen, GraduationCap, Sparkles } from "lucide-react";
+import { BookOpen, GraduationCap, Sparkles, Mail, Lock, User, Calendar, Award } from "lucide-react";
 import { usernameSchema } from "@/lib/validation";
-import { logger } from "@/lib/logger";
 
-const Auth = () => {
+export default function ImprovedAuth() {
   const [isLogin, setIsLogin] = useState(true);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -42,59 +41,80 @@ const Auth = () => {
     setLoading(true);
 
     try {
-      // Validate username
       const validatedUsername = usernameSchema.parse(username);
 
       if (isLogin) {
-        // Try login directly without revealing username existence
         const { error } = await supabase.auth.signInWithPassword({
-          email: `${validatedUsername}@temp.local`,
-          password,
+          email: `${validatedUsername}@easydars.local`,
+          password: password,
         });
 
         if (error) {
-          // Generic error message - don't reveal if username exists
-          throw new Error('نام کاربری یا رمز عبور اشتباه است');
+          if (error.message.includes("Invalid") || error.message.includes("not found")) {
+            toast({
+              title: "خطا در ورود",
+              description: "نام کاربری یا رمز عبور اشتباه است",
+              variant: "destructive",
+            });
+          } else {
+            throw error;
+          }
+          return;
         }
 
         toast({
-          title: "خوش آمدید! 🎉",
-          description: "با موفقیت وارد شدید",
+          title: "ورود موفق",
+          description: "خوش آمدید!",
         });
       } else {
-        // Validate required fields
-        if (parseInt(grade) >= 9 && !field) {
-          throw new Error('لطفا رشته تحصیلی را انتخاب کنید');
+        if (!fullName || !birthDate || !grade) {
+          toast({
+            title: "خطا",
+            description: "لطفاً تمام فیلدهای ضروری را پر کنید",
+            variant: "destructive",
+          });
+          return;
         }
 
-        const { data: authData, error: signUpError } = await supabase.auth.signUp({
-          email: `${validatedUsername}@temp.local`,
-          password,
+        const redirectUrl = `${window.location.origin}/`;
+        
+        const { error } = await supabase.auth.signUp({
+          email: `${validatedUsername}@easydars.local`,
+          password: password,
           options: {
+            emailRedirectTo: redirectUrl,
             data: {
-              full_name: fullName,
               username: validatedUsername,
+              full_name: fullName,
               grade: grade,
-              field: parseInt(grade) >= 9 ? field : null,
+              field: field || null,
               birth_date: birthDate,
             },
-            emailRedirectTo: `${window.location.origin}/dashboard`,
           },
         });
 
-        if (signUpError) throw signUpError;
+        if (error) {
+          if (error.message.includes("already registered")) {
+            toast({
+              title: "خطا",
+              description: "این نام کاربری قبلاً ثبت شده است",
+              variant: "destructive",
+            });
+          } else {
+            throw error;
+          }
+          return;
+        }
 
         toast({
-          title: "ثبت‌نام موفق! 🎊",
-          description: "حساب کاربری شما ایجاد شد",
+          title: "ثبت‌نام موفق",
+          description: "به ایزی درس خوش آمدید! 🎉",
         });
       }
-    } catch (error) {
-      logger.error("Authentication failed", error);
-      const message = error instanceof Error ? error.message : "مشکلی پیش آمد";
+    } catch (error: any) {
       toast({
         title: "خطا",
-        description: message,
+        description: error.message || "مشکلی پیش آمده است",
         variant: "destructive",
       });
     } finally {
@@ -103,155 +123,166 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center gradient-hero p-4 relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/20 via-background to-secondary/20 p-4 relative overflow-hidden">
       {/* Animated background elements */}
-      <div className="absolute inset-0 opacity-20">
-        <div className="absolute top-20 left-20 w-72 h-72 bg-primary rounded-full blur-3xl animate-float"></div>
-        <div className="absolute bottom-20 right-20 w-96 h-96 bg-secondary rounded-full blur-3xl animate-float" style={{ animationDelay: "2s" }}></div>
-        <div className="absolute top-1/2 left-1/2 w-80 h-80 bg-accent rounded-full blur-3xl animate-float" style={{ animationDelay: "4s" }}></div>
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-primary/10 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-secondary/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        <div className="absolute top-1/2 right-1/3 w-48 h-48 bg-accent/10 rounded-full blur-2xl animate-pulse delay-500"></div>
       </div>
 
-      <Card className="w-full max-w-md p-8 space-y-6 animate-fade-in shadow-glow border-primary/30 relative z-10 backdrop-blur-sm bg-card/95">
-        <div className="text-center space-y-4">
-          <div className="flex items-center justify-center gap-3 mb-6">
-            <div className="gradient-primary p-3 rounded-xl shadow-neon animate-pulse-glow">
-              <GraduationCap className="w-10 h-10 text-white" />
-            </div>
-            <div className="gradient-secondary p-2 rounded-lg shadow-neon animate-float">
-              <BookOpen className="w-8 h-8 text-white" />
-            </div>
-            <div className="gradient-accent p-2 rounded-lg shadow-neon animate-float" style={{ animationDelay: "1s" }}>
-              <Sparkles className="w-6 h-6 text-white" />
+      <Card className="w-full max-w-lg p-8 backdrop-blur-sm bg-background/95 shadow-2xl border-primary/20 relative z-10">
+        <div className="text-center mb-8">
+          <div className="flex justify-center mb-4">
+            <div className="relative">
+              <GraduationCap className="w-16 h-16 text-primary" />
+              <Sparkles className="w-6 h-6 text-yellow-500 absolute -top-1 -right-1 animate-pulse" />
             </div>
           </div>
-          
-          <h1 className="text-3xl font-bold text-gradient animate-neon-pulse">
-            {isLogin ? "ورود به حساب" : "ثبت‌نام"}
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent mb-2">
+            ایزی درس
           </h1>
-          <p className="text-muted-foreground text-lg">
-            پلتفرم هوش مصنوعی یادگیری
+          <p className="text-muted-foreground">
+            {isLogin ? "به پلتفرم هوشمند یادگیری خوش آمدید" : "ثبت‌نام در پلتفرم هوشمند یادگیری"}
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {!isLogin && (
-            <>
-              <div className="space-y-2">
-                <label className="text-sm font-medium">نام و نام خانوادگی</label>
-                <Input
-                  type="text"
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  placeholder="نام خود را وارد کنید"
-                  required={!isLogin}
-                  className="bg-input border-border/50 focus:border-primary/50 focus:ring-primary/20"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-sm font-medium">تاریخ تولد</label>
-                <Input
-                  type="date"
-                  value={birthDate}
-                  onChange={(e) => setBirthDate(e.target.value)}
-                  required={!isLogin}
-                  className="bg-input border-border/50 focus:border-primary/50 focus:ring-primary/20"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-sm font-medium">مقطع تحصیلی</label>
-                <select
-                  value={grade}
-                  onChange={(e) => setGrade(e.target.value)}
-                  required={!isLogin}
-                  className="flex h-10 w-full rounded-md border border-input bg-input px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                >
-                  <option value="">انتخاب کنید</option>
-                  {[...Array(12)].map((_, i) => (
-                    <option key={i + 1} value={i + 1}>
-                      پایه {i + 1}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {parseInt(grade) >= 9 && (
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">رشته تحصیلی</label>
-                  <select
-                    value={field}
-                    onChange={(e) => setField(e.target.value)}
-                    required={parseInt(grade) >= 9}
-                    className="flex h-10 w-full rounded-md border border-input bg-input px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                  >
-                    <option value="">انتخاب کنید</option>
-                    <option value="math">ریاضی</option>
-                    <option value="science">تجربی</option>
-                    <option value="humanities">انسانی</option>
-                  </select>
-                </div>
-              )}
-            </>
-          )}
-
+        <form onSubmit={handleSubmit} className="space-y-5">
           <div className="space-y-2">
-            <label className="text-sm font-medium">نام کاربری</label>
+            <label className="text-sm font-medium flex items-center gap-2">
+              <User className="w-4 h-4 text-primary" />
+              نام کاربری
+            </label>
             <Input
               type="text"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              placeholder="نام کاربری خود را وارد کنید"
+              placeholder="username"
               required
-              className="bg-input border-border/50 focus:border-primary/50 focus:ring-primary/20"
+              className="text-left transition-all duration-300 focus:ring-2 focus:ring-primary/50"
+              dir="ltr"
             />
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium">رمز عبور</label>
+            <label className="text-sm font-medium flex items-center gap-2">
+              <Lock className="w-4 h-4 text-primary" />
+              رمز عبور
+            </label>
             <Input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="حداقل 6 کاراکتر"
+              placeholder="••••••••"
               required
               minLength={6}
-              className="bg-input border-border/50 focus:border-primary/50 focus:ring-primary/20"
+              className="transition-all duration-300 focus:ring-2 focus:ring-primary/50"
             />
           </div>
 
+          {!isLogin && (
+            <>
+              <div className="space-y-2">
+                <label className="text-sm font-medium flex items-center gap-2">
+                  <User className="w-4 h-4 text-primary" />
+                  نام و نام خانوادگی
+                </label>
+                <Input
+                  type="text"
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  placeholder="نام کامل خود را وارد کنید"
+                  required
+                  className="transition-all duration-300 focus:ring-2 focus:ring-primary/50"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium flex items-center gap-2">
+                  <Calendar className="w-4 h-4 text-primary" />
+                  تاریخ تولد
+                </label>
+                <Input
+                  type="date"
+                  value={birthDate}
+                  onChange={(e) => setBirthDate(e.target.value)}
+                  required
+                  className="transition-all duration-300 focus:ring-2 focus:ring-primary/50"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium flex items-center gap-2">
+                    <Award className="w-4 h-4 text-primary" />
+                    پایه تحصیلی
+                  </label>
+                  <Input
+                    type="text"
+                    value={grade}
+                    onChange={(e) => setGrade(e.target.value)}
+                    placeholder="مثلاً: دهم"
+                    required
+                    className="transition-all duration-300 focus:ring-2 focus:ring-primary/50"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium flex items-center gap-2">
+                    <BookOpen className="w-4 h-4 text-primary" />
+                    رشته (اختیاری)
+                  </label>
+                  <Input
+                    type="text"
+                    value={field}
+                    onChange={(e) => setField(e.target.value)}
+                    placeholder="مثلاً: ریاضی"
+                    className="transition-all duration-300 focus:ring-2 focus:ring-primary/50"
+                  />
+                </div>
+              </div>
+            </>
+          )}
+
           <Button
             type="submit"
-            className="w-full shadow-glow hover:shadow-neon"
-            size="lg"
+            className="w-full h-12 text-lg font-semibold bg-gradient-to-r from-primary to-secondary hover:opacity-90 transition-all duration-300 shadow-lg hover:shadow-xl"
             disabled={loading}
           >
             {loading ? (
-              <span className="flex items-center gap-2">
-                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                در حال پردازش...
-              </span>
+              <div className="flex items-center gap-2">
+                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                {isLogin ? "در حال ورود..." : "در حال ثبت‌نام..."}
+              </div>
             ) : (
-              isLogin ? "ورود" : "ثبت‌نام"
+              <span>{isLogin ? "ورود به حساب" : "ثبت‌نام"}</span>
             )}
           </Button>
         </form>
 
-        <div className="text-center space-y-3">
+        <div className="mt-6 text-center">
           <button
-            type="button"
-            onClick={() => setIsLogin(!isLogin)}
-            className="text-sm text-primary hover:text-primary/80 hover:underline transition-all"
+            onClick={() => {
+              setIsLogin(!isLogin);
+              setUsername("");
+              setPassword("");
+              setFullName("");
+              setGrade("");
+              setField("");
+              setBirthDate("");
+            }}
+            className="text-sm text-primary hover:underline transition-all duration-300 font-medium"
           >
-            {isLogin ? "حساب کاربری ندارید؟ ثبت‌نام کنید" : "حساب دارید؟ وارد شوید"}
+            {isLogin ? "حساب کاربری ندارید? ثبت‌نام کنید" : "قبلاً ثبت‌نام کرده‌اید? وارد شوید"}
           </button>
-          <p className="text-xs text-muted-foreground">
-            Made by مهدی رنجبر
+        </div>
+
+        <div className="mt-8 pt-6 border-t border-border/50">
+          <p className="text-center text-xs text-muted-foreground">
+            🎓 با ثبت‌نام، ۱۰۰۰ سکه رایگان دریافت می‌کنید
           </p>
         </div>
       </Card>
     </div>
   );
-};
-
-export default Auth;
+}

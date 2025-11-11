@@ -23,3 +23,9 @@ verify_jwt = true
 
 [functions.ai-group-chat]
 verify_jwt = true
+
+[functions.ai-mindmap-generator]
+verify_jwt = true
+
+[functions.ai-flashcard-generator]
+verify_jwt = true
