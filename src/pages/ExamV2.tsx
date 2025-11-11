@@ -53,7 +53,7 @@ const ExamV2 = () => {
       setExam(data);
       toast({
         title: "آزمون آماده شد! 🎯",
-        description: `${data.questions.length} سوال متنوع برای شما ایجاد شد`,
+        description: `${data.questions?.length || 0} سوال متنوع برای شما ایجاد شد`,
       });
     } catch (error: any) {
       toast({
@@ -215,11 +215,11 @@ const ExamV2 = () => {
             <Card className="p-6 glassmorphism-card border-primary/10">
               <h2 className="text-xl font-bold mb-2">آزمون شما</h2>
               <p className="text-sm text-muted-foreground">
-                تعداد سوالات: {exam.questions.length}
+                تعداد سوالات: {exam.questions?.length || 0}
               </p>
             </Card>
 
-            {exam.questions.map((question: any, index: number) => (
+            {exam.questions?.map((question: any, index: number) => (
               <Card key={index} className="p-6 glassmorphism-card border-primary/10">
                 <div className="flex items-start gap-2 mb-4">
                   <Badge variant="outline">
@@ -363,7 +363,7 @@ const ExamV2 = () => {
             </Card>
 
             {/* Topics to Review */}
-            {evaluation.topicsToReview && evaluation.topicsToReview.length > 0 && (
+            {evaluation.topicsToReview && Array.isArray(evaluation.topicsToReview) && evaluation.topicsToReview.length > 0 && (
               <Card className="p-6 glassmorphism-card border-primary/10">
                 <div className="flex items-center gap-2 mb-4">
                   <XCircle className="w-5 h-5 text-red-500" />
