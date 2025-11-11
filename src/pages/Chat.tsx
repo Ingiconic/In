@@ -1,10 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar } from "@/components/ui/avatar";
-import { Send, Sparkles, Edit2, Trash2 } from "lucide-react";
+import { Send, Sparkles, Edit2, Trash2, Search, Reply, Users } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { messageSchema } from "@/lib/validation";
 import { aiPromptSchema } from "@/lib/ai-validation";
@@ -19,6 +19,7 @@ interface Message {
   user_id: string;
   created_at: string;
   is_edited: boolean;
+  reply_to_id?: string;
   profiles?: {
     full_name: string;
     username: string;
@@ -34,6 +35,10 @@ const Chat = () => {
   const [publicGroupId, setPublicGroupId] = useState<string | null>(null);
   const [isAiProcessing, setIsAiProcessing] = useState(false);
   const [profile, setProfile] = useState<any>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [replyingTo, setReplyingTo] = useState<Message | null>(null);
+  const [memberCount, setMemberCount] = useState(0);
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     loadPublicGroup();
@@ -43,9 +48,16 @@ const Chat = () => {
   useEffect(() => {
     if (publicGroupId) {
       loadMessages();
+      loadMemberCount();
       subscribeToMessages();
     }
   }, [publicGroupId]);
+
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [messages]);
 
   const loadProfile = async () => {
     const { data: { user } } = await supabase.auth.getUser();
@@ -70,6 +82,17 @@ const Chat = () => {
     if (data) {
       setPublicGroupId(data.id);
     }
+  };
+
+  const loadMemberCount = async () => {
+    if (!publicGroupId) return;
+    
+    const { count } = await supabase
+      .from("group_members")
+      .select("*", { count: "exact", head: true })
+      .eq("group_id", publicGroupId);
+    
+    setMemberCount(count || 0);
   };
 
   const loadMessages = async () => {
@@ -188,10 +211,12 @@ const Chat = () => {
           group_id: publicGroupId,
           user_id: user.id,
           content: validatedMessage.content,
+          reply_to_id: replyingTo?.id || null,
         });
       }
 
       setMessageInput("");
+      setReplyingTo(null);
     } catch (error) {
       logger.error("Failed to send message", error);
       toast({
@@ -216,7 +241,18 @@ const Chat = () => {
   const startEdit = (msg: Message) => {
     setEditingId(msg.id);
     setMessageInput(msg.content);
+    setReplyingTo(null);
   };
+
+  const startReply = (msg: Message) => {
+    setReplyingTo(msg);
+    setEditingId(null);
+  };
+
+  const filteredMessages = messages.filter(msg => 
+    msg.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    msg.profiles?.full_name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const AI_USER_ID = "00000000-0000-0000-0000-000000000000";
 
@@ -224,17 +260,35 @@ const Chat = () => {
     <AppLayout>
       <div className="container mx-auto px-4 py-4 max-w-4xl h-full flex flex-col">
         {/* Chat Header */}
-        <div className="mb-4">
+        <div className="mb-4 space-y-3">
           <div className="bg-gradient-to-br from-primary/5 to-secondary/5 rounded-xl p-4 border border-border/30">
-            <div className="flex items-center gap-3">
-              <div className="gradient-primary p-2 rounded-xl shadow-glow">
-                <Sparkles className="w-5 h-5 text-white" />
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="gradient-primary p-2 rounded-xl shadow-glow">
+                  <Sparkles className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-lg font-bold">چت عمومی ایزی درس</h2>
+                  <p className="text-xs text-muted-foreground">برای صحبت با هوش مصنوعی از ! استفاده کنید</p>
+                </div>
               </div>
-              <div>
-                <h2 className="text-lg font-bold">چت عمومی ایزی درس</h2>
-                <p className="text-xs text-muted-foreground">برای صحبت با هوش مصنوعی از ! استفاده کنید</p>
+              <div className="flex items-center gap-2 bg-card/50 px-3 py-1.5 rounded-lg">
+                <Users className="w-4 h-4 text-primary" />
+                <span className="text-sm font-bold">{memberCount}</span>
               </div>
             </div>
+          </div>
+          
+          {/* Search Bar */}
+          <div className="relative">
+            <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Input
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="🔍 جستجو در پیام‌ها..."
+              className="pr-10"
+              dir="rtl"
+            />
           </div>
         </div>
 
@@ -258,9 +312,9 @@ const Chat = () => {
             </div>
           )}
 
-          <ScrollArea className="flex-1 p-4">
+          <ScrollArea className="flex-1 p-4" ref={scrollRef}>
             <div className="space-y-3">
-              {messages.map((msg) => {
+              {filteredMessages.map((msg) => {
                 const isOwn = msg.user_id === profile?.id;
                 const isAI = msg.user_id === AI_USER_ID;
                 
@@ -284,30 +338,47 @@ const Chat = () => {
                           <p className="text-xs font-bold">دستیار هوشمند</p>
                         </div>
                       )}
+                      {msg.reply_to_id && (
+                        <div className="bg-background/30 p-2 rounded mb-2 text-xs border-r-2 border-primary/50">
+                          <p className="opacity-70">↩️ پاسخ به پیام</p>
+                        </div>
+                      )}
                       <p className="text-sm break-words">{msg.content}</p>
                       {msg.is_edited && (
                         <p className="text-xs opacity-70 mt-1">✏️ ویرایش شده</p>
                       )}
-                      {isOwn && !isAI && (
-                        <div className="flex gap-1 mt-2">
+                      <div className="flex gap-1 mt-2">
+                        {!isAI && (
                           <Button
                             size="sm"
                             variant="ghost"
-                            onClick={() => startEdit(msg)}
+                            onClick={() => startReply(msg)}
                             className="h-6 px-2"
                           >
-                            <Edit2 className="w-3 h-3" />
+                            <Reply className="w-3 h-3" />
                           </Button>
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={() => deleteMessage(msg.id)}
-                            className="h-6 px-2"
-                          >
-                            <Trash2 className="w-3 h-3" />
-                          </Button>
-                        </div>
-                      )}
+                        )}
+                        {isOwn && !isAI && (
+                          <>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => startEdit(msg)}
+                              className="h-6 px-2"
+                            >
+                              <Edit2 className="w-3 h-3" />
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => deleteMessage(msg.id)}
+                              className="h-6 px-2"
+                            >
+                              <Trash2 className="w-3 h-3" />
+                            </Button>
+                          </>
+                        )}
+                      </div>
                     </Card>
                   </div>
                 );
@@ -327,21 +398,44 @@ const Chat = () => {
 
           {/* Input Area */}
           <div className="p-3 border-t border-border/30 bg-card/50">
+            {replyingTo && (
+              <div className="mb-2 p-2 bg-primary/10 rounded-lg flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Reply className="w-4 h-4 text-primary" />
+                  <p className="text-xs">پاسخ به {replyingTo.profiles?.full_name}</p>
+                </div>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => setReplyingTo(null)}
+                  className="h-6 px-2"
+                >
+                  ✕
+                </Button>
+              </div>
+            )}
             <div className="flex gap-2">
               <Input
                 value={messageInput}
                 onChange={(e) => setMessageInput(e.target.value)}
                 onKeyPress={(e) => e.key === "Enter" && sendMessage()}
-                placeholder={editingId ? "✏️ ویرایش پیام..." : "💬 پیام خود را بنویسید... (! برای AI)"}
+                placeholder={
+                  editingId 
+                    ? "✏️ ویرایش پیام..." 
+                    : replyingTo 
+                    ? "💬 پاسخ خود را بنویسید..."
+                    : "💬 پیام خود را بنویسید... (! برای AI)"
+                }
                 className="flex-1"
                 dir="rtl"
                 disabled={isAiProcessing}
               />
-              {editingId && (
+              {(editingId || replyingTo) && (
                 <Button 
                   variant="outline" 
                   onClick={() => { 
-                    setEditingId(null); 
+                    setEditingId(null);
+                    setReplyingTo(null);
                     setMessageInput(""); 
                   }}
                 >

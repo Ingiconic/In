@@ -5,8 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Avatar } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
-import { User, Save } from "lucide-react";
+import { User, Save, Camera, Award, Target } from "lucide-react";
 import { usePageView } from "@/hooks/usePageView";
 import { logger } from "@/lib/logger";
 import AppLayout from "@/components/layout/AppLayout";
@@ -25,6 +27,8 @@ const Profile = () => {
     birth_date: "",
     grade: "",
     field: "",
+    bio: "",
+    avatar_url: "",
   });
 
   useEffect(() => {
@@ -54,6 +58,8 @@ const Profile = () => {
         birth_date: data.birth_date || "",
         grade: data.grade || "",
         field: data.field || "",
+        bio: data.bio || "",
+        avatar_url: data.avatar_url || "",
       });
     } catch (error: any) {
       toast({
@@ -80,6 +86,8 @@ const Profile = () => {
           birth_date: formData.birth_date || null,
           grade: formData.grade || null,
           field: formData.field || null,
+          bio: formData.bio || null,
+          avatar_url: formData.avatar_url || null,
         })
         .eq("id", user.id);
 
@@ -129,8 +137,39 @@ const Profile = () => {
           </div>
         </div>
 
+        {/* Avatar Section */}
+        <Card className="p-6 glassmorphism-card border-primary/10 mb-6">
+          <div className="flex flex-col items-center gap-4">
+            <div className="relative">
+              <Avatar className="w-32 h-32 gradient-primary text-white">
+                {formData.avatar_url ? (
+                  <img src={formData.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-4xl font-bold">
+                    {formData.full_name?.[0] || "؟"}
+                  </div>
+                )}
+              </Avatar>
+              <Button
+                size="sm"
+                className="absolute bottom-0 right-0 rounded-full gradient-primary shadow-glow"
+              >
+                <Camera className="w-4 h-4" />
+              </Button>
+            </div>
+            <div className="text-center">
+              <h3 className="font-bold text-xl">{formData.full_name || "نام کاربر"}</h3>
+              <p className="text-sm text-muted-foreground">@{formData.username || "username"}</p>
+            </div>
+          </div>
+        </Card>
+
         {/* Profile Form */}
         <Card className="p-6 glassmorphism-card border-primary/10">
+          <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
+            <User className="w-5 h-5 text-primary" />
+            اطلاعات شخصی
+          </h3>
           <div className="space-y-4">
             <div>
               <Label htmlFor="full_name">نام و نام خانوادگی</Label>
@@ -184,6 +223,29 @@ const Profile = () => {
               />
             </div>
 
+            <div>
+              <Label htmlFor="bio">بیوگرافی</Label>
+              <Textarea
+                id="bio"
+                value={formData.bio}
+                onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
+                placeholder="در مورد خودتان بنویسید..."
+                dir="rtl"
+                rows={3}
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="avatar_url">لینک آواتار</Label>
+              <Input
+                id="avatar_url"
+                value={formData.avatar_url}
+                onChange={(e) => setFormData({ ...formData, avatar_url: e.target.value })}
+                placeholder="https://example.com/avatar.jpg"
+                dir="ltr"
+              />
+            </div>
+
             <Button
               onClick={handleSave}
               disabled={saving}
@@ -196,21 +258,41 @@ const Profile = () => {
           </div>
         </Card>
 
-        {/* Stats Card */}
+        {/* Stats Cards */}
         {profile && (
-          <Card className="p-6 glassmorphism-card border-primary/10 mt-6">
-            <h3 className="font-bold text-lg mb-4">آمار کاربری</h3>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="bg-primary/10 p-4 rounded-xl">
-                <p className="text-sm text-muted-foreground mb-1">امتیاز کل</p>
-                <p className="text-2xl font-bold text-primary">{profile.points || 0}</p>
+          <>
+            <Card className="p-6 glassmorphism-card border-primary/10 mt-6">
+              <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
+                <Award className="w-5 h-5 text-primary" />
+                آمار یادگیری
+              </h3>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-gradient-to-br from-primary/10 to-primary/5 p-4 rounded-xl border border-primary/20">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Award className="w-4 h-4 text-primary" />
+                    <p className="text-xs text-muted-foreground">امتیاز کل</p>
+                  </div>
+                  <p className="text-3xl font-bold text-primary">{profile.points || 0}</p>
+                </div>
+                <div className="bg-gradient-to-br from-secondary/10 to-secondary/5 p-4 rounded-xl border border-secondary/20">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Target className="w-4 h-4 text-secondary" />
+                    <p className="text-xs text-muted-foreground">آزمون‌ها</p>
+                  </div>
+                  <p className="text-3xl font-bold text-secondary">{profile.exams_taken || 0}</p>
+                </div>
               </div>
-              <div className="bg-secondary/10 p-4 rounded-xl">
-                <p className="text-sm text-muted-foreground mb-1">آزمون‌های انجام شده</p>
-                <p className="text-2xl font-bold text-secondary">{profile.exams_taken || 0}</p>
-              </div>
-            </div>
-          </Card>
+            </Card>
+
+            {formData.bio && (
+              <Card className="p-6 glassmorphism-card border-primary/10 mt-6">
+                <h3 className="font-bold text-lg mb-3">بیوگرافی</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed" dir="rtl">
+                  {formData.bio}
+                </p>
+              </Card>
+            )}
+          </>
         )}
       </div>
     </AppLayout>
