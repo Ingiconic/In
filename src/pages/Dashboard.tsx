@@ -149,7 +149,7 @@ const Dashboard = () => {
                         <HelpCircle className="w-4 h-4 md:w-5 md:h-5 text-white" />
                       </div>
                       <CardTitle className="text-xs md:text-base group-hover:text-gradient transition-colors">پرسش درسی</CardTitle>
-                      <CardDescription className="text-[10px] md:text-xs">2 سکه</CardDescription>
+                      <CardDescription className="text-[10px] md:text-xs">رایگان</CardDescription>
                     </div>
                   </CardHeader>
                 </Card>
@@ -164,7 +164,7 @@ const Dashboard = () => {
                         <FileText className="w-4 h-4 md:w-5 md:h-5 text-white" />
                       </div>
                       <CardTitle className="text-xs md:text-base group-hover:text-gradient transition-colors">خلاصه‌سازی</CardTitle>
-                      <CardDescription className="text-[10px] md:text-xs">2 سکه</CardDescription>
+                      <CardDescription className="text-[10px] md:text-xs">رایگان</CardDescription>
                     </div>
                   </CardHeader>
                 </Card>
@@ -179,7 +179,7 @@ const Dashboard = () => {
                         <CheckSquare className="w-4 h-4 md:w-5 md:h-5 text-white" />
                       </div>
                       <CardTitle className="text-xs md:text-base group-hover:text-gradient transition-colors">آزمون ساز</CardTitle>
-                      <CardDescription className="text-[10px] md:text-xs">5 سکه</CardDescription>
+                      <CardDescription className="text-[10px] md:text-xs">رایگان</CardDescription>
                     </div>
                   </CardHeader>
                 </Card>
@@ -194,7 +194,7 @@ const Dashboard = () => {
                         <Brain className="w-4 h-4 md:w-5 md:h-5 text-white" />
                       </div>
                       <CardTitle className="text-xs md:text-base group-hover:text-gradient transition-colors">مشاور هوشمند</CardTitle>
-                      <CardDescription className="text-[10px] md:text-xs">رایگان</CardDescription>
+                      <CardDescription className="text-[10px] md:text-xs">10 سکه</CardDescription>
                     </div>
                   </CardHeader>
                 </Card>
@@ -218,7 +218,7 @@ const Dashboard = () => {
                         <Lightbulb className="w-4 h-4 md:w-5 md:h-5 text-white" />
                       </div>
                       <CardTitle className="text-xs md:text-base group-hover:text-gradient transition-colors">نقشه ذهنی</CardTitle>
-                      <CardDescription className="text-[10px] md:text-xs">4 سکه</CardDescription>
+                      <CardDescription className="text-[10px] md:text-xs">رایگان</CardDescription>
                     </div>
                   </CardHeader>
                 </Card>
@@ -233,7 +233,7 @@ const Dashboard = () => {
                         <CreditCard className="w-4 h-4 md:w-5 md:h-5 text-white" />
                       </div>
                       <CardTitle className="text-xs md:text-base group-hover:text-gradient transition-colors">فلش کارت</CardTitle>
-                      <CardDescription className="text-[10px] md:text-xs">3 سکه</CardDescription>
+                      <CardDescription className="text-[10px] md:text-xs">رایگان</CardDescription>
                     </div>
                   </CardHeader>
                 </Card>
@@ -263,7 +263,7 @@ const Dashboard = () => {
                         <Calendar className="w-4 h-4 md:w-5 md:h-5 text-white" />
                       </div>
                       <CardTitle className="text-xs md:text-base group-hover:text-gradient transition-colors">برنامه مطالعاتی</CardTitle>
-                      <CardDescription className="text-[10px] md:text-xs">3 سکه</CardDescription>
+                      <CardDescription className="text-[10px] md:text-xs">رایگان</CardDescription>
                     </div>
                   </CardHeader>
                 </Card>

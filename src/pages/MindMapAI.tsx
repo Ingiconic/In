@@ -118,7 +118,7 @@ const MindMapAI = () => {
               <div className="gradient-primary p-2.5 rounded-xl shadow-glow">
                 <Brain className="w-6 h-6 text-white" />
               </div>
-              <h1 className="text-2xl font-bold">نقشه ذهنی با AI (4 سکه)</h1>
+              <h1 className="text-2xl font-bold">نقشه ذهنی با AI</h1>
             </div>
             <p className="text-sm text-muted-foreground">
               موضوع یا منبع خود را وارد کنید تا AI نقشه ذهنی بسازد

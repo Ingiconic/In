@@ -2,35 +2,33 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/lib/supabase";
-import { BookOpen, GraduationCap, Sparkles, Mail, Lock, User, Calendar, Award } from "lucide-react";
-import { usernameSchema } from "@/lib/validation";
+import { supabase } from "@/integrations/supabase/client";
+import { User } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import logo from "@/assets/logo.png";
 
-export default function ImprovedAuth() {
+const Auth = () => {
+  const navigate = useNavigate();
+  const { toast } = useToast();
   const [isLogin, setIsLogin] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
+  const [birthDate, setBirthDate] = useState("");
   const [grade, setGrade] = useState("");
   const [field, setField] = useState("");
-  const [birthDate, setBirthDate] = useState("");
-  const [loading, setLoading] = useState(false);
-  const { toast } = useToast();
-  const navigate = useNavigate();
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (session) {
-        navigate("/dashboard");
-      }
-    });
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) navigate("/dashboard");
+    };
+    checkAuth();
 
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) {
-        navigate("/dashboard");
-      }
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (session) navigate("/dashboard");
     });
 
     return () => subscription.unsubscribe();
@@ -38,251 +36,311 @@ export default function ImprovedAuth() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!username.trim() || !password.trim()) {
+      toast({ title: "خطا", description: "نام کاربری و رمز عبور را وارد کنید", variant: "destructive" });
+      return;
+    }
+
     setLoading(true);
 
     try {
-      const validatedUsername = usernameSchema.parse(username);
-
       if (isLogin) {
         const { error } = await supabase.auth.signInWithPassword({
-          email: `${validatedUsername}@easydars.local`,
-          password: password,
+          email: `${username}@easydars.com`,
+          password,
         });
 
-        if (error) {
-          if (error.message.includes("Invalid") || error.message.includes("not found")) {
-            toast({
-              title: "خطا در ورود",
-              description: "نام کاربری یا رمز عبور اشتباه است",
-              variant: "destructive",
-            });
-          } else {
-            throw error;
-          }
-          return;
-        }
-
-        toast({
-          title: "ورود موفق",
-          description: "خوش آمدید!",
-        });
+        if (error) throw error;
+        toast({ title: "خوش آمدید! 🎉", description: "ورود موفقیت‌آمیز بود" });
       } else {
-        if (!fullName || !birthDate || !grade) {
-          toast({
-            title: "خطا",
-            description: "لطفاً تمام فیلدهای ضروری را پر کنید",
-            variant: "destructive",
-          });
+        if (!fullName.trim() || !birthDate || !grade.trim() || !field.trim()) {
+          toast({ title: "خطا", description: "لطفا تمام فیلدها را پر کنید", variant: "destructive" });
+          setLoading(false);
           return;
         }
 
-        const redirectUrl = `${window.location.origin}/`;
-        
-        const { error } = await supabase.auth.signUp({
-          email: `${validatedUsername}@easydars.local`,
-          password: password,
+        const { data, error } = await supabase.auth.signUp({
+          email: `${username}@easydars.com`,
+          password,
           options: {
-            emailRedirectTo: redirectUrl,
+            emailRedirectTo: `${window.location.origin}/`,
             data: {
-              username: validatedUsername,
               full_name: fullName,
-              grade: grade,
-              field: field || null,
               birth_date: birthDate,
+              grade,
+              field,
             },
           },
         });
 
-        if (error) {
-          if (error.message.includes("already registered")) {
-            toast({
-              title: "خطا",
-              description: "این نام کاربری قبلاً ثبت شده است",
-              variant: "destructive",
-            });
-          } else {
-            throw error;
-          }
-          return;
-        }
-
-        toast({
-          title: "ثبت‌نام موفق",
-          description: "به ایزی درس خوش آمدید! 🎉",
-        });
+        if (error) throw error;
+        toast({ title: "ثبت‌نام موفق! 🎊", description: "حساب شما ایجاد شد" });
       }
     } catch (error: any) {
-      toast({
-        title: "خطا",
-        description: error.message || "مشکلی پیش آمده است",
-        variant: "destructive",
-      });
+      toast({ title: "خطا", description: error.message || "مشکلی پیش آمد", variant: "destructive" });
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/20 via-background to-secondary/20 p-4 relative overflow-hidden">
-      {/* Animated background elements */}
+    <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-background via-background to-primary/5">
+      {/* Animated Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-primary/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-secondary/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
-        <div className="absolute top-1/2 right-1/3 w-48 h-48 bg-accent/10 rounded-full blur-2xl animate-pulse delay-500"></div>
+        <motion.div
+          className="absolute top-20 left-20 w-96 h-96 bg-primary/10 rounded-full blur-3xl"
+          animate={{
+            x: [0, 100, 0],
+            y: [0, 50, 0],
+            scale: [1, 1.2, 1],
+          }}
+          transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
+        />
+        <motion.div
+          className="absolute bottom-20 right-20 w-96 h-96 bg-secondary/10 rounded-full blur-3xl"
+          animate={{
+            x: [0, -100, 0],
+            y: [0, -50, 0],
+            scale: [1, 1.3, 1],
+          }}
+          transition={{ duration: 25, repeat: Infinity, ease: "easeInOut" }}
+        />
+        <motion.div
+          className="absolute top-1/2 left-1/2 w-64 h-64 bg-accent/10 rounded-full blur-3xl"
+          animate={{
+            x: [-50, 50, -50],
+            y: [-50, 50, -50],
+            scale: [1, 1.1, 1],
+          }}
+          transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
+        />
       </div>
 
-      <Card className="w-full max-w-lg p-8 backdrop-blur-sm bg-background/95 shadow-2xl border-primary/20 relative z-10">
-        <div className="text-center mb-8">
-          <div className="flex justify-center mb-4">
-            <div className="relative">
-              <GraduationCap className="w-16 h-16 text-primary" />
-              <Sparkles className="w-6 h-6 text-yellow-500 absolute -top-1 -right-1 animate-pulse" />
+      {/* Content Container */}
+      <div className="relative z-10 min-h-screen flex items-center justify-center p-4">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="w-full max-w-md"
+        >
+          {/* Logo Section */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="text-center mb-8"
+          >
+            <img src={logo} alt="EasyDars" className="w-24 h-24 mx-auto mb-4 drop-shadow-2xl" />
+            <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
+              EasyDars
+            </h1>
+            <p className="text-muted-foreground text-sm">
+              یادگیری هوشمند با قدرت هوش مصنوعی
+            </p>
+          </motion.div>
+
+          {/* Auth Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className="backdrop-blur-xl bg-card/50 border border-border/50 rounded-3xl shadow-2xl p-8"
+          >
+            {/* Toggle Buttons */}
+            <div className="flex gap-2 mb-6 p-1 bg-muted/30 rounded-2xl">
+              <button
+                onClick={() => setIsLogin(true)}
+                className={`flex-1 py-3 rounded-xl font-medium transition-all duration-300 ${
+                  isLogin
+                    ? "bg-gradient-to-r from-primary to-primary/80 text-primary-foreground shadow-lg"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                ورود
+              </button>
+              <button
+                onClick={() => setIsLogin(false)}
+                className={`flex-1 py-3 rounded-xl font-medium transition-all duration-300 ${
+                  !isLogin
+                    ? "bg-gradient-to-r from-primary to-primary/80 text-primary-foreground shadow-lg"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                ثبت‌نام
+              </button>
             </div>
-          </div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent mb-2">
-            ایزی درس
-          </h1>
-          <p className="text-muted-foreground">
-            {isLogin ? "به پلتفرم هوشمند یادگیری خوش آمدید" : "ثبت‌نام در پلتفرم هوشمند یادگیری"}
-          </p>
-        </div>
 
-        <form onSubmit={handleSubmit} className="space-y-5">
-          <div className="space-y-2">
-            <label className="text-sm font-medium flex items-center gap-2">
-              <User className="w-4 h-4 text-primary" />
-              نام کاربری
-            </label>
-            <Input
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              placeholder="username"
-              required
-              className="text-left transition-all duration-300 focus:ring-2 focus:ring-primary/50"
-              dir="ltr"
-            />
-          </div>
+            {/* Form */}
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <AnimatePresence mode="wait">
+                {isLogin ? (
+                  <motion.div
+                    key="login"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 20 }}
+                    transition={{ duration: 0.3 }}
+                    className="space-y-4"
+                  >
+                    <div>
+                      <Input
+                        type="text"
+                        placeholder="نام کاربری"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                        className="h-12 bg-background/50 border-border/50 rounded-xl text-base"
+                        dir="rtl"
+                      />
+                    </div>
+                    <div>
+                      <Input
+                        type="password"
+                        placeholder="رمز عبور"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        className="h-12 bg-background/50 border-border/50 rounded-xl text-base"
+                        dir="rtl"
+                      />
+                    </div>
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="signup"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 20 }}
+                    transition={{ duration: 0.3 }}
+                    className="space-y-4"
+                  >
+                    <div>
+                      <Input
+                        type="text"
+                        placeholder="نام کاربری"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                        className="h-12 bg-background/50 border-border/50 rounded-xl text-base"
+                        dir="rtl"
+                      />
+                    </div>
+                    <div>
+                      <Input
+                        type="password"
+                        placeholder="رمز عبور"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        className="h-12 bg-background/50 border-border/50 rounded-xl text-base"
+                        dir="rtl"
+                      />
+                    </div>
+                    <div>
+                      <Input
+                        type="text"
+                        placeholder="نام و نام خانوادگی"
+                        value={fullName}
+                        onChange={(e) => setFullName(e.target.value)}
+                        className="h-12 bg-background/50 border-border/50 rounded-xl text-base"
+                        dir="rtl"
+                      />
+                    </div>
+                    <div>
+                      <Input
+                        type="date"
+                        placeholder="تاریخ تولد"
+                        value={birthDate}
+                        onChange={(e) => setBirthDate(e.target.value)}
+                        className="h-12 bg-background/50 border-border/50 rounded-xl text-base"
+                        dir="rtl"
+                      />
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <Input
+                        type="text"
+                        placeholder="پایه تحصیلی"
+                        value={grade}
+                        onChange={(e) => setGrade(e.target.value)}
+                        className="h-12 bg-background/50 border-border/50 rounded-xl text-base"
+                        dir="rtl"
+                      />
+                      <Input
+                        type="text"
+                        placeholder="رشته"
+                        value={field}
+                        onChange={(e) => setField(e.target.value)}
+                        className="h-12 bg-background/50 border-border/50 rounded-xl text-base"
+                        dir="rtl"
+                      />
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
-          <div className="space-y-2">
-            <label className="text-sm font-medium flex items-center gap-2">
-              <Lock className="w-4 h-4 text-primary" />
-              رمز عبور
-            </label>
-            <Input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
-              required
-              minLength={6}
-              className="transition-all duration-300 focus:ring-2 focus:ring-primary/50"
-            />
-          </div>
-
-          {!isLogin && (
-            <>
-              <div className="space-y-2">
-                <label className="text-sm font-medium flex items-center gap-2">
-                  <User className="w-4 h-4 text-primary" />
-                  نام و نام خانوادگی
-                </label>
-                <Input
-                  type="text"
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  placeholder="نام کامل خود را وارد کنید"
-                  required
-                  className="transition-all duration-300 focus:ring-2 focus:ring-primary/50"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-sm font-medium flex items-center gap-2">
-                  <Calendar className="w-4 h-4 text-primary" />
-                  تاریخ تولد
-                </label>
-                <Input
-                  type="date"
-                  value={birthDate}
-                  onChange={(e) => setBirthDate(e.target.value)}
-                  required
-                  className="transition-all duration-300 focus:ring-2 focus:ring-primary/50"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium flex items-center gap-2">
-                    <Award className="w-4 h-4 text-primary" />
-                    پایه تحصیلی
-                  </label>
-                  <Input
-                    type="text"
-                    value={grade}
-                    onChange={(e) => setGrade(e.target.value)}
-                    placeholder="مثلاً: دهم"
-                    required
-                    className="transition-all duration-300 focus:ring-2 focus:ring-primary/50"
+              <Button
+                type="submit"
+                disabled={loading}
+                className="w-full h-12 bg-gradient-to-r from-primary via-secondary to-accent hover:opacity-90 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 text-base"
+              >
+                {loading ? (
+                  <motion.div
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                    className="w-5 h-5 border-2 border-white border-t-transparent rounded-full"
                   />
-                </div>
+                ) : (
+                  <span className="flex items-center gap-2 justify-center">
+                    <User className="w-5 h-5" />
+                    {isLogin ? "ورود به سیستم" : "ثبت‌نام"}
+                  </span>
+                )}
+              </Button>
+            </form>
 
-                <div className="space-y-2">
-                  <label className="text-sm font-medium flex items-center gap-2">
-                    <BookOpen className="w-4 h-4 text-primary" />
-                    رشته (اختیاری)
-                  </label>
-                  <Input
-                    type="text"
-                    value={field}
-                    onChange={(e) => setField(e.target.value)}
-                    placeholder="مثلاً: ریاضی"
-                    className="transition-all duration-300 focus:ring-2 focus:ring-primary/50"
-                  />
-                </div>
-              </div>
-            </>
-          )}
+            {/* Footer Text */}
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.6 }}
+              className="text-center text-sm text-muted-foreground mt-6"
+            >
+              {isLogin ? "حساب کاربری ندارید؟" : "قبلاً ثبت‌نام کرده‌اید؟"}{" "}
+              <button
+                type="button"
+                onClick={() => setIsLogin(!isLogin)}
+                className="text-primary font-medium hover:underline"
+              >
+                {isLogin ? "ثبت‌نام کنید" : "وارد شوید"}
+              </button>
+            </motion.p>
+          </motion.div>
 
-          <Button
-            type="submit"
-            className="w-full h-12 text-lg font-semibold bg-gradient-to-r from-primary to-secondary hover:opacity-90 transition-all duration-300 shadow-lg hover:shadow-xl"
-            disabled={loading}
+          {/* Features */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.6 }}
+            className="mt-8 grid grid-cols-3 gap-4"
           >
-            {loading ? (
-              <div className="flex items-center gap-2">
-                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                {isLogin ? "در حال ورود..." : "در حال ثبت‌نام..."}
-              </div>
-            ) : (
-              <span>{isLogin ? "ورود به حساب" : "ثبت‌نام"}</span>
-            )}
-          </Button>
-        </form>
-
-        <div className="mt-6 text-center">
-          <button
-            onClick={() => {
-              setIsLogin(!isLogin);
-              setUsername("");
-              setPassword("");
-              setFullName("");
-              setGrade("");
-              setField("");
-              setBirthDate("");
-            }}
-            className="text-sm text-primary hover:underline transition-all duration-300 font-medium"
-          >
-            {isLogin ? "حساب کاربری ندارید? ثبت‌نام کنید" : "قبلاً ثبت‌نام کرده‌اید? وارد شوید"}
-          </button>
-        </div>
-
-        <div className="mt-8 pt-6 border-t border-border/50">
-          <p className="text-center text-xs text-muted-foreground">
-            🎓 با ثبت‌نام، ۱۰۰۰ سکه رایگان دریافت می‌کنید
-          </p>
-        </div>
-      </Card>
+            {[
+              { icon: "🤖", text: "هوش مصنوعی" },
+              { icon: "📚", text: "آموزش هوشمند" },
+              { icon: "🎯", text: "پیشرفت سریع" },
+            ].map((feature, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.4, delay: 0.7 + i * 0.1 }}
+                className="backdrop-blur-xl bg-card/30 border border-border/30 rounded-2xl p-4 text-center hover:border-primary/50 transition-all duration-300"
+              >
+                <div className="text-3xl mb-2">{feature.icon}</div>
+                <p className="text-xs text-muted-foreground">{feature.text}</p>
+              </motion.div>
+            ))}
+          </motion.div>
+        </motion.div>
+      </div>
     </div>
   );
-}
+};
+
+export default Auth;

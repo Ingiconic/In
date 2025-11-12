@@ -58,7 +58,7 @@ const Consultation = () => {
             <ArrowRight className="ml-2 w-4 h-4" />
             بازگشت
           </Button>
-          <h1 className="text-xl font-bold text-gradient">مشاوره تحصیلی</h1>
+          <h1 className="text-xl font-bold text-gradient">مشاوره تحصیلی (10 سکه)</h1>
         </div>
       </header>
 

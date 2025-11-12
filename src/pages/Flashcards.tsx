@@ -206,7 +206,7 @@ const Flashcards = () => {
                   <BookOpen className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <h2 className="text-lg font-bold">فلش کارت‌ها (3 سکه)</h2>
+                  <h2 className="text-lg font-bold">فلش کارت‌ها</h2>
                   <p className="text-xs text-muted-foreground">کارت‌های آموزشی از محتوا یا منابع</p>
                 </div>
               </div>

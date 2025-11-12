@@ -137,7 +137,7 @@ const Summarize = () => {
               <div className="gradient-primary p-2.5 rounded-xl shadow-glow">
                 <FileText className="w-6 h-6 text-white" />
               </div>
-              <h1 className="text-2xl font-bold">خلاصه‌سازی با AI (2 سکه)</h1>
+              <h1 className="text-2xl font-bold">خلاصه‌سازی با AI</h1>
             </div>
             <p className="text-sm text-muted-foreground">
               متن، تصویر، صدا یا منبع خود را انتخاب کنید
