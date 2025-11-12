@@ -4,12 +4,13 @@ import { Card } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/lib/supabase";
-import { Sparkles, FileText, Loader2, Image, Mic, MicOff } from "lucide-react";
+import { Sparkles, FileText, Loader2, Image, Mic, MicOff, Coins } from "lucide-react";
 import ResourceSelector from "@/components/ResourceSelector";
 import { usePageView } from "@/hooks/usePageView";
 import { logger } from "@/lib/logger";
 import AppLayout from "@/components/layout/AppLayout";
 import MathText from "@/components/MathText";
+import { checkAndDeductCoins } from "@/lib/coinHelpers";
 
 const Summarize = () => {
   const { toast } = useToast();
@@ -95,6 +96,17 @@ const Summarize = () => {
       return;
     }
 
+    // Check and deduct coins
+    const hasCoins = await checkAndDeductCoins(10);
+    if (!hasCoins) {
+      toast({
+        title: "سکه کافی نیست",
+        description: "برای استفاده از این ابزار به ۱۰ سکه نیاز دارید",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setLoading(true);
     setResult("");
 
@@ -137,7 +149,13 @@ const Summarize = () => {
               <div className="gradient-primary p-2.5 rounded-xl shadow-glow">
                 <FileText className="w-6 h-6 text-white" />
               </div>
-              <h1 className="text-2xl font-bold">خلاصه‌سازی با AI</h1>
+              <h1 className="text-2xl font-bold flex items-center gap-2">
+                خلاصه‌سازی با AI
+                <span className="text-sm font-normal text-primary flex items-center gap-1">
+                  <Coins className="w-4 h-4" />
+                  10 سکه
+                </span>
+              </h1>
             </div>
             <p className="text-sm text-muted-foreground">
               متن، تصویر، صدا یا منبع خود را انتخاب کنید

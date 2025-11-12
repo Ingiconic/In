@@ -1,6 +1,6 @@
 import { 
   LayoutDashboard,
-  MessageSquare, 
+  ShoppingBag, 
   HelpCircle, 
   FileText, 
   User,
@@ -13,7 +13,7 @@ const BottomNav = () => {
 
   const navItems = [
     { icon: LayoutDashboard, label: "خانه", path: "/dashboard" },
-    { icon: MessageSquare, label: "چت", path: "/chat" },
+    { icon: ShoppingBag, label: "فروشگاه", path: "/coin-shop" },
     { icon: HelpCircle, label: "پرسش", path: "/questions" },
     { icon: FileText, label: "خلاصه", path: "/summarize" },
     { icon: User, label: "پروفایل", path: "/profile" },

@@ -28,10 +28,10 @@ export default function CoinShop() {
 
           <Card className="p-6 text-center hover:shadow-lg transition-shadow border-2 hover:border-primary">
             <Coins className="w-12 h-12 mx-auto mb-4 text-primary" />
-            <h3 className="text-2xl font-bold mb-2">۵۰۰ سکه</h3>
-            <p className="text-3xl font-bold text-primary mb-4">۴۵,۰۰۰ تومان</p>
+            <h3 className="text-2xl font-bold mb-2">۳۰۰ سکه</h3>
+            <p className="text-3xl font-bold text-primary mb-4">۲۵,۰۰۰ تومان</p>
             <span className="inline-block bg-green-500 text-white text-xs px-2 py-1 rounded mb-2">
-              ۱۰٪ تخفیف
+              ۱۶٪ تخفیف
             </span>
             <Button className="w-full" variant="outline">
               <ShoppingCart className="ml-2 w-4 h-4" />
@@ -42,9 +42,9 @@ export default function CoinShop() {
           <Card className="p-6 text-center hover:shadow-lg transition-shadow border-2 hover:border-primary">
             <Coins className="w-12 h-12 mx-auto mb-4 text-primary" />
             <h3 className="text-2xl font-bold mb-2">۱۰۰۰ سکه</h3>
-            <p className="text-3xl font-bold text-primary mb-4">۸۰,۰۰۰ تومان</p>
+            <p className="text-3xl font-bold text-primary mb-4">۷۵,۰۰۰ تومان</p>
             <span className="inline-block bg-green-500 text-white text-xs px-2 py-1 rounded mb-2">
-              ۲۰٪ تخفیف
+              ۲۵٪ تخفیف
             </span>
             <Button className="w-full" variant="outline">
               <ShoppingCart className="ml-2 w-4 h-4" />
@@ -72,8 +72,20 @@ export default function CoinShop() {
           <p className="mb-2">💰 هزینه استفاده از ابزارها:</p>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
             <div>
+              <p className="font-bold">پرسش درسی</p>
+              <p className="text-primary">۱۰ سکه</p>
+            </div>
+            <div>
+              <p className="font-bold">خلاصه‌ساز</p>
+              <p className="text-primary">۱۰ سکه</p>
+            </div>
+            <div>
               <p className="font-bold">آزمون‌ساز</p>
               <p className="text-primary">۱۰ سکه</p>
+            </div>
+            <div>
+              <p className="font-bold">مشاوره هوشمند</p>
+              <p className="text-primary">۲۰ سکه</p>
             </div>
             <div>
               <p className="font-bold">نقشه ذهنی</p>
@@ -81,11 +93,15 @@ export default function CoinShop() {
             </div>
             <div>
               <p className="font-bold">فلش کارت</p>
-              <p className="text-primary">۵ سکه</p>
+              <p className="text-primary">۱۰ سکه</p>
             </div>
             <div>
-              <p className="font-bold">خلاصه‌ساز</p>
-              <p className="text-primary">۳ سکه</p>
+              <p className="font-bold">منابع</p>
+              <p className="text-green-500">رایگان</p>
+            </div>
+            <div>
+              <p className="font-bold">برنامه مطالعاتی</p>
+              <p className="text-primary">۱۰ سکه</p>
             </div>
           </div>
         </div>

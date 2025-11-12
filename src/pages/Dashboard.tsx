@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { MessageSquare, Users, FileText, CheckSquare, HelpCircle, Sparkles, Trophy, PenTool, Brain, TrendingUp, Award, Target, BookOpen, Calendar, Lightbulb, CreditCard, Coins } from "lucide-react";
+import { ShoppingBag, Users, FileText, CheckSquare, HelpCircle, Sparkles, Trophy, PenTool, Brain, TrendingUp, Award, Target, BookOpen, Calendar, Lightbulb, CreditCard, Coins, MessageSquare } from "lucide-react";
 import { usePageView } from "@/hooks/usePageView";
 import AppLayout from "@/components/layout/AppLayout";
 import { Button } from "@/components/ui/button";
@@ -149,7 +149,7 @@ const Dashboard = () => {
                         <HelpCircle className="w-4 h-4 md:w-5 md:h-5 text-white" />
                       </div>
                       <CardTitle className="text-xs md:text-base group-hover:text-gradient transition-colors">پرسش درسی</CardTitle>
-                      <CardDescription className="text-[10px] md:text-xs">رایگان</CardDescription>
+                      <CardDescription className="text-[10px] md:text-xs">10 سکه</CardDescription>
                     </div>
                   </CardHeader>
                 </Card>
@@ -164,7 +164,7 @@ const Dashboard = () => {
                         <FileText className="w-4 h-4 md:w-5 md:h-5 text-white" />
                       </div>
                       <CardTitle className="text-xs md:text-base group-hover:text-gradient transition-colors">خلاصه‌سازی</CardTitle>
-                      <CardDescription className="text-[10px] md:text-xs">رایگان</CardDescription>
+                      <CardDescription className="text-[10px] md:text-xs">10 سکه</CardDescription>
                     </div>
                   </CardHeader>
                 </Card>
@@ -179,7 +179,7 @@ const Dashboard = () => {
                         <CheckSquare className="w-4 h-4 md:w-5 md:h-5 text-white" />
                       </div>
                       <CardTitle className="text-xs md:text-base group-hover:text-gradient transition-colors">آزمون ساز</CardTitle>
-                      <CardDescription className="text-[10px] md:text-xs">رایگان</CardDescription>
+                      <CardDescription className="text-[10px] md:text-xs">10 سکه</CardDescription>
                     </div>
                   </CardHeader>
                 </Card>
@@ -194,7 +194,7 @@ const Dashboard = () => {
                         <Brain className="w-4 h-4 md:w-5 md:h-5 text-white" />
                       </div>
                       <CardTitle className="text-xs md:text-base group-hover:text-gradient transition-colors">مشاور هوشمند</CardTitle>
-                      <CardDescription className="text-[10px] md:text-xs">10 سکه</CardDescription>
+                      <CardDescription className="text-[10px] md:text-xs">20 سکه</CardDescription>
                     </div>
                   </CardHeader>
                 </Card>
@@ -218,7 +218,7 @@ const Dashboard = () => {
                         <Lightbulb className="w-4 h-4 md:w-5 md:h-5 text-white" />
                       </div>
                       <CardTitle className="text-xs md:text-base group-hover:text-gradient transition-colors">نقشه ذهنی</CardTitle>
-                      <CardDescription className="text-[10px] md:text-xs">رایگان</CardDescription>
+                      <CardDescription className="text-[10px] md:text-xs">10 سکه</CardDescription>
                     </div>
                   </CardHeader>
                 </Card>
@@ -233,7 +233,7 @@ const Dashboard = () => {
                         <CreditCard className="w-4 h-4 md:w-5 md:h-5 text-white" />
                       </div>
                       <CardTitle className="text-xs md:text-base group-hover:text-gradient transition-colors">فلش کارت</CardTitle>
-                      <CardDescription className="text-[10px] md:text-xs">رایگان</CardDescription>
+                      <CardDescription className="text-[10px] md:text-xs">10 سکه</CardDescription>
                     </div>
                   </CardHeader>
                 </Card>
@@ -255,15 +255,15 @@ const Dashboard = () => {
 
                 <Card 
                   className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group border-secondary/10"
-                  onClick={() => navigate("/study-plan")}
+                  onClick={() => navigate("/coin-shop")}
                 >
                   <CardHeader className="p-3 md:p-5">
                     <div className="flex flex-col items-center gap-2 text-center">
                       <div className="gradient-secondary p-2 md:p-2.5 rounded-xl shadow-glow group-hover:scale-110 transition-transform">
-                        <Calendar className="w-4 h-4 md:w-5 md:h-5 text-white" />
+                        <ShoppingBag className="w-4 h-4 md:w-5 md:h-5 text-white" />
                       </div>
-                      <CardTitle className="text-xs md:text-base group-hover:text-gradient transition-colors">برنامه مطالعاتی</CardTitle>
-                      <CardDescription className="text-[10px] md:text-xs">رایگان</CardDescription>
+                      <CardTitle className="text-xs md:text-base group-hover:text-gradient transition-colors">فروشگاه سکه</CardTitle>
+                      <CardDescription className="text-[10px] md:text-xs">خرید سکه</CardDescription>
                     </div>
                   </CardHeader>
                 </Card>

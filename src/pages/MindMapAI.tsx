@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/lib/supabase";
-import { Brain, Sparkles, Loader2 } from "lucide-react";
+import { Brain, Sparkles, Loader2, Coins } from "lucide-react";
 import AppLayout from "@/components/layout/AppLayout";
 import { usePageView } from "@/hooks/usePageView";
 import ResourceSelector from "@/components/ResourceSelector";
@@ -17,6 +17,7 @@ import ReactFlow, {
   useEdgesState,
 } from "reactflow";
 import "reactflow/dist/style.css";
+import { checkAndDeductCoins } from "@/lib/coinHelpers";
 
 interface Resource {
   id: string;
@@ -40,6 +41,17 @@ const MindMapAI = () => {
       toast({
         title: "خطا",
         description: "لطفا موضوع را وارد کنید یا منبعی را انتخاب کنید",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Check and deduct coins
+    const hasCoins = await checkAndDeductCoins(10);
+    if (!hasCoins) {
+      toast({
+        title: "سکه کافی نیست",
+        description: "برای استفاده از این ابزار به ۱۰ سکه نیاز دارید",
         variant: "destructive",
       });
       return;
@@ -118,7 +130,13 @@ const MindMapAI = () => {
               <div className="gradient-primary p-2.5 rounded-xl shadow-glow">
                 <Brain className="w-6 h-6 text-white" />
               </div>
-              <h1 className="text-2xl font-bold">نقشه ذهنی با AI</h1>
+              <h1 className="text-2xl font-bold flex items-center gap-2">
+                نقشه ذهنی با AI
+                <span className="text-sm font-normal text-primary flex items-center gap-1">
+                  <Coins className="w-4 h-4" />
+                  10 سکه
+                </span>
+              </h1>
             </div>
             <p className="text-sm text-muted-foreground">
               موضوع یا منبع خود را وارد کنید تا AI نقشه ذهنی بسازد

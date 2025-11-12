@@ -12,6 +12,7 @@ import AppLayout from "@/components/layout/AppLayout";
 import { Badge } from "@/components/ui/badge";
 import ResourceSelector from "@/components/ResourceSelector";
 import MathText from "@/components/MathText";
+import { checkAndDeductCoins } from "@/lib/coinHelpers";
 
 const ExamV2 = () => {
   const { toast } = useToast();
@@ -31,6 +32,17 @@ const ExamV2 = () => {
       toast({
         title: "خطا",
         description: "لطفا محتوا را وارد کنید یا منبعی انتخاب کنید",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Check and deduct coins
+    const hasCoins = await checkAndDeductCoins(10);
+    if (!hasCoins) {
+      toast({
+        title: "سکه کافی نیست",
+        description: "برای استفاده از این ابزار به ۱۰ سکه نیاز دارید",
         variant: "destructive",
       });
       return;
@@ -142,7 +154,13 @@ const ExamV2 = () => {
                   <Brain className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h1 className="text-2xl font-bold">آزمون ساز هوشمند V2 (5 سکه)</h1>
+                  <h1 className="text-2xl font-bold flex items-center gap-2">
+                    آزمون ساز هوشمند V2
+                    <span className="text-sm font-normal text-primary flex items-center gap-1">
+                      <Coins className="w-4 h-4" />
+                      10 سکه
+                    </span>
+                  </h1>
                   <p className="text-sm text-muted-foreground">
                     سوالات متنوع با ارزیابی هوشمند - محتوا یا منبع را انتخاب کنید
                   </p>

@@ -4,11 +4,12 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/lib/supabase";
-import { Send, Brain, Loader2, Image } from "lucide-react";
+import { Send, Brain, Loader2, Image, Coins } from "lucide-react";
 import ResourceSelector from "@/components/ResourceSelector";
 import { logger } from "@/lib/logger";
 import AppLayout from "@/components/layout/AppLayout";
 import MathText from "@/components/MathText";
+import { checkAndDeductCoins } from "@/lib/coinHelpers";
 
 const Questions = () => {
   const { toast } = useToast();
@@ -34,6 +35,17 @@ const Questions = () => {
       toast({
         title: "خطا",
         description: "لطفا سوال خود را بنویسید، تصویر آپلود کنید یا منبعی انتخاب کنید",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Check and deduct coins
+    const hasCoins = await checkAndDeductCoins(10);
+    if (!hasCoins) {
+      toast({
+        title: "سکه کافی نیست",
+        description: "برای استفاده از این ابزار به ۱۰ سکه نیاز دارید",
         variant: "destructive",
       });
       return;
@@ -88,7 +100,13 @@ const Questions = () => {
               <div className="gradient-primary p-2.5 rounded-xl shadow-glow">
                 <Brain className="w-6 h-6 text-white" />
               </div>
-              <h1 className="text-2xl font-bold">پرسش درسی با AI</h1>
+              <h1 className="text-2xl font-bold flex items-center gap-2">
+                پرسش درسی با AI
+                <span className="text-sm font-normal text-primary flex items-center gap-1">
+                  <Coins className="w-4 h-4" />
+                  10 سکه
+                </span>
+              </h1>
             </div>
             <p className="text-sm text-muted-foreground">
               سوال بپرسید، تصویر آپلود کنید یا از منابع استفاده کنید

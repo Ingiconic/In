@@ -5,8 +5,9 @@ import { Card } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/lib/supabase";
-import { ArrowRight, MessageSquare, Sparkles, Loader2, User } from "lucide-react";
+import { ArrowRight, MessageSquare, Sparkles, Loader2, User, Coins } from "lucide-react";
 import { logger } from "@/lib/logger";
+import { checkAndDeductCoins } from "@/lib/coinHelpers";
 
 const Consultation = () => {
   const navigate = useNavigate();
@@ -20,6 +21,17 @@ const Consultation = () => {
       toast({
         title: "خطا",
         description: "لطفا پیام خود را بنویسید",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Check and deduct 20 coins for consultation
+    const hasCoins = await checkAndDeductCoins(20);
+    if (!hasCoins) {
+      toast({
+        title: "سکه کافی نیست",
+        description: "برای استفاده از مشاوره هوشمند به ۲۰ سکه نیاز دارید",
         variant: "destructive",
       });
       return;
@@ -58,7 +70,13 @@ const Consultation = () => {
             <ArrowRight className="ml-2 w-4 h-4" />
             بازگشت
           </Button>
-          <h1 className="text-xl font-bold text-gradient">مشاوره تحصیلی (10 سکه)</h1>
+          <h1 className="text-xl font-bold text-gradient flex items-center gap-2">
+            مشاوره تحصیلی
+            <span className="text-sm font-normal text-primary flex items-center gap-1">
+              <Coins className="w-4 h-4" />
+              20 سکه
+            </span>
+          </h1>
         </div>
       </header>
 
