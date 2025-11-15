@@ -42,10 +42,14 @@ const Auth = () => {
 
     setLoading(true);
     try {
+      console.log("Checking username:", username);
+      
       // Call edge function to check if username exists
       const { data, error } = await supabase.functions.invoke('check-username', {
         body: { username: username.toLowerCase().trim() }
       });
+
+      console.log("Edge function response:", { data, error });
 
       if (error) {
         console.error("Error checking user:", error);
@@ -54,10 +58,14 @@ const Auth = () => {
         return;
       }
 
+      console.log("User exists:", data?.exists);
+
       // If user exists, go to login. Otherwise go to signup
       if (data?.exists) {
+        console.log("Going to login");
         setStep("login");
       } else {
+        console.log("Going to signup");
         setStep("signup");
       }
     } catch (error: any) {

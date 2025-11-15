@@ -11,9 +11,12 @@ Deno.serve(async (req) => {
   }
 
   try {
+    console.log('check-username function called');
     const { username } = await req.json();
+    console.log('Checking username:', username);
 
     if (!username) {
+      console.log('No username provided');
       return new Response(
         JSON.stringify({ error: 'نام کاربری الزامی است' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -27,6 +30,8 @@ Deno.serve(async (req) => {
       { auth: { persistSession: false } }
     );
 
+    console.log('Querying profiles table for username:', username);
+
     // Check if username exists in profiles
     const { data, error } = await supabaseAdmin
       .from('profiles')
@@ -35,21 +40,25 @@ Deno.serve(async (req) => {
       .maybeSingle();
 
     if (error) {
-      console.error('Error checking username:', error);
+      console.error('Database error checking username:', error);
       return new Response(
         JSON.stringify({ error: 'خطا در بررسی نام کاربری' }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
+    console.log('Query result:', data);
+    const exists = !!data;
+    console.log('Username exists:', exists);
+
     // Return whether user exists or not
     return new Response(
-      JSON.stringify({ exists: !!data }),
+      JSON.stringify({ exists }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 
   } catch (error) {
-    console.error('Error in check-username function:', error);
+    console.error('Exception in check-username function:', error);
     return new Response(
       JSON.stringify({ error: 'خطای سرور' }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
