@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import AdminLogin from "./pages/AdminLogin";
 import Admin from "./pages/Admin";
 import Dashboard from "./pages/Dashboard";
 import Summarize from "./pages/Summarize";
@@ -37,7 +38,8 @@ const App = () => (
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/auth" element={<Login />} />
-          <Route path="/admin" element={<Admin />} />
+          <Route path="/admin" element={<AdminLogin />} />
+          <Route path="/admin/dashboard" element={<Admin />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/summarize" element={<Summarize />} />
           <Route path="/questions" element={<Questions />} />

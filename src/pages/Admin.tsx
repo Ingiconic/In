@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { 
   Users, Eye, Coins, TrendingUp, Calendar, Shield,
-  Plus, Minus, Search, ArrowLeft, Loader2
+  Plus, Minus, Search, ArrowLeft, Loader2, LogOut
 } from "lucide-react";
 import { motion } from "framer-motion";
 import {
@@ -54,28 +54,29 @@ const Admin = () => {
 
   const checkAdminAccess = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      // Check if admin is authenticated via session
+      const isAuthenticated = sessionStorage.getItem("admin_authenticated");
+      const loginTime = sessionStorage.getItem("admin_login_time");
       
-      if (!user) {
-        navigate("/login");
+      if (!isAuthenticated || !loginTime) {
+        navigate("/admin");
         return;
       }
 
-      // Check if user has admin role
-      const { data: roleData } = await supabase
-        .from("user_roles")
-        .select("role")
-        .eq("user_id", user.id)
-        .eq("role", "admin")
-        .single();
-
-      if (!roleData) {
+      // Check if session is expired (24 hours)
+      const now = new Date().getTime();
+      const elapsed = now - parseInt(loginTime);
+      const twentyFourHours = 24 * 60 * 60 * 1000;
+      
+      if (elapsed > twentyFourHours) {
+        sessionStorage.removeItem("admin_authenticated");
+        sessionStorage.removeItem("admin_login_time");
         toast({
-          title: "دسترسی غیرمجاز",
-          description: "شما دسترسی به این صفحه ندارید",
+          title: "نشست منقضی شد",
+          description: "لطفا دوباره وارد شوید",
           variant: "destructive"
         });
-        navigate("/dashboard");
+        navigate("/admin");
         return;
       }
 
@@ -86,7 +87,7 @@ const Admin = () => {
       ]);
     } catch (error) {
       console.error("Error checking admin access:", error);
-      navigate("/dashboard");
+      navigate("/admin");
     } finally {
       setLoading(false);
     }
@@ -102,7 +103,10 @@ const Admin = () => {
         .select("page_path, viewed_at")
         .gte("viewed_at", today.toISOString());
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error loading page views:", error);
+        return;
+      }
 
       // Count views per page
       const viewCounts: { [key: string]: number } = {};
@@ -134,11 +138,24 @@ const Admin = () => {
         .select("*")
         .order("created_at", { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error loading users:", error);
+        return;
+      }
       setUsers(data || []);
     } catch (error) {
       console.error("Error loading users:", error);
     }
+  };
+
+  const handleLogout = () => {
+    sessionStorage.removeItem("admin_authenticated");
+    sessionStorage.removeItem("admin_login_time");
+    toast({
+      title: "خروج موفق",
+      description: "شما از پنل مدیریت خارج شدید"
+    });
+    navigate("/admin");
   };
 
   const adjustUserCoins = async (userId: string, amount: number) => {
@@ -153,13 +170,38 @@ const Admin = () => {
 
     setAdjusting(true);
     try {
-      const { error } = await supabase.rpc("admin_adjust_user_coins", {
-        target_user_id: userId,
-        coin_amount: amount,
-        adjustment_reason: amount > 0 ? "Admin credit added" : "Admin deduction"
-      });
+      // Direct update without RPC since we're in admin context
+      const { data: currentProfile } = await supabase
+        .from("profiles")
+        .select("coins")
+        .eq("id", userId)
+        .single();
 
-      if (error) throw error;
+      if (!currentProfile) {
+        throw new Error("کاربر یافت نشد");
+      }
+
+      const newCoins = Math.max(0, currentProfile.coins + amount);
+
+      const { error: updateError } = await supabase
+        .from("profiles")
+        .update({ coins: newCoins })
+        .eq("id", userId);
+
+      if (updateError) throw updateError;
+
+      // Log transaction
+      const { error: logError } = await supabase
+        .from("coin_transactions")
+        .insert({
+          user_id: userId,
+          amount: amount,
+          reason: amount > 0 ? "Admin credit added" : "Admin deduction"
+        });
+
+      if (logError) {
+        console.error("Error logging transaction:", logError);
+      }
 
       toast({
         title: "موفق",
@@ -206,14 +248,26 @@ const Admin = () => {
           animate={{ opacity: 1, y: 0 }}
           className="mb-8"
         >
-          <Button
-            variant="ghost"
-            onClick={() => navigate("/dashboard")}
-            className="mb-4"
-          >
-            <ArrowLeft className="ml-2 h-4 w-4" />
-            بازگشت به داشبورد
-          </Button>
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <Button
+                variant="ghost"
+                onClick={() => navigate("/dashboard")}
+              >
+                <ArrowLeft className="ml-2 h-4 w-4" />
+                بازگشت به داشبورد
+              </Button>
+            </div>
+            
+            <Button
+              variant="outline"
+              onClick={handleLogout}
+              className="text-destructive hover:text-destructive"
+            >
+              <LogOut className="ml-2 h-4 w-4" />
+              خروج از پنل
+            </Button>
+          </div>
           
           <div className="flex items-center gap-3 mb-2">
             <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
