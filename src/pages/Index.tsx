@@ -8,7 +8,8 @@ import {
 import { useNavigate } from "react-router-dom";
 import { usePageView } from "@/hooks/usePageView";
 import { motion, useScroll, useTransform, useInView } from "framer-motion";
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
+import { supabase } from "@/lib/supabase";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -491,6 +492,35 @@ const Index = () => {
         </div>
       </section>
 
+      {/* Blog/News Section */}
+      <section className="relative py-24 bg-muted/5">
+        <div className="container mx-auto px-4">
+          <AnimatedSection>
+            <motion.div className="text-center mb-16">
+              <motion.div
+                className="inline-block mb-4"
+                initial={{ scale: 0 }}
+                whileInView={{ scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ type: "spring", stiffness: 200 }}
+              >
+                <div className="w-16 h-16 rounded-2xl gradient-primary flex items-center justify-center shadow-glow mx-auto">
+                  <BookOpen className="w-8 h-8 text-white" />
+                </div>
+              </motion.div>
+              <h2 className="text-4xl md:text-5xl font-black text-gradient mb-4">
+                آخرین اخبار و مقالات
+              </h2>
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                جدیدترین مطالب آموزشی و اخبار
+              </p>
+            </motion.div>
+
+            <BlogPosts />
+          </AnimatedSection>
+        </div>
+      </section>
+
       {/* Footer */}
       <footer className="relative py-16 border-t border-border/30 bg-muted/10 backdrop-blur-xl">
         <div className="container mx-auto px-4">
@@ -624,6 +654,100 @@ const TestimonialCard = ({ quote, name, role, delay }: any) => {
         </div>
       </Card>
     </motion.div>
+  );
+};
+
+// Blog Posts Component
+const BlogPosts = () => {
+  const [posts, setPosts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadPosts();
+  }, []);
+
+  const loadPosts = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("blog_posts")
+        .select("*")
+        .eq("published", true)
+        .order("published_at", { ascending: false })
+        .limit(3);
+
+      if (!error && data) {
+        setPosts(data);
+      }
+    } catch (error) {
+      console.error("Error loading blog posts:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        {[1, 2, 3].map((i) => (
+          <Card key={i} className="glass-card p-6 animate-pulse">
+            <div className="w-full h-48 bg-muted rounded-lg mb-4"></div>
+            <div className="h-6 bg-muted rounded mb-2"></div>
+            <div className="h-4 bg-muted rounded"></div>
+          </Card>
+        ))}
+      </div>
+    );
+  }
+
+  if (posts.length === 0) {
+    return (
+      <Card className="glass-card p-12 text-center">
+        <p className="text-muted-foreground">هنوز مقاله‌ای منتشر نشده است</p>
+      </Card>
+    );
+  }
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      {posts.map((post, index) => (
+        <motion.div
+          key={post.id}
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: index * 0.1 }}
+        >
+          <Card className="glass-card hover-lift overflow-hidden h-full">
+            {post.featured_image && (
+              <div className="relative h-48 overflow-hidden">
+                <motion.img
+                  src={post.featured_image}
+                  alt={post.title}
+                  className="w-full h-full object-cover"
+                  whileHover={{ scale: 1.1 }}
+                  transition={{ duration: 0.3 }}
+                />
+              </div>
+            )}
+            <div className="p-6">
+              <h3 className="text-xl font-bold mb-2 line-clamp-2">{post.title}</h3>
+              <p className="text-muted-foreground text-sm mb-4 line-clamp-3">
+                {post.excerpt}
+              </p>
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-muted-foreground">
+                  {new Date(post.published_at).toLocaleDateString('fa-IR')}
+                </span>
+                <Button variant="ghost" size="sm" className="text-primary">
+                  بیشتر بخوانید
+                  <ArrowRight className="w-4 h-4 mr-2" />
+                </Button>
+              </div>
+            </div>
+          </Card>
+        </motion.div>
+      ))}
+    </div>
   );
 };
 

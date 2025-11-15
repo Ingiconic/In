@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { 
   Users, Eye, Coins, TrendingUp, Calendar, Shield,
-  Plus, Minus, Search, ArrowLeft, Loader2, LogOut
+  Plus, Minus, Search, ArrowLeft, Loader2, LogOut, BookOpen
 } from "lucide-react";
 import { motion } from "framer-motion";
 import {
@@ -259,14 +259,23 @@ const Admin = () => {
               </Button>
             </div>
             
-            <Button
-              variant="outline"
-              onClick={handleLogout}
-              className="text-destructive hover:text-destructive"
-            >
-              <LogOut className="ml-2 h-4 w-4" />
-              خروج از پنل
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                onClick={() => navigate("/admin/blog")}
+              >
+                <BookOpen className="ml-2 h-4 w-4" />
+                مدیریت بلاگ
+              </Button>
+              <Button
+                variant="outline"
+                onClick={handleLogout}
+                className="text-destructive hover:text-destructive"
+              >
+                <LogOut className="ml-2 h-4 w-4" />
+                خروج از پنل
+              </Button>
+            </div>
           </div>
           
           <div className="flex items-center gap-3 mb-2">

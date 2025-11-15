@@ -8,6 +8,7 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import AdminLogin from "./pages/AdminLogin";
 import Admin from "./pages/Admin";
+import AdminBlog from "./pages/AdminBlog";
 import Dashboard from "./pages/Dashboard";
 import Summarize from "./pages/Summarize";
 import Questions from "./pages/Questions";
@@ -40,6 +41,7 @@ const App = () => (
           <Route path="/auth" element={<Login />} />
           <Route path="/admin" element={<AdminLogin />} />
           <Route path="/admin/dashboard" element={<Admin />} />
+          <Route path="/admin/blog" element={<AdminBlog />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/summarize" element={<Summarize />} />
           <Route path="/questions" element={<Questions />} />
