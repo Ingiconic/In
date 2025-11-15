@@ -10,7 +10,6 @@ import { usePageView } from "@/hooks/usePageView";
 import { logger } from "@/lib/logger";
 import AppLayout from "@/components/layout/AppLayout";
 import MathText from "@/components/MathText";
-import { checkAndDeductCoins } from "@/lib/coinHelpers";
 
 const Summarize = () => {
   const { toast } = useToast();
@@ -93,17 +92,6 @@ const Summarize = () => {
   const handleSummarize = async () => {
     if (!content.trim() && !imageFile && !selectedResource) {
       toast({ title: "خطا", description: "لطفا محتوا را وارد کنید یا منبعی انتخاب کنید", variant: "destructive" });
-      return;
-    }
-
-    // Check and deduct coins
-    const hasCoins = await checkAndDeductCoins(10);
-    if (!hasCoins) {
-      toast({
-        title: "سکه کافی نیست",
-        description: "برای استفاده از این ابزار به ۱۰ سکه نیاز دارید",
-        variant: "destructive",
-      });
       return;
     }
 

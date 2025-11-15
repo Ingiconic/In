@@ -825,6 +825,11 @@ export type Database = {
         Returns: undefined
       }
       create_friendship: { Args: { request_id: string }; Returns: undefined }
+      deduct_user_coins: {
+        Args: { _amount: number; _reason: string }
+        Returns: boolean
+      }
+      get_user_coins: { Args: never; Returns: number }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

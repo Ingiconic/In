@@ -9,7 +9,6 @@ import ResourceSelector from "@/components/ResourceSelector";
 import { logger } from "@/lib/logger";
 import AppLayout from "@/components/layout/AppLayout";
 import MathText from "@/components/MathText";
-import { checkAndDeductCoins } from "@/lib/coinHelpers";
 
 const Questions = () => {
   const { toast } = useToast();
@@ -35,17 +34,6 @@ const Questions = () => {
       toast({
         title: "خطا",
         description: "لطفا سوال خود را بنویسید، تصویر آپلود کنید یا منبعی انتخاب کنید",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    // Check and deduct coins
-    const hasCoins = await checkAndDeductCoins(10);
-    if (!hasCoins) {
-      toast({
-        title: "سکه کافی نیست",
-        description: "برای استفاده از این ابزار به ۱۰ سکه نیاز دارید",
         variant: "destructive",
       });
       return;

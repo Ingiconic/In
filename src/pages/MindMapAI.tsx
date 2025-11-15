@@ -17,7 +17,6 @@ import ReactFlow, {
   useEdgesState,
 } from "reactflow";
 import "reactflow/dist/style.css";
-import { checkAndDeductCoins } from "@/lib/coinHelpers";
 
 interface Resource {
   id: string;
@@ -41,17 +40,6 @@ const MindMapAI = () => {
       toast({
         title: "خطا",
         description: "لطفا موضوع را وارد کنید یا منبعی را انتخاب کنید",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    // Check and deduct coins
-    const hasCoins = await checkAndDeductCoins(10);
-    if (!hasCoins) {
-      toast({
-        title: "سکه کافی نیست",
-        description: "برای استفاده از این ابزار به ۱۰ سکه نیاز دارید",
         variant: "destructive",
       });
       return;
