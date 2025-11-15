@@ -54,23 +54,23 @@ const Admin = () => {
 
   const checkAdminAccess = async () => {
     try {
-      // Check if admin is authenticated via session
-      const isAuthenticated = sessionStorage.getItem("admin_authenticated");
-      const loginTime = sessionStorage.getItem("admin_login_time");
+      // Check if admin token exists
+      const token = sessionStorage.getItem("admin_token");
+      const expiresAt = sessionStorage.getItem("admin_expires");
       
-      if (!isAuthenticated || !loginTime) {
+      if (!token || !expiresAt) {
         navigate("/admin");
         return;
       }
 
-      // Check if session is expired (24 hours)
-      const now = new Date().getTime();
-      const elapsed = now - parseInt(loginTime);
-      const twentyFourHours = 24 * 60 * 60 * 1000;
-      
-      if (elapsed > twentyFourHours) {
-        sessionStorage.removeItem("admin_authenticated");
-        sessionStorage.removeItem("admin_login_time");
+      // Verify session with edge function
+      const { data, error } = await supabase.functions.invoke('verify-admin-session', {
+        body: { token, expiresAt: parseInt(expiresAt) }
+      });
+
+      if (error || !data?.valid) {
+        sessionStorage.removeItem("admin_token");
+        sessionStorage.removeItem("admin_expires");
         toast({
           title: "نشست منقضی شد",
           description: "لطفا دوباره وارد شوید",
@@ -149,8 +149,8 @@ const Admin = () => {
   };
 
   const handleLogout = () => {
-    sessionStorage.removeItem("admin_authenticated");
-    sessionStorage.removeItem("admin_login_time");
+    sessionStorage.removeItem("admin_token");
+    sessionStorage.removeItem("admin_expires");
     toast({
       title: "خروج موفق",
       description: "شما از پنل مدیریت خارج شدید"

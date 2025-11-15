@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/lib/supabase";
 import { ArrowRight, Loader2, Shield } from "lucide-react";
 import { motion } from "framer-motion";
 import logo from "@/assets/logo.png";
@@ -14,7 +15,7 @@ const AdminLogin = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!username.trim() || !password.trim()) {
@@ -28,29 +29,35 @@ const AdminLogin = () => {
 
     setLoading(true);
     
-    // Simulate a small delay for better UX
-    setTimeout(() => {
-      // Check hardcoded credentials
-      if (username === "IngIconic" && password === "Ing131314#") {
-        // Set admin session
-        sessionStorage.setItem("admin_authenticated", "true");
-        sessionStorage.setItem("admin_login_time", new Date().getTime().toString());
-        
-        toast({ 
-          title: "خوش آمدید! 🎉", 
-          description: "ورود به پنل مدیریت موفقیت‌آمیز بود" 
-        });
-        
-        navigate("/admin/dashboard");
-      } else {
-        toast({ 
-          title: "خطا", 
-          description: "نام کاربری یا رمز عبور اشتباه است", 
-          variant: "destructive" 
-        });
+    try {
+      // Call secure edge function
+      const { data, error } = await supabase.functions.invoke('admin-login', {
+        body: { username, password }
+      });
+
+      if (error || !data?.success) {
+        throw new Error(data?.error || 'نام کاربری یا رمز عبور اشتباه است');
       }
+
+      // Store secure session token
+      sessionStorage.setItem("admin_token", data.token);
+      sessionStorage.setItem("admin_expires", data.expiresAt.toString());
+      
+      toast({ 
+        title: "خوش آمدید! 🎉", 
+        description: "ورود به پنل مدیریت موفقیت‌آمیز بود" 
+      });
+      
+      navigate("/admin/dashboard");
+    } catch (error: any) {
+      toast({ 
+        title: "خطا", 
+        description: error.message || "مشکلی پیش آمد", 
+        variant: "destructive" 
+      });
+    } finally {
       setLoading(false);
-    }, 500);
+    }
   };
 
   return (
@@ -127,10 +134,10 @@ const AdminLogin = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3 }}
-            className="mb-6 p-4 bg-destructive/10 border border-destructive/30 rounded-lg"
+            className="mb-6 p-4 bg-primary/10 border border-primary/30 rounded-lg"
           >
-            <p className="text-sm text-destructive text-center font-medium">
-              ⚠️ هشدار: این صفحه از احراز هویت ساده استفاده می‌کند
+            <p className="text-sm text-primary text-center font-medium">
+              🔒 ورود امن با رمزنگاری SHA-256
             </p>
           </motion.div>
 
