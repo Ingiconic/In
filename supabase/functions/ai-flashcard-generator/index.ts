@@ -34,26 +34,25 @@ serve(async (req) => {
       );
     }
 
+    // Check and deduct coins atomically (5 coins for flashcard generation)
+    const { data: success, error: coinError } = await supabase.rpc('deduct_user_coins', {
+      _amount: 5,
+      _reason: 'ai_flashcard_generator'
+    });
+
+    if (coinError || !success) {
+      return new Response(JSON.stringify({ error: 'سکه کافی نیست. برای ساخت فلش‌کارت به ۵ سکه نیاز دارید' }), {
+        status: 402,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
     const { topic, count = 10, resourceId } = await req.json();
 
     if (!topic || topic.length < 3) {
       return new Response(
         JSON.stringify({ error: 'موضوع باید حداقل ۳ کاراکتر باشد' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
-    // Check coins
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('coins')
-      .eq('id', user.id)
-      .single();
-
-    if (!profile || profile.coins < 5) {
-      return new Response(
-        JSON.stringify({ error: 'سکه کافی ندارید. برای این عملیات ۵ سکه نیاز است.' }),
-        { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
@@ -124,24 +123,6 @@ ${count} فلش کارت با کیفیت بالا بساز.`
     }
     
     const flashcardsData = JSON.parse(jsonMatch[0]);
-
-    // Deduct coins
-    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const supabaseService = createClient(supabaseUrl, supabaseServiceKey);
-    
-    await supabaseService
-      .from('profiles')
-      .update({ coins: profile.coins - 5 })
-      .eq('id', user.id);
-
-    await supabaseService
-      .from('coin_transactions')
-      .insert({
-        user_id: user.id,
-        amount: -5,
-        reason: 'تولید فلش کارت',
-        resource_id: resourceId || null
-      });
 
     return new Response(
       JSON.stringify({ flashcards: flashcardsData.flashcards }),
