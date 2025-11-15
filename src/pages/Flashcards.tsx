@@ -120,8 +120,15 @@ const Flashcards = () => {
   };
 
   const generateFlashcardsWithAI = async () => {
-    if (!aiTopic.trim()) {
+    const trimmedTopic = aiTopic.trim();
+    
+    if (!trimmedTopic) {
       toast({ title: "خطا", description: "موضوع را وارد کنید", variant: "destructive" });
+      return;
+    }
+
+    if (trimmedTopic.length < 3) {
+      toast({ title: "خطا", description: "موضوع باید حداقل ۳ کاراکتر باشد", variant: "destructive" });
       return;
     }
 
@@ -134,7 +141,7 @@ const Flashcards = () => {
     try {
       const { data, error } = await supabase.functions.invoke('ai-flashcard-generator', {
         body: { 
-          topic: aiTopic,
+          topic: trimmedTopic,
           count: parseInt(aiCount),
           resourceId: selectedResource?.id
         }
