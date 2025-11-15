@@ -9,6 +9,8 @@ import ResourceSelector from "@/components/ResourceSelector";
 import { logger } from "@/lib/logger";
 import AppLayout from "@/components/layout/AppLayout";
 import MathText from "@/components/MathText";
+import { Badge } from "@/components/ui/badge";
+import { COIN_COSTS } from "@/lib/coinCosts";
 
 const Questions = () => {
   const { toast } = useToast();
@@ -92,7 +94,7 @@ const Questions = () => {
                 پرسش درسی با AI
                 <span className="text-sm font-normal text-primary flex items-center gap-1">
                   <Coins className="w-4 h-4" />
-                  10 سکه
+                  {COIN_COSTS.QUESTION_ANSWER} سکه
                 </span>
               </h1>
             </div>

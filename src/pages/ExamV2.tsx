@@ -12,6 +12,7 @@ import AppLayout from "@/components/layout/AppLayout";
 import { Badge } from "@/components/ui/badge";
 import ResourceSelector from "@/components/ResourceSelector";
 import MathText from "@/components/MathText";
+import { COIN_COSTS } from "@/lib/coinCosts";
 
 const ExamV2 = () => {
   const { toast } = useToast();
@@ -146,7 +147,7 @@ const ExamV2 = () => {
                     آزمون ساز هوشمند V2
                     <span className="text-sm font-normal text-primary flex items-center gap-1">
                       <Coins className="w-4 h-4" />
-                      10 سکه
+                      {COIN_COSTS.EXAM_GENERATE} سکه
                     </span>
                   </h1>
                   <p className="text-sm text-muted-foreground">

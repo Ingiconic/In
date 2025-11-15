@@ -8,6 +8,7 @@ import { Brain, Sparkles, Loader2, Coins } from "lucide-react";
 import AppLayout from "@/components/layout/AppLayout";
 import { usePageView } from "@/hooks/usePageView";
 import ResourceSelector from "@/components/ResourceSelector";
+import { COIN_COSTS } from "@/lib/coinCosts";
 import ReactFlow, {
   Node,
   Edge,

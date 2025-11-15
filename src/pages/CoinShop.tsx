@@ -2,6 +2,7 @@ import AppLayout from "@/components/layout/AppLayout";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Coins, ShoppingCart } from "lucide-react";
+import { COIN_COSTS } from "@/lib/coinCosts";
 
 export default function CoinShop() {
   return (
@@ -73,27 +74,27 @@ export default function CoinShop() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
             <div>
               <p className="font-bold">پرسش درسی</p>
-              <p className="text-primary">۱۰ سکه</p>
+              <p className="text-primary">{COIN_COSTS.QUESTION_ANSWER} سکه</p>
             </div>
             <div>
               <p className="font-bold">خلاصه‌ساز</p>
-              <p className="text-primary">۱۰ سکه</p>
+              <p className="text-primary">{COIN_COSTS.SUMMARIZE} سکه</p>
             </div>
             <div>
               <p className="font-bold">آزمون‌ساز</p>
-              <p className="text-primary">۱۰ سکه</p>
+              <p className="text-primary">{COIN_COSTS.EXAM_GENERATE} سکه</p>
             </div>
             <div>
               <p className="font-bold">مشاوره هوشمند</p>
-              <p className="text-primary">۲۰ سکه</p>
+              <p className="text-primary">{COIN_COSTS.CONSULTATION} سکه</p>
             </div>
             <div>
               <p className="font-bold">نقشه ذهنی</p>
-              <p className="text-primary">۱۰ سکه</p>
+              <p className="text-primary">{COIN_COSTS.MINDMAP_GENERATE} سکه</p>
             </div>
             <div>
               <p className="font-bold">فلش کارت</p>
-              <p className="text-primary">۱۰ سکه</p>
+              <p className="text-primary">{COIN_COSTS.FLASHCARD_GENERATE} سکه</p>
             </div>
             <div>
               <p className="font-bold">منابع</p>
@@ -101,7 +102,7 @@ export default function CoinShop() {
             </div>
             <div>
               <p className="font-bold">برنامه مطالعاتی</p>
-              <p className="text-primary">۱۰ سکه</p>
+              <p className="text-primary">{COIN_COSTS.STUDY_PLAN} سکه</p>
             </div>
           </div>
         </div>
