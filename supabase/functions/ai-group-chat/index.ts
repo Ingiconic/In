@@ -1,10 +1,38 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
+import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
+
+// Prompt validation schema with injection detection
+const aiPromptSchema = z.object({
+  prompt: z
+    .string()
+    .trim()
+    .min(1, "پرامپت نمی‌تواند خالی باشد")
+    .max(2000, "پرامپت حداکثر ۲۰۰۰ کاراکتر است")
+    .refine(
+      (val) => !containsSuspiciousPatterns(val),
+      "محتوای نامعتبر شناسایی شد"
+    ),
+  groupId: z.string().uuid("شناسه گروه نامعتبر است")
+});
+
+function containsSuspiciousPatterns(text: string): boolean {
+  const suspiciousPatterns = [
+    /ignore\s+(previous|prior|all)\s+(instructions?|prompts?)/i,
+    /system\s+prompt/i,
+    /دستورات\s+قبلی.*نادیده/i,
+    /نادیده\s+بگیر.*دستور/i,
+    /disregard\s+(previous|prior)/i,
+    /forget\s+(everything|all)/i,
+  ];
+  
+  return suspiciousPatterns.some(pattern => pattern.test(text));
+}
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -40,25 +68,23 @@ serve(async (req) => {
       );
     }
 
-    // 2. Parse and validate input (don't trust userId from client)
-    const { prompt, groupId } = await req.json();
-
-    // 3. Validate prompt
-    if (!prompt || typeof prompt !== 'string' || prompt.length > 2000 || prompt.length < 1) {
+    // 2. Parse and validate input with zod
+    const body = await req.json();
+    const validation = aiPromptSchema.safeParse(body);
+    
+    if (!validation.success) {
       return new Response(
-        JSON.stringify({ error: 'پرامپت نامعتبر است (حداکثر ۲۰۰۰ کاراکتر)' }),
+        JSON.stringify({ 
+          error: 'ورودی نامعتبر', 
+          details: validation.error.issues.map(i => i.message).join(', ')
+        }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    if (!groupId) {
-      return new Response(
-        JSON.stringify({ error: 'شناسه گروه الزامی است' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
+    const { prompt, groupId } = validation.data;
 
-    // 4. Verify group membership
+    // 3. Verify group membership
     const { data: membership } = await supabase
       .from('group_members')
       .select('id')
