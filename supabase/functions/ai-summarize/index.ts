@@ -14,7 +14,10 @@ serve(async (req) => {
   try {
     // Get the JWT token from Authorization header
     const authHeader = req.headers.get('Authorization');
+    console.log('Auth header present:', !!authHeader);
+    
     if (!authHeader) {
+      console.error('No authorization header');
       return new Response(JSON.stringify({ error: 'لطفا ابتدا وارد شوید' }), {
         status: 401,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -23,11 +26,27 @@ serve(async (req) => {
 
     // Extract the JWT token
     const token = authHeader.replace('Bearer ', '');
+    console.log('Token extracted, length:', token.length);
+
+    // Get environment variables
+    const supabaseUrl = Deno.env.get('SUPABASE_URL');
+    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY');
+    
+    console.log('Supabase URL present:', !!supabaseUrl);
+    console.log('Supabase Anon Key present:', !!supabaseAnonKey);
+
+    if (!supabaseUrl || !supabaseAnonKey) {
+      console.error('Missing Supabase environment variables');
+      return new Response(JSON.stringify({ error: 'پیکربندی سرور نادرست است' }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
 
     // Create Supabase client
     const supabase = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
+      supabaseUrl,
+      supabaseAnonKey,
       { 
         global: { 
           headers: { 
@@ -37,16 +56,21 @@ serve(async (req) => {
       }
     );
 
+    console.log('Calling getUser with token');
     // Verify the JWT and get user - pass the token explicitly
     const { data: { user }, error: userError } = await supabase.auth.getUser(token);
     
+    console.log('getUser result - user:', !!user, 'error:', userError?.message);
+    
     if (userError || !user) {
-      console.error('Auth error:', userError);
+      console.error('Auth error details:', JSON.stringify(userError));
       return new Response(JSON.stringify({ error: 'لطفا ابتدا وارد شوید' }), {
         status: 401,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
+
+    console.log('User authenticated:', user.id);
 
     // Check and deduct coins atomically (10 coins for summarize)
     const { data: success, error: coinError } = await supabase.rpc('deduct_user_coins', {
