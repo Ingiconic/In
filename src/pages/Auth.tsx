@@ -42,23 +42,25 @@ const Auth = () => {
 
     setLoading(true);
     try {
-      const email = `${username}@easydars.com`;
-      
-      // Try to sign in with dummy password to check if user exists
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password: "dummy_check_password_12345",
-      });
+      // Check if username exists in profiles table
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("id, username")
+        .eq("username", username)
+        .maybeSingle();
 
-      // If error says "Invalid login credentials" it means user exists
       if (error) {
-        if (error.message.includes("Invalid login credentials") || error.message.includes("invalid")) {
-          setStep("login");
-        } else {
-          setStep("signup");
-        }
-      } else {
+        console.error("Error checking user:", error);
+        toast({ title: "خطا", description: "مشکلی پیش آمد", variant: "destructive" });
+        setLoading(false);
+        return;
+      }
+
+      // If user exists, go to login. Otherwise go to signup
+      if (data) {
         setStep("login");
+      } else {
+        setStep("signup");
       }
     } catch (error: any) {
       toast({ title: "خطا", description: "مشکلی پیش آمد", variant: "destructive" });
