@@ -118,7 +118,7 @@ const Summarize = () => {
           body: { content: finalContent, type },
         });
         if (error) throw error;
-        setResult(data.summary);
+        setResult(data.result);
       }
       
       toast({ title: "موفق", description: "خلاصه‌سازی انجام شد" });
