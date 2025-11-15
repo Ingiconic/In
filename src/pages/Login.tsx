@@ -145,7 +145,7 @@ const Login = () => {
             >
               <Input
                 type="text"
-                placeholder="نام کاربری"
+                placeholder="نام کاربری خود را وارد کنید (لاتین)"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 className="text-right h-12 bg-background/50"
