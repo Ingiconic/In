@@ -12,9 +12,6 @@ verify_jwt = true
 [functions.ai-image-analysis]
 verify_jwt = true
 
-[functions.ai-exam-generator]
-verify_jwt = true
-
 [functions.ai-study-planner]
 verify_jwt = true
 
@@ -22,9 +19,6 @@ verify_jwt = true
 verify_jwt = true
 
 [functions.ai-group-chat]
-verify_jwt = true
-
-[functions.ai-mindmap-generator]
 verify_jwt = true
 
 [functions.ai-flashcard-generator]
