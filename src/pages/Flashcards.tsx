@@ -13,6 +13,8 @@ import AppLayout from "@/components/layout/AppLayout";
 import { usePageView } from "@/hooks/usePageView";
 import ResourceSelector from "@/components/ResourceSelector";
 import MathText from "@/components/MathText";
+import { useCoinError } from "@/hooks/useCoinError";
+import { COIN_COSTS } from "@/lib/coinCosts";
 
 interface Deck {
   id: string;
@@ -32,6 +34,7 @@ interface Flashcard {
 
 const Flashcards = () => {
   const { toast } = useToast();
+  const { handleCoinError } = useCoinError();
   usePageView();
   const [decks, setDecks] = useState<Deck[]>([]);
   const [selectedDeck, setSelectedDeck] = useState<Deck | null>(null);
@@ -176,11 +179,15 @@ const Flashcards = () => {
       }
     } catch (error: any) {
       console.error('Error generating flashcards:', error);
-      toast({ 
-        title: "خطا", 
-        description: error.message || "خطا در تولید فلش کارت", 
-        variant: "destructive" 
-      });
+      
+      // Handle insufficient coins error with navigation to shop
+      if (!handleCoinError(error, COIN_COSTS.FLASHCARD_GENERATE)) {
+        toast({ 
+          title: "خطا", 
+          description: error.message || "خطا در تولید فلش کارت", 
+          variant: "destructive" 
+        });
+      }
     } finally {
       setGeneratingCards(false);
     }

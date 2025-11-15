@@ -13,9 +13,11 @@ import { Badge } from "@/components/ui/badge";
 import ResourceSelector from "@/components/ResourceSelector";
 import MathText from "@/components/MathText";
 import { COIN_COSTS } from "@/lib/coinCosts";
+import { useCoinError } from "@/hooks/useCoinError";
 
 const ExamV2 = () => {
   const { toast } = useToast();
+  const { handleCoinError } = useCoinError();
   usePageView();
   const [content, setContent] = useState("");
   const [questionCount, setQuestionCount] = useState(10);
@@ -66,11 +68,13 @@ const ExamV2 = () => {
         description: `${data.questions?.length || 0} سوال متنوع برای شما ایجاد شد`,
       });
     } catch (error: any) {
-      toast({
-        title: "خطا",
-        description: error.message || "مشکلی در ایجاد آزمون پیش آمد",
-        variant: "destructive",
-      });
+      if (!handleCoinError(error, COIN_COSTS.EXAM_GENERATE)) {
+        toast({
+          title: "خطا",
+          description: error.message || "مشکلی در ایجاد آزمون پیش آمد",
+          variant: "destructive",
+        });
+      }
     } finally {
       setLoading(false);
     }

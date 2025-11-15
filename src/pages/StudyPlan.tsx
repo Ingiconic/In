@@ -9,6 +9,8 @@ import { supabase } from "@/lib/supabase";
 import { ArrowRight, Calendar, Plus, Trash2, CheckCircle, Sparkles, Brain, Loader2 } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { logger } from "@/lib/logger";
+import { useCoinError } from "@/hooks/useCoinError";
+import { COIN_COSTS } from "@/lib/coinCosts";
 
 interface StudyPlan {
   id: string;
@@ -22,6 +24,7 @@ interface StudyPlan {
 const StudyPlan = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { handleCoinError } = useCoinError();
   const [plans, setPlans] = useState<StudyPlan[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -138,11 +141,14 @@ const StudyPlan = () => {
     } catch (error) {
       logger.error("Failed to generate AI plan", error);
       const message = error instanceof Error ? error.message : "مشکلی در تولید برنامه پیش آمد";
-      toast({
-        title: "خطا",
-        description: message,
-        variant: "destructive",
-      });
+      
+      if (!handleCoinError(error, COIN_COSTS.STUDY_PLAN)) {
+        toast({
+          title: "خطا",
+          description: message,
+          variant: "destructive",
+        });
+      }
     } finally {
       setGenerating(false);
     }
