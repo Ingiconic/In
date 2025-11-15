@@ -36,13 +36,17 @@ Deno.serve(async (req) => {
       );
     }
 
+    // Extract the JWT token
+    const token = authHeader.replace('Bearer ', '');
+
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL')!,
       Deno.env.get('SUPABASE_ANON_KEY')!,
       { global: { headers: { Authorization: authHeader } } }
     );
 
-    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    // Verify the JWT and get user - pass the token explicitly
+    const { data: { user }, error: userError } = await supabase.auth.getUser(token);
     if (userError || !user) {
       console.error('User authentication failed:', userError);
       return new Response(
