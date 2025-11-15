@@ -43,7 +43,7 @@ serve(async (req) => {
       });
     }
 
-    // Create Supabase client
+    // Create Supabase client for auth verification
     const supabase = createClient(
       supabaseUrl,
       supabaseAnonKey,
@@ -72,8 +72,21 @@ serve(async (req) => {
 
     console.log('User authenticated:', user.id);
 
+    // Create service role client for RPC calls
+    const supabaseAdmin = createClient(
+      supabaseUrl,
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
+      {
+        global: {
+          headers: {
+            Authorization: authHeader
+          }
+        }
+      }
+    );
+
     // Check and deduct coins atomically (10 coins for summarize)
-    const { data: success, error: coinError } = await supabase.rpc('deduct_user_coins', {
+    const { data: success, error: coinError } = await supabaseAdmin.rpc('deduct_user_coins', {
       _amount: 10,
       _reason: 'ai_summarize'
     });

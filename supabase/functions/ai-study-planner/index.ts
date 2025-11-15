@@ -24,7 +24,7 @@ serve(async (req) => {
     // Extract the JWT token
     const token = authHeader.replace('Bearer ', '');
 
-    // Create Supabase client
+    // Create Supabase client for auth verification
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_ANON_KEY') ?? '',
@@ -48,8 +48,21 @@ serve(async (req) => {
       });
     }
 
+    // Create service role client for RPC calls
+    const supabaseAdmin = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
+      {
+        global: {
+          headers: {
+            Authorization: authHeader
+          }
+        }
+      }
+    );
+
     // Check and deduct coins atomically (10 coins for study planner)
-    const { data: success, error: coinError } = await supabase.rpc('deduct_user_coins', {
+    const { data: success, error: coinError } = await supabaseAdmin.rpc('deduct_user_coins', {
       _amount: 10,
       _reason: 'ai_study_planner'
     });
