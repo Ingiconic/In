@@ -32,9 +32,10 @@ const MindMapAI = () => {
   const [topic, setTopic] = useState("");
   const [selectedResource, setSelectedResource] = useState<Resource | null>(null);
   const [loading, setLoading] = useState(false);
-  const [nodes, setNodes, onNodesChange] = useNodesState([]);
-  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+  const [nodes, setNodes] = useNodesState([]);
+  const [edges, setEdges] = useEdgesState([]);
   const [showResult, setShowResult] = useState(false);
+  const [refinementText, setRefinementText] = useState("");
 
   const handleGenerate = async () => {
     if (!topic.trim() && !selectedResource) {
@@ -66,29 +67,89 @@ const MindMapAI = () => {
 
       if (error) throw error;
 
-      // Convert AI response to ReactFlow format
-      const flowNodes: Node[] = data.nodes.map((node: any) => ({
-        id: node.id,
-        type: 'default',
-        position: node.position,
-        data: { label: node.label },
-        style: {
-          background: 'hsl(var(--primary))',
-          color: 'white',
-          border: '2px solid hsl(var(--primary))',
-          borderRadius: '8px',
-          padding: '10px',
-          fontWeight: 'bold',
-        },
-      }));
+      // رنگ‌های متنوع برای سطوح مختلف
+      const levelColors = [
+        { bg: '#FF6B6B', border: '#C92A2A' }, // قرمز - سطح 0 (مرکزی)
+        { bg: '#4ECDC4', border: '#0B8C85' }, // فیروزه‌ای - سطح 1
+        { bg: '#FFD93D', border: '#F08C00' }, // زرد - سطح 2
+        { bg: '#95E1D3', border: '#38B2AC' }, // سبز آبی - سطح 3
+      ];
 
-      const flowEdges: Edge[] = data.edges.map((edge: any) => ({
-        id: edge.id,
-        source: edge.source,
-        target: edge.target,
-        label: edge.label,
-        style: { stroke: 'hsl(var(--primary))', strokeWidth: 2 },
-      }));
+      // Convert AI response to ReactFlow format
+      const flowNodes: Node[] = data.nodes.map((node: any) => {
+        const level = node.level || 0;
+        const colors = levelColors[level] || levelColors[0];
+        
+        // تعیین شکل بر اساس سطح
+        let borderRadius = '8px';
+        let width = 'auto';
+        let minWidth = '120px';
+        let padding = '12px 16px';
+        
+        if (level === 0) {
+          borderRadius = '50%';
+          width = '180px';
+          minWidth = '180px';
+          padding = '40px 20px';
+        } else if (level === 1) {
+          borderRadius = '16px';
+          minWidth = '140px';
+          padding = '14px 18px';
+        } else if (level === 2) {
+          borderRadius = '50%';
+          width = '120px';
+          minWidth = '120px';
+          padding = '30px 15px';
+        } else {
+          borderRadius = '20px';
+          minWidth = '100px';
+          padding = '10px 14px';
+        }
+
+        return {
+          id: node.id,
+          type: 'default',
+          position: node.position,
+          data: { label: node.label },
+          draggable: false,
+          connectable: false,
+          style: {
+            background: colors.bg,
+            color: 'white',
+            border: `3px solid ${colors.border}`,
+            borderRadius,
+            padding,
+            fontWeight: level === 0 ? 'bold' : level === 1 ? '600' : 'normal',
+            fontSize: level === 0 ? '18px' : level === 1 ? '15px' : '13px',
+            textAlign: 'center',
+            width,
+            minWidth,
+            boxShadow: `0 4px 12px ${colors.border}40`,
+          },
+        };
+      });
+
+      const flowEdges: Edge[] = data.edges.map((edge: any, index: number) => {
+        const edgeColors = ['#FF6B6B', '#4ECDC4', '#FFD93D', '#95E1D3'];
+        const color = edgeColors[index % edgeColors.length];
+        
+        return {
+          id: edge.id,
+          source: edge.source,
+          target: edge.target,
+          label: edge.label,
+          animated: true,
+          style: { 
+            stroke: color, 
+            strokeWidth: 3,
+          },
+          labelStyle: {
+            fill: color,
+            fontWeight: 600,
+            fontSize: 12,
+          },
+        };
+      });
 
       setNodes(flowNodes);
       setEdges(flowEdges);
@@ -102,6 +163,128 @@ const MindMapAI = () => {
       toast({
         title: "خطا",
         description: error.message || "خطا در ساخت نقشه ذهنی",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRefine = async () => {
+    if (!refinementText.trim()) {
+      toast({
+        title: "خطا",
+        description: "لطفا متن اصلاح را وارد کنید",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('ai-mindmap-generator-v2', {
+        body: { 
+          topic: `${topic}\n\nاصلاحات: ${refinementText}`,
+          detailLevel: 'detailed'
+        }
+      });
+
+      if (error) throw error;
+
+      // رنگ‌های متنوع برای سطوح مختلف
+      const levelColors = [
+        { bg: '#FF6B6B', border: '#C92A2A' },
+        { bg: '#4ECDC4', border: '#0B8C85' },
+        { bg: '#FFD93D', border: '#F08C00' },
+        { bg: '#95E1D3', border: '#38B2AC' },
+      ];
+
+      const flowNodes: Node[] = data.nodes.map((node: any) => {
+        const level = node.level || 0;
+        const colors = levelColors[level] || levelColors[0];
+        
+        let borderRadius = '8px';
+        let width = 'auto';
+        let minWidth = '120px';
+        let padding = '12px 16px';
+        
+        if (level === 0) {
+          borderRadius = '50%';
+          width = '180px';
+          minWidth = '180px';
+          padding = '40px 20px';
+        } else if (level === 1) {
+          borderRadius = '16px';
+          minWidth = '140px';
+          padding = '14px 18px';
+        } else if (level === 2) {
+          borderRadius = '50%';
+          width = '120px';
+          minWidth = '120px';
+          padding = '30px 15px';
+        } else {
+          borderRadius = '20px';
+          minWidth = '100px';
+          padding = '10px 14px';
+        }
+
+        return {
+          id: node.id,
+          type: 'default',
+          position: node.position,
+          data: { label: node.label },
+          draggable: false,
+          connectable: false,
+          style: {
+            background: colors.bg,
+            color: 'white',
+            border: `3px solid ${colors.border}`,
+            borderRadius,
+            padding,
+            fontWeight: level === 0 ? 'bold' : level === 1 ? '600' : 'normal',
+            fontSize: level === 0 ? '18px' : level === 1 ? '15px' : '13px',
+            textAlign: 'center',
+            width,
+            minWidth,
+            boxShadow: `0 4px 12px ${colors.border}40`,
+          },
+        };
+      });
+
+      const flowEdges: Edge[] = data.edges.map((edge: any, index: number) => {
+        const edgeColors = ['#FF6B6B', '#4ECDC4', '#FFD93D', '#95E1D3'];
+        const color = edgeColors[index % edgeColors.length];
+        
+        return {
+          id: edge.id,
+          source: edge.source,
+          target: edge.target,
+          label: edge.label,
+          animated: true,
+          style: { 
+            stroke: color, 
+            strokeWidth: 3,
+          },
+          labelStyle: {
+            fill: color,
+            fontWeight: 600,
+            fontSize: 12,
+          },
+        };
+      });
+
+      setNodes(flowNodes);
+      setEdges(flowEdges);
+      setRefinementText("");
+
+      toast({
+        title: "موفق",
+        description: "نقشه ذهنی با موفقیت اصلاح شد",
+      });
+    } catch (error: any) {
+      toast({
+        title: "خطا",
+        description: error.message || "خطا در اصلاح نقشه ذهنی",
         variant: "destructive",
       });
     } finally {
@@ -192,9 +375,10 @@ const MindMapAI = () => {
               <ReactFlow
                 nodes={nodes}
                 edges={edges}
-                onNodesChange={onNodesChange}
-                onEdgesChange={onEdgesChange}
                 fitView
+                nodesDraggable={false}
+                nodesConnectable={false}
+                elementsSelectable={false}
               >
                 <Background />
                 <Controls />
