@@ -20,14 +20,19 @@ serve(async (req) => {
       );
     }
 
+    // Extract the JWT token
+    const token = authHeader.replace('Bearer ', '');
+
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseAnonKey, {
       global: { headers: { Authorization: authHeader } }
     });
 
-    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    // Verify the JWT and get user - pass the token explicitly
+    const { data: { user }, error: userError } = await supabase.auth.getUser(token);
     if (userError || !user) {
+      console.error('Auth error:', userError);
       return new Response(
         JSON.stringify({ error: 'احراز هویت نامعتبر' }),
         { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
