@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -11,6 +12,34 @@ serve(async (req) => {
   }
 
   try {
+    const authHeader = req.headers.get('Authorization');
+    const supabase = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
+      { global: { headers: { Authorization: authHeader ?? '' } } }
+    );
+
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    if (userError || !user) {
+      return new Response(JSON.stringify({ error: 'لطفا ابتدا وارد شوید' }), {
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // Check and deduct coins atomically (20 coins for consultation)
+    const { data: success, error: coinError } = await supabase.rpc('deduct_user_coins', {
+      _amount: 20,
+      _reason: 'ai_consultation'
+    });
+
+    if (coinError || !success) {
+      return new Response(JSON.stringify({ error: 'سکه کافی نیست. برای استفاده از مشاوره به ۲۰ سکه نیاز دارید' }), {
+        status: 402,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
     const { message, grade, subjects } = await req.json();
     
     if (!message) {

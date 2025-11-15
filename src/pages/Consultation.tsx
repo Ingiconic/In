@@ -7,7 +7,6 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/lib/supabase";
 import { ArrowRight, MessageSquare, Sparkles, Loader2, User, Coins } from "lucide-react";
 import { logger } from "@/lib/logger";
-import { checkAndDeductCoins } from "@/lib/coinHelpers";
 
 const Consultation = () => {
   const navigate = useNavigate();
@@ -21,17 +20,6 @@ const Consultation = () => {
       toast({
         title: "خطا",
         description: "لطفا پیام خود را بنویسید",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    // Check and deduct 20 coins for consultation
-    const hasCoins = await checkAndDeductCoins(20);
-    if (!hasCoins) {
-      toast({
-        title: "سکه کافی نیست",
-        description: "برای استفاده از مشاوره هوشمند به ۲۰ سکه نیاز دارید",
         variant: "destructive",
       });
       return;
