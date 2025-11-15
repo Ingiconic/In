@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/lib/supabase";
-import { Brain, Sparkles, Loader2, Coins } from "lucide-react";
+import { Brain, Sparkles, Loader2, Coins, Download, Save, FolderOpen } from "lucide-react";
 import AppLayout from "@/components/layout/AppLayout";
 import { usePageView } from "@/hooks/usePageView";
 import ResourceSelector from "@/components/ResourceSelector";
@@ -18,6 +18,15 @@ import ReactFlow, {
   useEdgesState,
 } from "reactflow";
 import "reactflow/dist/style.css";
+import { toPng } from 'html-to-image';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 
 interface Resource {
   id: string;
@@ -36,6 +45,11 @@ const MindMapAI = () => {
   const [edges, setEdges] = useEdgesState([]);
   const [showResult, setShowResult] = useState(false);
   const [refinementText, setRefinementText] = useState("");
+  const [saveTitle, setSaveTitle] = useState("");
+  const [savedMaps, setSavedMaps] = useState<any[]>([]);
+  const [showSaveDialog, setShowSaveDialog] = useState(false);
+  const [showLoadDialog, setShowLoadDialog] = useState(false);
+  const flowRef = useRef<HTMLDivElement>(null);
 
   const handleGenerate = async () => {
     if (!topic.trim() && !selectedResource) {
@@ -167,6 +181,190 @@ const MindMapAI = () => {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadSavedMaps();
+  }, []);
+
+  const loadSavedMaps = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data, error } = await supabase
+        .from('mind_maps')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setSavedMaps(data || []);
+    } catch (error) {
+      console.error('Error loading saved maps:', error);
+    }
+  };
+
+  const handleSave = async () => {
+    if (!saveTitle.trim()) {
+      toast({
+        title: "خطا",
+        description: "لطفا عنوان نقشه ذهنی را وارد کنید",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('لطفا ابتدا وارد شوید');
+
+      const { error } = await supabase.from('mind_maps').insert({
+        user_id: user.id,
+        title: saveTitle,
+        nodes: nodes as any,
+        edges: edges as any,
+      } as any);
+
+      if (error) throw error;
+
+      toast({
+        title: "موفق",
+        description: "نقشه ذهنی با موفقیت ذخیره شد",
+      });
+
+      setSaveTitle("");
+      setShowSaveDialog(false);
+      loadSavedMaps();
+    } catch (error: any) {
+      toast({
+        title: "خطا",
+        description: error.message || "خطا در ذخیره نقشه ذهنی",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleLoad = (map: any) => {
+    const levelColors = [
+      { bg: '#FF6B6B', border: '#C92A2A' },
+      { bg: '#4ECDC4', border: '#0B8C85' },
+      { bg: '#FFD93D', border: '#F08C00' },
+      { bg: '#95E1D3', border: '#38B2AC' },
+    ];
+
+    const flowNodes: Node[] = map.nodes.map((node: any) => {
+      const level = node.level || 0;
+      const colors = levelColors[level] || levelColors[0];
+      
+      let borderRadius = '8px';
+      let width = 'auto';
+      let minWidth = '120px';
+      let padding = '12px 16px';
+      
+      if (level === 0) {
+        borderRadius = '50%';
+        width = '180px';
+        minWidth = '180px';
+        padding = '40px 20px';
+      } else if (level === 1) {
+        borderRadius = '16px';
+        minWidth = '140px';
+        padding = '14px 18px';
+      } else if (level === 2) {
+        borderRadius = '50%';
+        width = '120px';
+        minWidth = '120px';
+        padding = '30px 15px';
+      } else {
+        borderRadius = '20px';
+        minWidth = '100px';
+        padding = '10px 14px';
+      }
+
+      return {
+        id: node.id,
+        type: 'default',
+        position: node.position,
+        data: { label: node.data?.label || node.label },
+        draggable: false,
+        connectable: false,
+        style: {
+          background: colors.bg,
+          color: 'white',
+          border: `3px solid ${colors.border}`,
+          borderRadius,
+          padding,
+          fontWeight: level === 0 ? 'bold' : level === 1 ? '600' : 'normal',
+          fontSize: level === 0 ? '18px' : level === 1 ? '15px' : '13px',
+          textAlign: 'center',
+          width,
+          minWidth,
+          boxShadow: `0 4px 12px ${colors.border}40`,
+        },
+      };
+    });
+
+    const flowEdges: Edge[] = map.edges.map((edge: any, index: number) => {
+      const edgeColors = ['#FF6B6B', '#4ECDC4', '#FFD93D', '#95E1D3'];
+      const color = edgeColors[index % edgeColors.length];
+      
+      return {
+        id: edge.id,
+        source: edge.source,
+        target: edge.target,
+        label: edge.label,
+        animated: true,
+        style: { 
+          stroke: color, 
+          strokeWidth: 3,
+        },
+        labelStyle: {
+          fill: color,
+          fontWeight: 600,
+          fontSize: 12,
+        },
+      };
+    });
+
+    setNodes(flowNodes);
+    setEdges(flowEdges);
+    setShowResult(true);
+    setShowLoadDialog(false);
+    setTopic(map.title);
+
+    toast({
+      title: "موفق",
+      description: "نقشه ذهنی با موفقیت بارگذاری شد",
+    });
+  };
+
+  const handleDownload = async () => {
+    if (!flowRef.current) return;
+
+    try {
+      const dataUrl = await toPng(flowRef.current, {
+        cacheBust: true,
+        backgroundColor: '#ffffff',
+        pixelRatio: 2,
+      });
+
+      const link = document.createElement('a');
+      link.download = `${topic || 'نقشه-ذهنی'}.png`;
+      link.href = dataUrl;
+      link.click();
+
+      toast({
+        title: "موفق",
+        description: "نقشه ذهنی با موفقیت دانلود شد",
+      });
+    } catch (error) {
+      toast({
+        title: "خطا",
+        description: "خطا در دانلود نقشه ذهنی",
+        variant: "destructive",
+      });
     }
   };
 
@@ -370,33 +568,150 @@ const MindMapAI = () => {
           </>
         ) : (
           <>
-            {/* Result */}
-            <Card className="flex-1 overflow-hidden mb-4">
-              <ReactFlow
-                nodes={nodes}
-                edges={edges}
-                fitView
-                nodesDraggable={false}
-                nodesConnectable={false}
-                elementsSelectable={false}
+            {/* Action Buttons */}
+            <div className="flex gap-2 flex-wrap mb-4">
+              <Dialog open={showSaveDialog} onOpenChange={setShowSaveDialog}>
+                <DialogTrigger asChild>
+                  <Button variant="outline" className="gap-2">
+                    <Save className="w-4 h-4" />
+                    ذخیره نقشه
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>ذخیره نقشه ذهنی</DialogTitle>
+                  </DialogHeader>
+                  <div className="space-y-4 pt-4">
+                    <Input
+                      value={saveTitle}
+                      onChange={(e) => setSaveTitle(e.target.value)}
+                      placeholder="عنوان نقشه ذهنی را وارد کنید..."
+                      className="text-right"
+                    />
+                    <Button onClick={handleSave} className="w-full gradient-primary">
+                      <Save className="w-4 h-4 ml-2" />
+                      ذخیره
+                    </Button>
+                  </div>
+                </DialogContent>
+              </Dialog>
+
+              <Dialog open={showLoadDialog} onOpenChange={setShowLoadDialog}>
+                <DialogTrigger asChild>
+                  <Button variant="outline" className="gap-2">
+                    <FolderOpen className="w-4 h-4" />
+                    بارگذاری نقشه
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+                  <DialogHeader>
+                    <DialogTitle>نقشه‌های ذهنی ذخیره شده</DialogTitle>
+                  </DialogHeader>
+                  <div className="space-y-3 pt-4">
+                    {savedMaps.length === 0 ? (
+                      <p className="text-center text-muted-foreground py-8">
+                        هیچ نقشه ذهنی ذخیره شده‌ای وجود ندارد
+                      </p>
+                    ) : (
+                      savedMaps.map((map) => (
+                        <Card
+                          key={map.id}
+                          className="p-4 cursor-pointer hover:bg-accent transition-colors"
+                          onClick={() => handleLoad(map)}
+                        >
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <h3 className="font-semibold">{map.title}</h3>
+                              <p className="text-sm text-muted-foreground">
+                                {new Date(map.created_at).toLocaleDateString('fa-IR')}
+                              </p>
+                            </div>
+                            <Button size="sm" variant="ghost">
+                              بارگذاری
+                            </Button>
+                          </div>
+                        </Card>
+                      ))
+                    )}
+                  </div>
+                </DialogContent>
+              </Dialog>
+
+              <Button onClick={handleDownload} variant="outline" className="gap-2">
+                <Download className="w-4 h-4" />
+                دانلود PNG
+              </Button>
+
+              <Button
+                onClick={() => {
+                  setShowResult(false);
+                  setNodes([]);
+                  setEdges([]);
+                  setTopic("");
+                  setSelectedResource(null);
+                }}
+                variant="outline"
+                className="gap-2"
               >
-                <Background />
-                <Controls />
-              </ReactFlow>
+                ساخت نقشه جدید
+              </Button>
+            </div>
+
+            {/* Result */}
+            <Card className="flex-1 overflow-hidden">
+              <div ref={flowRef} className="h-full">
+                <ReactFlow
+                  nodes={nodes}
+                  edges={edges}
+                  fitView
+                  fitViewOptions={{ padding: 0.2 }}
+                  nodesDraggable={false}
+                  nodesConnectable={false}
+                  elementsSelectable={false}
+                  zoomOnScroll={true}
+                  panOnScroll={false}
+                  panOnDrag={true}
+                >
+                  <Background />
+                  <Controls />
+                </ReactFlow>
+              </div>
             </Card>
-            <Button
-              onClick={() => {
-                setShowResult(false);
-                setNodes([]);
-                setEdges([]);
-                setTopic("");
-                setSelectedResource(null);
-              }}
-              variant="outline"
-              className="w-full"
-            >
-              ساخت نقشه جدید
-            </Button>
+
+            {/* Refinement Section */}
+            <Card className="p-4 mt-4">
+              <div className="space-y-3">
+                <h3 className="text-sm font-semibold flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-primary" />
+                  اصلاح نقشه ذهنی
+                </h3>
+                <Textarea
+                  value={refinementText}
+                  onChange={(e) => setRefinementText(e.target.value)}
+                  placeholder="چه تغییری می‌خواهید؟ مثلاً: جزئیات بیشتر درباره ... اضافه کن، یا موضوع ... را حذف کن"
+                  className="min-h-[80px] resize-none"
+                  disabled={loading}
+                />
+                <Button
+                  onClick={handleRefine}
+                  disabled={loading || !refinementText.trim()}
+                  className="w-full gradient-primary"
+                >
+                  {loading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 ml-2 animate-spin" />
+                      در حال اصلاح...
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="w-4 h-4 ml-2" />
+                      اصلاح نقشه ذهنی
+                      <span className="mr-2 text-xs opacity-80">({COIN_COSTS.MINDMAP_GENERATE} سکه)</span>
+                    </>
+                  )}
+                </Button>
+              </div>
+            </Card>
           </>
         )}
       </div>
