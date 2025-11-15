@@ -94,16 +94,16 @@ const Index = () => {
               <Button 
                 variant="ghost" 
                 size="sm" 
-                onClick={() => navigate("/auth")}
+                onClick={() => navigate("/login")}
                 className="hover:bg-primary/10 transition-all"
               >
                 ورود
               </Button>
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                 <Button 
-                  size="sm" 
+                  size="sm"
                   className="gradient-primary shadow-glow hover:shadow-neon transition-all" 
-                  onClick={() => navigate("/auth")}
+                  onClick={() => navigate("/signup")}
                 >
                   شروع رایگان
                   <Sparkles className="w-4 h-4 mr-2" />
@@ -186,7 +186,7 @@ const Index = () => {
                 <Button 
                   size="lg" 
                   className="gradient-primary hover:opacity-90 shadow-glow text-lg px-10 py-7 rounded-2xl font-bold group"
-                  onClick={() => navigate("/auth")}
+                  onClick={() => navigate("/signup")}
                 >
                   شروع یادگیری الان
                   <motion.div
@@ -471,7 +471,7 @@ const Index = () => {
                 <Button 
                   size="lg" 
                   className="gradient-primary hover:opacity-90 shadow-neon text-xl px-16 py-8 rounded-2xl font-black group"
-                  onClick={() => navigate("/auth")}
+                  onClick={() => navigate("/signup")}
                 >
                   <motion.span
                     animate={{ scale: [1, 1.1, 1] }}

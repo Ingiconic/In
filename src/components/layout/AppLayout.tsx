@@ -18,13 +18,13 @@ const AppLayout = ({ children }: AppLayoutProps) => {
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (!session) {
-        navigate("/auth");
+        navigate("/login");
       }
     });
 
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!session) {
-        navigate("/auth");
+        navigate("/login");
       } else {
         loadProfile(session.user.id);
       }
