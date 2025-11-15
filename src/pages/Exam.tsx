@@ -36,7 +36,7 @@ const Exam = () => {
 
     setLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke('ai-exam-generator', {
+      const { data, error } = await supabase.functions.invoke('ai-exam-generator-v2', {
         body: { content, questionCount, difficulty }
       });
 
