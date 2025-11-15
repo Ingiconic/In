@@ -9,10 +9,12 @@ import { ArrowRight, MessageSquare, Sparkles, Loader2, User, Coins } from "lucid
 import { logger } from "@/lib/logger";
 import MathText from "@/components/MathText";
 import { COIN_COSTS } from "@/lib/coinCosts";
+import { useCoinError } from "@/hooks/useCoinError";
 
 const Consultation = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { handleCoinError } = useCoinError();
   const [message, setMessage] = useState("");
   const [conversation, setConversation] = useState<Array<{ role: string; content: string }>>([]);
   const [loading, setLoading] = useState(false);
@@ -42,11 +44,13 @@ const Consultation = () => {
       const aiMsg = { role: "assistant", content: data.advice };
       setConversation((prev) => [...prev, aiMsg]);
     } catch (error: any) {
-      toast({
-        title: "خطا",
-        description: error.message || "مشکلی پیش آمد",
-        variant: "destructive",
-      });
+      if (!handleCoinError(error, COIN_COSTS.CONSULTATION)) {
+        toast({
+          title: "خطا",
+          description: error.message || "مشکلی پیش آمد",
+          variant: "destructive",
+        });
+      }
     } finally {
       setLoading(false);
     }

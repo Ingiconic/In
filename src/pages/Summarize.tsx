@@ -12,9 +12,11 @@ import AppLayout from "@/components/layout/AppLayout";
 import MathText from "@/components/MathText";
 import { Badge } from "@/components/ui/badge";
 import { COIN_COSTS } from "@/lib/coinCosts";
+import { useCoinError } from "@/hooks/useCoinError";
 
 const Summarize = () => {
   const { toast } = useToast();
+  const { handleCoinError } = useCoinError();
   usePageView();
   const [content, setContent] = useState("");
   const [result, setResult] = useState("");
@@ -123,7 +125,9 @@ const Summarize = () => {
       
       toast({ title: "موفق", description: "خلاصه‌سازی انجام شد" });
     } catch (error: any) {
-      toast({ title: "خطا", description: error.message || "خطا در خلاصه‌سازی", variant: "destructive" });
+      if (!handleCoinError(error, COIN_COSTS.SUMMARIZE)) {
+        toast({ title: "خطا", description: error.message || "خطا در خلاصه‌سازی", variant: "destructive" });
+      }
     } finally {
       setLoading(false);
     }

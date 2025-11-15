@@ -11,9 +11,11 @@ import AppLayout from "@/components/layout/AppLayout";
 import MathText from "@/components/MathText";
 import { Badge } from "@/components/ui/badge";
 import { COIN_COSTS } from "@/lib/coinCosts";
+import { useCoinError } from "@/hooks/useCoinError";
 
 const Questions = () => {
   const { toast } = useToast();
+  const { handleCoinError } = useCoinError();
   const [question, setQuestion] = useState("");
   const [messages, setMessages] = useState<Array<{ role: string; content: string }>>([]);
   const [loading, setLoading] = useState(false);
@@ -70,11 +72,13 @@ const Questions = () => {
         setMessages((prev) => [...prev, aiMessage]);
       }
     } catch (error: any) {
-      toast({
-        title: "خطا",
-        description: error.message || "مشکلی پیش آمد",
-        variant: "destructive",
-      });
+      if (!handleCoinError(error, COIN_COSTS.QUESTION_ANSWER)) {
+        toast({
+          title: "خطا",
+          description: error.message || "مشکلی پیش آمد",
+          variant: "destructive",
+        });
+      }
     } finally {
       setLoading(false);
     }

@@ -9,6 +9,7 @@ import AppLayout from "@/components/layout/AppLayout";
 import { usePageView } from "@/hooks/usePageView";
 import ResourceSelector from "@/components/ResourceSelector";
 import { COIN_COSTS } from "@/lib/coinCosts";
+import { useCoinError } from "@/hooks/useCoinError";
 import ReactFlow, {
   Node,
   Edge,
@@ -37,6 +38,7 @@ interface Resource {
 
 const MindMapAI = () => {
   const { toast } = useToast();
+  const { handleCoinError } = useCoinError();
   usePageView();
   const [topic, setTopic] = useState("");
   const [selectedResource, setSelectedResource] = useState<Resource | null>(null);
@@ -174,11 +176,13 @@ const MindMapAI = () => {
         description: "نقشه ذهنی با موفقیت ساخته شد",
       });
     } catch (error: any) {
-      toast({
-        title: "خطا",
-        description: error.message || "خطا در ساخت نقشه ذهنی",
-        variant: "destructive",
-      });
+      if (!handleCoinError(error, COIN_COSTS.MINDMAP_GENERATE)) {
+        toast({
+          title: "خطا",
+          description: error.message || "خطا در ساخت نقشه ذهنی",
+          variant: "destructive",
+        });
+      }
     } finally {
       setLoading(false);
     }
@@ -503,11 +507,13 @@ const MindMapAI = () => {
         description: "نقشه ذهنی با موفقیت اصلاح شد",
       });
     } catch (error: any) {
-      toast({
-        title: "خطا",
-        description: error.message || "خطا در اصلاح نقشه ذهنی",
-        variant: "destructive",
-      });
+      if (!handleCoinError(error, COIN_COSTS.MINDMAP_GENERATE)) {
+        toast({
+          title: "خطا",
+          description: error.message || "خطا در اصلاح نقشه ذهنی",
+          variant: "destructive",
+        });
+      }
     } finally {
       setLoading(false);
     }
