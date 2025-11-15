@@ -140,10 +140,13 @@ ${count} فلش کارت با کیفیت بالا بساز.`
     const data = await response.json();
     const aiResponse = data.choices[0].message.content;
     
+    console.log('AI Response:', aiResponse); // برای دیباگ
+    
     // Parse JSON from response
     const jsonMatch = aiResponse.match(/\{[\s\S]*\}/);
     if (!jsonMatch) {
-      throw new Error("خطا در تولید فلش کارت");
+      console.error('Failed to parse AI response:', aiResponse);
+      throw new Error("پاسخ هوش مصنوعی قابل تبدیل به فلش کارت نبود");
     }
     
     const flashcardsData = JSON.parse(jsonMatch[0]);
