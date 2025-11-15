@@ -25,9 +25,15 @@ serve(async (req) => {
 
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
-    const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-      global: { headers: { Authorization: authHeader } }
-    });
+    
+    // Create Supabase client for auth verification
+    const supabase = createClient(
+      supabaseUrl,
+      supabaseAnonKey,
+      {
+        global: { headers: { Authorization: authHeader } }
+      }
+    );
 
     // Verify the JWT and get user - pass the token explicitly
     const { data: { user }, error: userError } = await supabase.auth.getUser(token);
@@ -39,8 +45,21 @@ serve(async (req) => {
       );
     }
 
+    // Create service role client for RPC calls
+    const supabaseAdmin = createClient(
+      supabaseUrl,
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
+      {
+        global: {
+          headers: {
+            Authorization: authHeader
+          }
+        }
+      }
+    );
+
     // Check and deduct coins atomically (5 coins for flashcard generation)
-    const { data: success, error: coinError } = await supabase.rpc('deduct_user_coins', {
+    const { data: success, error: coinError } = await supabaseAdmin.rpc('deduct_user_coins', {
       _amount: 5,
       _reason: 'ai_flashcard_generator'
     });

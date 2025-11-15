@@ -24,7 +24,7 @@ serve(async (req) => {
     // Extract the JWT token
     const token = authHeader.replace('Bearer ', '');
 
-    // Create Supabase client
+    // Create Supabase client for auth verification
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_ANON_KEY') ?? '',
@@ -48,18 +48,37 @@ serve(async (req) => {
       });
     }
 
+    // Create service role client for RPC calls (with user context)
+    const supabaseAdmin = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
+      {
+        global: {
+          headers: {
+            Authorization: authHeader // Pass user's JWT for auth.uid()
+          }
+        }
+      }
+    );
+
     // Check and deduct coins atomically (20 coins for consultation)
-    const { data: success, error: coinError } = await supabase.rpc('deduct_user_coins', {
+    console.log('Attempting to deduct coins for user:', user.id);
+    const { data: success, error: coinError } = await supabaseAdmin.rpc('deduct_user_coins', {
       _amount: 20,
       _reason: 'ai_consultation'
     });
+    
+    console.log('Coin deduction result:', { success, error: coinError });
 
     if (coinError || !success) {
+      console.error('Coin deduction failed:', coinError);
       return new Response(JSON.stringify({ error: 'سکه کافی نیست. برای استفاده از مشاوره به ۲۰ سکه نیاز دارید' }), {
         status: 402,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
+    
+    console.log('Coins successfully deducted');
 
     const { message, grade, subjects } = await req.json();
     
