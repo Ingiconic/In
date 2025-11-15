@@ -12,7 +12,7 @@ serve(async (req) => {
   }
 
   try {
-    // Get the authorization header
+    // Get the JWT token from Authorization header
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
       return new Response(JSON.stringify({ error: 'لطفا ابتدا وارد شوید' }), {
@@ -21,45 +21,27 @@ serve(async (req) => {
       });
     }
 
-    // Create Supabase client with the correct environment variables
-    const supabaseUrl = Deno.env.get('SUPABASE_URL');
-    const supabaseKey = Deno.env.get('SUPABASE_ANON_KEY') || Deno.env.get('SUPABASE_PUBLISHABLE_KEY');
-    
-    if (!supabaseUrl || !supabaseKey) {
-      console.error('Missing Supabase environment variables');
-      return new Response(JSON.stringify({ error: 'خطای پیکربندی سرور' }), {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
+    // Extract the JWT token
+    const token = authHeader.replace('Bearer ', '');
 
+    // Create Supabase client
     const supabase = createClient(
-      supabaseUrl,
-      supabaseKey,
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
       { 
         global: { 
           headers: { 
             Authorization: authHeader 
           } 
-        },
-        auth: {
-          persistSession: false,
-          autoRefreshToken: false
         }
       }
     );
 
-    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    // Verify the JWT and get user - pass the token explicitly
+    const { data: { user }, error: userError } = await supabase.auth.getUser(token);
     
-    if (userError) {
+    if (userError || !user) {
       console.error('Auth error:', userError);
-      return new Response(JSON.stringify({ error: 'لطفا ابتدا وارد شوید' }), {
-        status: 401,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-    
-    if (!user) {
       return new Response(JSON.stringify({ error: 'لطفا ابتدا وارد شوید' }), {
         status: 401,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
