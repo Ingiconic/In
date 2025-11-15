@@ -42,12 +42,10 @@ const Auth = () => {
 
     setLoading(true);
     try {
-      // Check if username exists in profiles table
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("id, username")
-        .eq("username", username)
-        .maybeSingle();
+      // Call edge function to check if username exists
+      const { data, error } = await supabase.functions.invoke('check-username', {
+        body: { username: username.toLowerCase().trim() }
+      });
 
       if (error) {
         console.error("Error checking user:", error);
@@ -57,12 +55,13 @@ const Auth = () => {
       }
 
       // If user exists, go to login. Otherwise go to signup
-      if (data) {
+      if (data?.exists) {
         setStep("login");
       } else {
         setStep("signup");
       }
     } catch (error: any) {
+      console.error("Exception checking user:", error);
       toast({ title: "خطا", description: "مشکلی پیش آمد", variant: "destructive" });
     } finally {
       setLoading(false);
