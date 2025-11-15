@@ -16,13 +16,11 @@ import {
   Trophy,
   Coins,
   BookOpen,
-  Shield,
   Lightbulb
 } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/hooks/use-toast";
-import { useEffect, useState } from "react";
 
 interface SidebarProps {
   profile: any;
@@ -32,25 +30,6 @@ const Sidebar = ({ profile }: SidebarProps) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { toast } = useToast();
-  const [isAdmin, setIsAdmin] = useState(false);
-
-  useEffect(() => {
-    checkAdmin();
-  }, []);
-
-  const checkAdmin = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
-
-    const { data } = await supabase
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", user.id)
-      .eq("role", "admin")
-      .single();
-
-    setIsAdmin(!!data);
-  };
 
   const userLevel = profile?.points ? Math.floor(profile.points / 100) + 1 : 1;
 
@@ -129,20 +108,6 @@ const Sidebar = ({ profile }: SidebarProps) => {
       {/* Navigation Menu */}
       <ScrollArea className="flex-1 px-3 py-4">
         <nav className="space-y-1">
-          {isAdmin && (
-            <Button
-              variant="ghost"
-              onClick={() => navigate("/admin")}
-              className={`w-full justify-start gap-3 h-11 px-3 rounded-xl transition-all mb-2 ${
-                isActive("/admin")
-                  ? "bg-yellow-500/10 text-yellow-500 border border-yellow-500/20"
-                  : "hover:bg-yellow-500/10 hover:text-yellow-500"
-              }`}
-            >
-              <Shield className="w-5 h-5" />
-              <span className="text-sm font-medium">پنل مدیریت</span>
-            </Button>
-          )}
           {menuItems.map((item) => (
             <Button
               key={item.path}

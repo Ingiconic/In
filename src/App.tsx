@@ -11,10 +11,8 @@ import Questions from "./pages/Questions";
 import Consultation from "./pages/Consultation";
 import StudyPlan from "./pages/StudyPlan";
 import ExamV2 from "./pages/ExamV2";
-import AdminPanel from "./pages/AdminPanel";
 import Chat from "./pages/Chat";
 import ChatFriends from "./pages/ChatFriends";
-import Admin from "./pages/Admin";
 import Profile from "./pages/Profile";
 import Progress from "./pages/Progress";
 import About from "./pages/About";
@@ -42,7 +40,6 @@ const App = () => (
           <Route path="/study-plan" element={<StudyPlan />} />
           <Route path="/exam" element={<ExamV2 />} />
           <Route path="/exam-v2" element={<ExamV2 />} />
-          <Route path="/admin" element={<AdminPanel />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/progress" element={<Progress />} />
           <Route path="/about" element={<About />} />
