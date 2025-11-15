@@ -7,6 +7,8 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/lib/supabase";
 import { ArrowRight, MessageSquare, Sparkles, Loader2, User, Coins } from "lucide-react";
 import { logger } from "@/lib/logger";
+import MathText from "@/components/MathText";
+import { COIN_COSTS } from "@/lib/coinCosts";
 
 const Consultation = () => {
   const navigate = useNavigate();
@@ -62,7 +64,7 @@ const Consultation = () => {
             مشاوره تحصیلی
             <span className="text-sm font-normal text-primary flex items-center gap-1">
               <Coins className="w-4 h-4" />
-              20 سکه
+              {COIN_COSTS.CONSULTATION} سکه
             </span>
           </h1>
         </div>

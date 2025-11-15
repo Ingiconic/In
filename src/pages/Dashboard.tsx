@@ -7,6 +7,7 @@ import { ShoppingBag, Users, FileText, CheckSquare, HelpCircle, Sparkles, Trophy
 import { usePageView } from "@/hooks/usePageView";
 import AppLayout from "@/components/layout/AppLayout";
 import { Button } from "@/components/ui/button";
+import { COIN_COSTS } from "@/lib/coinCosts";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -149,7 +150,7 @@ const Dashboard = () => {
                         <HelpCircle className="w-4 h-4 md:w-5 md:h-5 text-white" />
                       </div>
                       <CardTitle className="text-xs md:text-base group-hover:text-gradient transition-colors">پرسش درسی</CardTitle>
-                      <CardDescription className="text-[10px] md:text-xs">10 سکه</CardDescription>
+                      <CardDescription className="text-[10px] md:text-xs">{COIN_COSTS.QUESTION_ANSWER} سکه</CardDescription>
                     </div>
                   </CardHeader>
                 </Card>
@@ -164,7 +165,7 @@ const Dashboard = () => {
                         <FileText className="w-4 h-4 md:w-5 md:h-5 text-white" />
                       </div>
                       <CardTitle className="text-xs md:text-base group-hover:text-gradient transition-colors">خلاصه‌سازی</CardTitle>
-                      <CardDescription className="text-[10px] md:text-xs">10 سکه</CardDescription>
+                      <CardDescription className="text-[10px] md:text-xs">{COIN_COSTS.SUMMARIZE} سکه</CardDescription>
                     </div>
                   </CardHeader>
                 </Card>
@@ -179,7 +180,7 @@ const Dashboard = () => {
                         <CheckSquare className="w-4 h-4 md:w-5 md:h-5 text-white" />
                       </div>
                       <CardTitle className="text-xs md:text-base group-hover:text-gradient transition-colors">آزمون ساز</CardTitle>
-                      <CardDescription className="text-[10px] md:text-xs">10 سکه</CardDescription>
+                      <CardDescription className="text-[10px] md:text-xs">{COIN_COSTS.EXAM_GENERATE} سکه</CardDescription>
                     </div>
                   </CardHeader>
                 </Card>
@@ -194,7 +195,7 @@ const Dashboard = () => {
                         <Brain className="w-4 h-4 md:w-5 md:h-5 text-white" />
                       </div>
                       <CardTitle className="text-xs md:text-base group-hover:text-gradient transition-colors">مشاور هوشمند</CardTitle>
-                      <CardDescription className="text-[10px] md:text-xs">20 سکه</CardDescription>
+                      <CardDescription className="text-[10px] md:text-xs">{COIN_COSTS.CONSULTATION} سکه</CardDescription>
                     </div>
                   </CardHeader>
                 </Card>
@@ -218,7 +219,7 @@ const Dashboard = () => {
                         <Lightbulb className="w-4 h-4 md:w-5 md:h-5 text-white" />
                       </div>
                       <CardTitle className="text-xs md:text-base group-hover:text-gradient transition-colors">نقشه ذهنی</CardTitle>
-                      <CardDescription className="text-[10px] md:text-xs">10 سکه</CardDescription>
+                      <CardDescription className="text-[10px] md:text-xs">{COIN_COSTS.MINDMAP_GENERATE} سکه</CardDescription>
                     </div>
                   </CardHeader>
                 </Card>
@@ -233,7 +234,7 @@ const Dashboard = () => {
                         <CreditCard className="w-4 h-4 md:w-5 md:h-5 text-white" />
                       </div>
                       <CardTitle className="text-xs md:text-base group-hover:text-gradient transition-colors">فلش کارت</CardTitle>
-                      <CardDescription className="text-[10px] md:text-xs">10 سکه</CardDescription>
+                      <CardDescription className="text-[10px] md:text-xs">{COIN_COSTS.FLASHCARD_GENERATE} سکه</CardDescription>
                     </div>
                   </CardHeader>
                 </Card>
