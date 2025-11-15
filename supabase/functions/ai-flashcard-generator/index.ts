@@ -117,7 +117,7 @@ serve(async (req) => {
     {"question": "سوال بعدی", "answer": "پاسخ بعدی"}
   ]
 }
-${count} فلش کارت با کیفیت بالا بساز.`
+${count} فلش کارت با کیفیت بالا بساز. فقط JSON برگردان، بدون توضیحات اضافی.`
           },
           {
             role: "user",
@@ -128,28 +128,65 @@ ${count} فلش کارت با کیفیت بالا بساز.`
     });
 
     if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Lovable AI Error:', response.status, errorText);
+      
       if (response.status === 429) {
         return new Response(
           JSON.stringify({ error: "محدودیت درخواست. لطفاً بعداً امتحان کنید." }),
           { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
-      throw new Error("خطا در ارتباط با هوش مصنوعی");
+      if (response.status === 402) {
+        return new Response(
+          JSON.stringify({ error: "اعتبار کافی نیست. لطفاً اعتبار اضافه کنید." }),
+          { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+      throw new Error(`خطا در ارتباط با هوش مصنوعی: ${response.status}`);
     }
 
     const data = await response.json();
-    const aiResponse = data.choices[0].message.content;
+    console.log('AI Response received');
     
-    console.log('AI Response:', aiResponse); // برای دیباگ
+    if (!data.choices || !data.choices[0] || !data.choices[0].message) {
+      console.error('Invalid AI response structure:', JSON.stringify(data));
+      throw new Error("ساختار پاسخ هوش مصنوعی نامعتبر است");
+    }
+    
+    const aiResponse = data.choices[0].message.content;
+    console.log('AI Response content length:', aiResponse?.length);
+    
+    if (!aiResponse) {
+      throw new Error("هوش مصنوعی پاسخی ارسال نکرد");
+    }
     
     // Parse JSON from response
     const jsonMatch = aiResponse.match(/\{[\s\S]*\}/);
     if (!jsonMatch) {
-      console.error('Failed to parse AI response:', aiResponse);
-      throw new Error("پاسخ هوش مصنوعی قابل تبدیل به فلش کارت نبود");
+      console.error('Failed to parse AI response. Content:', aiResponse.substring(0, 500));
+      throw new Error("پاسخ هوش مصنوعی قابل تبدیل به فلش کارت نبود. لطفاً دوباره تلاش کنید.");
     }
     
-    const flashcardsData = JSON.parse(jsonMatch[0]);
+    let flashcardsData;
+    try {
+      flashcardsData = JSON.parse(jsonMatch[0]);
+    } catch (parseError) {
+      console.error('JSON parse error:', parseError);
+      console.error('JSON string:', jsonMatch[0].substring(0, 500));
+      throw new Error("خطا در تجزیه پاسخ هوش مصنوعی");
+    }
+    
+    if (!flashcardsData.flashcards || !Array.isArray(flashcardsData.flashcards)) {
+      console.error('Invalid flashcards structure:', JSON.stringify(flashcardsData));
+      throw new Error("ساختار فلش کارت‌ها نامعتبر است");
+    }
+    
+    if (flashcardsData.flashcards.length === 0) {
+      throw new Error("هوش مصنوعی فلش کارتی تولید نکرد");
+    }
+    
+    console.log(`Successfully generated ${flashcardsData.flashcards.length} flashcards`);
 
     return new Response(
       JSON.stringify({ flashcards: flashcardsData.flashcards }),
