@@ -344,10 +344,33 @@ const MindMapAI = () => {
     if (!flowRef.current) return;
 
     try {
+      // محاسبه ابعاد کل نقشه ذهنی
+      let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+      
+      nodes.forEach((node) => {
+        const width = parseInt(node.style?.width as string || '120');
+        const height = 100; // ارتفاع تقریبی
+        
+        minX = Math.min(minX, node.position.x);
+        minY = Math.min(minY, node.position.y);
+        maxX = Math.max(maxX, node.position.x + width);
+        maxY = Math.max(maxY, node.position.y + height);
+      });
+
+      const padding = 100;
+      const width = maxX - minX + padding * 2;
+      const height = maxY - minY + padding * 2;
+
       const dataUrl = await toPng(flowRef.current, {
         cacheBust: true,
         backgroundColor: '#ffffff',
         pixelRatio: 2,
+        width: width,
+        height: height,
+        style: {
+          width: `${width}px`,
+          height: `${height}px`,
+        }
       });
 
       const link = document.createElement('a');
@@ -659,21 +682,33 @@ const MindMapAI = () => {
 
             {/* Result */}
             <Card className="flex-1 overflow-hidden">
-              <div ref={flowRef} className="h-full">
+              <div ref={flowRef} className="h-full w-full">
                 <ReactFlow
                   nodes={nodes}
                   edges={edges}
                   fitView
-                  fitViewOptions={{ padding: 0.2 }}
+                  fitViewOptions={{ 
+                    padding: 0.15,
+                    includeHiddenNodes: true,
+                    minZoom: 0.1,
+                    maxZoom: 1.5
+                  }}
                   nodesDraggable={false}
                   nodesConnectable={false}
                   elementsSelectable={false}
                   zoomOnScroll={true}
                   panOnScroll={false}
                   panOnDrag={true}
+                  minZoom={0.1}
+                  maxZoom={2}
+                  defaultViewport={{ x: 0, y: 0, zoom: 0.8 }}
                 >
                   <Background />
-                  <Controls />
+                  <Controls 
+                    showZoom={true}
+                    showFitView={true}
+                    showInteractive={false}
+                  />
                 </ReactFlow>
               </div>
             </Card>
