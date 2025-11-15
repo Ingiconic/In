@@ -1,5 +1,6 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -23,6 +24,34 @@ serve(async (req) => {
   }
 
   try {
+    const authHeader = req.headers.get('Authorization');
+    const supabase = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
+      { global: { headers: { Authorization: authHeader ?? '' } } }
+    );
+
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    if (userError || !user) {
+      return new Response(JSON.stringify({ error: 'لطفا ابتدا وارد شوید' }), {
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // Check and deduct coins atomically (10 coins for exam generation)
+    const { data: success, error: coinError } = await supabase.rpc('deduct_user_coins', {
+      _amount: 10,
+      _reason: 'ai_exam_generator_v2'
+    });
+
+    if (coinError || !success) {
+      return new Response(JSON.stringify({ error: 'سکه کافی نیست. برای ساخت آزمون به ۱۰ سکه نیاز دارید' }), {
+        status: 402,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
     const { content, questionCount, difficulty, questionTypes }: ExamRequest = await req.json();
 
     if (!content || !content.trim()) {
