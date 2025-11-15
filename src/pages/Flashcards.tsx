@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/hooks/use-toast";
-import { BookOpen, Plus, Trash2, RotateCw, CheckCircle } from "lucide-react";
+import { BookOpen, Plus, Trash2, RotateCw, CheckCircle, Sparkles } from "lucide-react";
 import AppLayout from "@/components/layout/AppLayout";
 import { usePageView } from "@/hooks/usePageView";
 import ResourceSelector from "@/components/ResourceSelector";
@@ -40,9 +40,12 @@ const Flashcards = () => {
   const [isFlipped, setIsFlipped] = useState(false);
   const [showNewDeckDialog, setShowNewDeckDialog] = useState(false);
   const [showNewCardDialog, setShowNewCardDialog] = useState(false);
+  const [showAIGenerateDialog, setShowAIGenerateDialog] = useState(false);
   const [studyMode, setStudyMode] = useState(false);
   const [selectedResource, setSelectedResource] = useState<any>(null);
   const [generatingCards, setGeneratingCards] = useState(false);
+  const [aiTopic, setAiTopic] = useState("");
+  const [aiCount, setAiCount] = useState("10");
 
   const [newDeck, setNewDeck] = useState({ title: "", description: "" });
   const [newCard, setNewCard] = useState({
@@ -113,6 +116,66 @@ const Flashcards = () => {
       setShowNewDeckDialog(false);
       loadDecks();
       setSelectedDeck(data);
+    }
+  };
+
+  const generateFlashcardsWithAI = async () => {
+    if (!aiTopic.trim()) {
+      toast({ title: "خطا", description: "موضوع را وارد کنید", variant: "destructive" });
+      return;
+    }
+
+    if (!selectedDeck) {
+      toast({ title: "خطا", description: "ابتدا یک دسته انتخاب کنید", variant: "destructive" });
+      return;
+    }
+
+    setGeneratingCards(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('ai-flashcard-generator', {
+        body: { 
+          topic: aiTopic,
+          count: parseInt(aiCount),
+          resourceId: selectedResource?.id
+        }
+      });
+
+      if (error) throw error;
+
+      if (data?.flashcards) {
+        // اضافه کردن فلش کارت‌ها به دیتابیس
+        const cardsToInsert = data.flashcards.map((card: any) => ({
+          deck_id: selectedDeck.id,
+          question: card.question,
+          answer: card.answer,
+          difficulty: 'medium'
+        }));
+
+        const { error: insertError } = await supabase
+          .from('flashcards')
+          .insert(cardsToInsert);
+
+        if (insertError) throw insertError;
+
+        toast({ 
+          title: "موفق", 
+          description: `${data.flashcards.length} فلش کارت با هوش مصنوعی ساخته شد` 
+        });
+        
+        setAiTopic("");
+        setAiCount("10");
+        setShowAIGenerateDialog(false);
+        loadFlashcards(selectedDeck.id);
+      }
+    } catch (error: any) {
+      console.error('Error generating flashcards:', error);
+      toast({ 
+        title: "خطا", 
+        description: error.message || "خطا در تولید فلش کارت", 
+        variant: "destructive" 
+      });
+    } finally {
+      setGeneratingCards(false);
     }
   };
 
@@ -315,13 +378,68 @@ const Flashcards = () => {
                       {studyMode ? "حالت مطالعه" : "حالت مدیریت"}
                     </Button>
                     {!studyMode && (
-                      <Dialog open={showNewCardDialog} onOpenChange={setShowNewCardDialog}>
-                        <DialogTrigger asChild>
-                          <Button className="gradient-secondary">
-                            <Plus className="w-4 h-4 ml-1" />
-                            کارت جدید
-                          </Button>
-                        </DialogTrigger>
+                      <>
+                        <Dialog open={showAIGenerateDialog} onOpenChange={setShowAIGenerateDialog}>
+                          <DialogTrigger asChild>
+                            <Button variant="secondary">
+                              <Sparkles className="w-4 h-4 ml-1" />
+                              تولید با هوش مصنوعی
+                            </Button>
+                          </DialogTrigger>
+                          <DialogContent>
+                            <DialogHeader>
+                              <DialogTitle>تولید فلش کارت با هوش مصنوعی</DialogTitle>
+                            </DialogHeader>
+                            <div className="space-y-4">
+                              <div>
+                                <Label>موضوع</Label>
+                                <Input
+                                  value={aiTopic}
+                                  onChange={(e) => setAiTopic(e.target.value)}
+                                  placeholder="مثلاً: لغات انگلیسی سطح مبتدی"
+                                  disabled={generatingCards}
+                                  dir="rtl"
+                                />
+                              </div>
+                              <div>
+                                <Label>تعداد فلش کارت</Label>
+                                <Select value={aiCount} onValueChange={setAiCount} disabled={generatingCards}>
+                                  <SelectTrigger>
+                                    <SelectValue />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="5">5 عدد</SelectItem>
+                                    <SelectItem value="10">10 عدد</SelectItem>
+                                    <SelectItem value="15">15 عدد</SelectItem>
+                                    <SelectItem value="20">20 عدد</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                              <div>
+                                <Label>منبع (اختیاری)</Label>
+                                <ResourceSelector
+                                  selectedResource={selectedResource}
+                                  onResourceSelect={setSelectedResource}
+                                />
+                              </div>
+                              <Button 
+                                onClick={generateFlashcardsWithAI} 
+                                className="w-full gradient-primary"
+                                disabled={generatingCards}
+                              >
+                                {generatingCards ? "در حال تولید..." : "تولید فلش کارت"}
+                              </Button>
+                            </div>
+                          </DialogContent>
+                        </Dialog>
+                        
+                        <Dialog open={showNewCardDialog} onOpenChange={setShowNewCardDialog}>
+                          <DialogTrigger asChild>
+                            <Button className="gradient-secondary">
+                              <Plus className="w-4 h-4 ml-1" />
+                              کارت دستی
+                            </Button>
+                          </DialogTrigger>
                         <DialogContent>
                           <DialogHeader>
                             <DialogTitle>افزودن کارت جدید</DialogTitle>
@@ -375,6 +493,7 @@ const Flashcards = () => {
                           </div>
                         </DialogContent>
                       </Dialog>
+                      </>
                     )}
                   </div>
                   <p className="text-sm text-muted-foreground">
