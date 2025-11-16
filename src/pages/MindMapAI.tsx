@@ -10,6 +10,7 @@ import { usePageView } from "@/hooks/usePageView";
 import ResourceSelector from "@/components/ResourceSelector";
 import { COIN_COSTS } from "@/lib/coinCosts";
 import { useCoinError } from "@/hooks/useCoinError";
+import { getUserCoins } from "@/lib/coinHelpers";
 import ReactFlow, {
   Node,
   Edge,
@@ -51,13 +52,32 @@ const MindMapAI = () => {
   const [savedMaps, setSavedMaps] = useState<any[]>([]);
   const [showSaveDialog, setShowSaveDialog] = useState(false);
   const [showLoadDialog, setShowLoadDialog] = useState(false);
+  const [userCoins, setUserCoins] = useState<number>(0);
   const flowRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    loadUserCoins();
+  }, []);
+
+  const loadUserCoins = async () => {
+    const coins = await getUserCoins();
+    setUserCoins(coins);
+  };
 
   const handleGenerate = async () => {
     if (!topic.trim() && !selectedResource) {
       toast({
         title: "خطا",
         description: "لطفا موضوع را وارد کنید یا منبعی را انتخاب کنید",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (userCoins < COIN_COSTS.MINDMAP_GENERATE) {
+      toast({
+        title: "سکه کافی نیست",
+        description: `برای این عملیات به ${COIN_COSTS.MINDMAP_GENERATE} سکه نیاز دارید.`,
         variant: "destructive",
       });
       return;

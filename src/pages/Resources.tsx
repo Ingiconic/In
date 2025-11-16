@@ -7,7 +7,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { Upload, FileText, Trash2, Loader2 } from "lucide-react";
+import { Upload, FileText, Trash2, Loader2, Sparkles } from "lucide-react";
 
 interface Resource {
   id: string;
@@ -23,6 +23,8 @@ export default function Resources() {
   const [resources, setResources] = useState<Resource[]>([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
+  const [analyzing, setAnalyzing] = useState(false);
+  const [analysis, setAnalysis] = useState<string>("");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [file, setFile] = useState<File | null>(null);
@@ -76,6 +78,22 @@ export default function Resources() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("کاربر یافت نشد");
 
+      // Check if user already has a resource
+      const { data: existingResources } = await supabase
+        .from("resources")
+        .select("id")
+        .eq("user_id", user.id);
+
+      if (existingResources && existingResources.length > 0) {
+        toast({
+          title: "خطا",
+          description: "شما قبلاً یک منبع آپلود کرده‌اید. ابتدا منبع قبلی را حذف کنید.",
+          variant: "destructive",
+        });
+        setUploading(false);
+        return;
+      }
+
       const fileExt = file.name.split(".").pop();
       const fileName = `${user.id}/${Date.now()}.${fileExt}`;
 
@@ -89,7 +107,18 @@ export default function Resources() {
         .from("resources")
         .getPublicUrl(fileName);
 
-      const { error: insertError } = await supabase
+      // Read file content for text files
+      let fileContent = null;
+      if (file.type.startsWith('text/') || file.type === 'application/pdf') {
+        const reader = new FileReader();
+        const readPromise = new Promise<string>((resolve) => {
+          reader.onload = (e) => resolve(e.target?.result as string);
+        });
+        reader.readAsText(file);
+        fileContent = await readPromise;
+      }
+
+      const { data: newResource, error: insertError } = await supabase
         .from("resources")
         .insert({
           user_id: user.id,
@@ -97,19 +126,25 @@ export default function Resources() {
           description,
           file_url: publicUrl,
           file_type: file.type,
-        });
+          content: fileContent,
+        })
+        .select()
+        .single();
 
       if (insertError) throw insertError;
 
       toast({
         title: "موفق",
-        description: "منبع با موفقیت آپلود شد",
+        description: "منبع با موفقیت آپلود شد. در حال تحلیل با هوش مصنوعی...",
       });
 
       setTitle("");
       setDescription("");
       setFile(null);
       loadResources();
+
+      // Analyze with AI
+      handleAnalyze(newResource.id);
     } catch (error: any) {
       toast({
         title: "خطا",
@@ -118,6 +153,32 @@ export default function Resources() {
       });
     } finally {
       setUploading(false);
+    }
+  };
+
+  const handleAnalyze = async (resourceId: string) => {
+    setAnalyzing(true);
+    setAnalysis("");
+    try {
+      const { data, error } = await supabase.functions.invoke('ai-analyze-resource', {
+        body: { resourceId }
+      });
+
+      if (error) throw error;
+
+      setAnalysis(data.analysis);
+      toast({
+        title: "تحلیل کامل شد",
+        description: "منبع شما با موفقیت تحلیل شد",
+      });
+    } catch (error: any) {
+      toast({
+        title: "خطا در تحلیل",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setAnalyzing(false);
     }
   };
 

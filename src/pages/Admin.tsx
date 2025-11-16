@@ -167,38 +167,14 @@ const Admin = () => {
 
     setAdjusting(true);
     try {
-      // Direct update without RPC since we're in admin context
-      const { data: currentProfile } = await supabase
-        .from("profiles")
-        .select("coins")
-        .eq("id", userId)
-        .single();
+      // Use the secure RPC function for adjusting coins
+      const { error } = await supabase.rpc('admin_adjust_user_coins', {
+        target_user_id: userId,
+        coin_amount: amount,
+        adjustment_reason: amount > 0 ? 'تراکنش ادمین - افزودن سکه' : 'تراکنش ادمین - کسر سکه'
+      });
 
-      if (!currentProfile) {
-        throw new Error("کاربر یافت نشد");
-      }
-
-      const newCoins = Math.max(0, currentProfile.coins + amount);
-
-      const { error: updateError } = await supabase
-        .from("profiles")
-        .update({ coins: newCoins })
-        .eq("id", userId);
-
-      if (updateError) throw updateError;
-
-      // Log transaction
-      const { error: logError } = await supabase
-        .from("coin_transactions")
-        .insert({
-          user_id: userId,
-          amount: amount,
-          reason: amount > 0 ? "Admin credit added" : "Admin deduction"
-        });
-
-      if (logError) {
-        console.error("Error logging transaction:", logError);
-      }
+      if (error) throw error;
 
       toast({
         title: "موفق",

@@ -1,10 +1,10 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/lib/supabase";
-import { Sparkles, FileText, Loader2, Image, Mic, MicOff, Coins } from "lucide-react";
+import { Sparkles, FileText, Loader2, Image, Mic, MicOff, Coins, ShoppingCart } from "lucide-react";
 import ResourceSelector from "@/components/ResourceSelector";
 import { usePageView } from "@/hooks/usePageView";
 import { logger } from "@/lib/logger";
@@ -13,9 +13,12 @@ import MathText from "@/components/MathText";
 import { Badge } from "@/components/ui/badge";
 import { COIN_COSTS } from "@/lib/coinCosts";
 import { useCoinError } from "@/hooks/useCoinError";
+import { getUserCoins } from "@/lib/coinHelpers";
+import { useNavigate } from "react-router-dom";
 
 const Summarize = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const { handleCoinError } = useCoinError();
   usePageView();
   const [content, setContent] = useState("");
@@ -26,8 +29,18 @@ const Summarize = () => {
   const [imagePreview, setImagePreview] = useState<string>("");
   const [isRecording, setIsRecording] = useState(false);
   const [selectedResource, setSelectedResource] = useState<any>(null);
+  const [userCoins, setUserCoins] = useState<number>(0);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
+
+  useEffect(() => {
+    loadUserCoins();
+  }, []);
+
+  const loadUserCoins = async () => {
+    const coins = await getUserCoins();
+    setUserCoins(coins);
+  };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -99,6 +112,26 @@ const Summarize = () => {
       return;
     }
 
+    if (userCoins < COIN_COSTS.SUMMARIZE) {
+      toast({
+        title: "سکه کافی نیست",
+        description: `برای این عملیات به ${COIN_COSTS.SUMMARIZE} سکه نیاز دارید.`,
+        variant: "destructive",
+        action: (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => navigate("/coin-shop")}
+            className="gap-2"
+          >
+            <ShoppingCart className="w-4 h-4" />
+            خرید سکه
+          </Button>
+        ),
+      });
+      return;
+    }
+
     setLoading(true);
     setResult("");
 
@@ -123,6 +156,7 @@ const Summarize = () => {
         setResult(data.result);
       }
       
+      await loadUserCoins(); // Reload coins after successful operation
       toast({ title: "موفق", description: "خلاصه‌سازی انجام شد" });
     } catch (error: any) {
       if (!handleCoinError(error, COIN_COSTS.SUMMARIZE)) {

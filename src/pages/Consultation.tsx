@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -10,6 +10,9 @@ import { logger } from "@/lib/logger";
 import MathText from "@/components/MathText";
 import { COIN_COSTS } from "@/lib/coinCosts";
 import { useCoinError } from "@/hooks/useCoinError";
+import { getUserCoins } from "@/lib/coinHelpers";
+import { useEffect } from "react";
+import { getUserCoins } from "@/lib/coinHelpers";
 
 const Consultation = () => {
   const navigate = useNavigate();
@@ -18,12 +21,31 @@ const Consultation = () => {
   const [message, setMessage] = useState("");
   const [conversation, setConversation] = useState<Array<{ role: string; content: string }>>([]);
   const [loading, setLoading] = useState(false);
+  const [userCoins, setUserCoins] = useState<number>(0);
+
+  useEffect(() => {
+    loadUserCoins();
+  }, []);
+
+  const loadUserCoins = async () => {
+    const coins = await getUserCoins();
+    setUserCoins(coins);
+  };
 
   const handleSend = async () => {
     if (!message.trim()) {
       toast({
         title: "خطا",
         description: "لطفا پیام خود را بنویسید",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (userCoins < COIN_COSTS.CONSULTATION) {
+      toast({
+        title: "سکه کافی نیست",
+        description: `برای این عملیات به ${COIN_COSTS.CONSULTATION} سکه نیاز دارید.`,
         variant: "destructive",
       });
       return;
