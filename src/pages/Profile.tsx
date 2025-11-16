@@ -30,6 +30,7 @@ const Profile = () => {
     bio: "",
     avatar_url: "",
   });
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
 
   useEffect(() => {
     loadProfile();
@@ -72,11 +73,68 @@ const Profile = () => {
     }
   };
 
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast({
+        title: "خطا",
+        description: "فقط فایل‌های تصویری مجاز هستند",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast({
+        title: "خطا",
+        description: "حجم تصویر نباید بیشتر از 5 مگابایت باشد",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setAvatarFile(file);
+    
+    // Preview
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setFormData(prev => ({ ...prev, avatar_url: reader.result as string }));
+    };
+    reader.readAsDataURL(file);
+  };
+
   const handleSave = async () => {
     setSaving(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
+
+      let avatarUrl = formData.avatar_url;
+
+      // Upload avatar if a new file is selected
+      if (avatarFile) {
+        const fileExt = avatarFile.name.split('.').pop();
+        const fileName = `${user.id}_${Date.now()}.${fileExt}`;
+        
+        const { error: uploadError } = await supabase.storage
+          .from('blog-images')
+          .upload(`avatars/${fileName}`, avatarFile, {
+            cacheControl: '3600',
+            upsert: true
+          });
+
+        if (uploadError) throw uploadError;
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('blog-images')
+          .getPublicUrl(`avatars/${fileName}`);
+
+        avatarUrl = publicUrl;
+      }
 
       const { error } = await supabase
         .from("profiles")
@@ -87,12 +145,13 @@ const Profile = () => {
           grade: formData.grade || null,
           field: formData.field || null,
           bio: formData.bio || null,
-          avatar_url: formData.avatar_url || null,
+          avatar_url: avatarUrl || null,
         })
         .eq("id", user.id);
 
       if (error) throw error;
 
+      setAvatarFile(null);
       toast({
         title: "موفق",
         description: "پروفایل با موفقیت بروزرسانی شد",

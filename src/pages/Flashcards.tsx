@@ -15,6 +15,7 @@ import ResourceSelector from "@/components/ResourceSelector";
 import MathText from "@/components/MathText";
 import { useCoinError } from "@/hooks/useCoinError";
 import { COIN_COSTS } from "@/lib/coinCosts";
+import { getUserCoins } from "@/lib/coinHelpers";
 
 interface Deck {
   id: string;
@@ -49,6 +50,7 @@ const Flashcards = () => {
   const [generatingCards, setGeneratingCards] = useState(false);
   const [aiTopic, setAiTopic] = useState("");
   const [aiCount, setAiCount] = useState("10");
+  const [userCoins, setUserCoins] = useState<number>(0);
 
   const [newDeck, setNewDeck] = useState({ title: "", description: "" });
   const [newCard, setNewCard] = useState({
