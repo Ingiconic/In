@@ -11,8 +11,6 @@ import MathText from "@/components/MathText";
 import { COIN_COSTS } from "@/lib/coinCosts";
 import { useCoinError } from "@/hooks/useCoinError";
 import { getUserCoins } from "@/lib/coinHelpers";
-import { useEffect } from "react";
-import { getUserCoins } from "@/lib/coinHelpers";
 
 const Consultation = () => {
   const navigate = useNavigate();
