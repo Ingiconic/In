@@ -73,6 +73,35 @@ export default function Resources() {
       return;
     }
 
+    // Validate file size (10MB limit)
+    const MAX_FILE_SIZE = 10 * 1024 * 1024;
+    if (file.size > MAX_FILE_SIZE) {
+      toast({
+        title: "خطا",
+        description: "حجم فایل نباید بیشتر از ۱۰ مگابایت باشد",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Validate file type
+    const ALLOWED_TYPES = [
+      'application/pdf',
+      'text/plain',
+      'text/markdown',
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    ];
+    
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      toast({
+        title: "خطا",
+        description: "فقط فایل‌های PDF، Word و متنی مجاز هستند",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setUploading(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
