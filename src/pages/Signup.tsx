@@ -7,10 +7,12 @@ import { supabase } from "@/lib/supabase";
 import { ArrowRight, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 import logo from "@/assets/logo.png";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const Signup = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { t } = useLanguage();
   const [loading, setLoading] = useState(false);
   const [username, setUsername] = useState("");
   const [fullName, setFullName] = useState("");
@@ -35,8 +37,8 @@ const Signup = () => {
     
     if (!username.trim() || !fullName.trim() || !password.trim()) {
       toast({ 
-        title: "خطا", 
-        description: "لطفا تمام فیلدها را پر کنید", 
+        title: t("common.error"), 
+        description: t("auth.fillAllFields"), 
         variant: "destructive" 
       });
       return;
@@ -44,8 +46,8 @@ const Signup = () => {
 
     if (password.length < 6) {
       toast({ 
-        title: "خطا", 
-        description: "رمز عبور باید حداقل ۶ کاراکتر باشد", 
+        title: t("common.error"), 
+        description: t("auth.passwordMinLength"), 
         variant: "destructive" 
       });
       return;
@@ -59,11 +61,11 @@ const Signup = () => {
       });
 
       if (checkError) {
-        throw new Error("مشکلی در بررسی نام کاربری پیش آمد");
+        throw new Error(t("auth.problemOccurred"));
       }
 
       if (checkData?.exists) {
-        throw new Error("این نام کاربری قبلاً ثبت شده است");
+        throw new Error(t("auth.usernameExists"));
       }
 
       const { error } = await supabase.auth.signUp({
@@ -80,19 +82,19 @@ const Signup = () => {
 
       if (error) {
         if (error.message.includes("User already registered")) {
-          throw new Error("این حساب کاربری قبلاً ثبت شده است");
+          throw new Error(t("auth.usernameExists"));
         }
         throw error;
       }
 
       toast({ 
-        title: "موفق! 🎉", 
-        description: "حساب شما با موفقیت ساخته شد" 
+        title: t("auth.welcomeSuccess"), 
+        description: t("auth.accountCreated") 
       });
     } catch (error: any) {
       toast({ 
-        title: "خطا", 
-        description: error.message || "مشکلی پیش آمد", 
+        title: t("common.error"), 
+        description: error.message || t("auth.problemOccurred"), 
         variant: "destructive" 
       });
     } finally {
@@ -163,9 +165,9 @@ const Signup = () => {
             <div className="w-20 h-20 rounded-3xl gradient-primary flex items-center justify-center mb-4 shadow-glow">
               <img src={logo} alt="Easy Dars" className="w-12 h-12" />
             </div>
-            <h1 className="text-3xl font-bold text-gradient mb-2">ثبت‌نام در ایزی درس</h1>
+            <h1 className="text-3xl font-bold text-gradient mb-2">{t("auth.signup")} {t("app.name")}</h1>
             <p className="text-muted-foreground text-center">
-              به خانواده ایزی درس بپیوندید
+              {t("auth.signupMessage")}
             </p>
           </motion.div>
 
@@ -178,7 +180,7 @@ const Signup = () => {
             >
               <Input
                 type="text"
-                placeholder="نام کاربری خود را وارد کنید (لاتین)"
+                placeholder={t("auth.username")}
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 className="text-right h-12 bg-background/50"
@@ -193,7 +195,7 @@ const Signup = () => {
             >
               <Input
                 type="text"
-                placeholder="نام و نام خانوادگی"
+                placeholder={t("auth.fullName")}
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
                 className="text-right h-12 bg-background/50"
@@ -208,7 +210,7 @@ const Signup = () => {
             >
               <Input
                 type="password"
-                placeholder="رمز عبور (حداقل ۶ کاراکتر)"
+                placeholder={t("auth.password")}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="text-right h-12 bg-background/50"
@@ -229,12 +231,12 @@ const Signup = () => {
                 {loading ? (
                   <>
                     <Loader2 className="ml-2 h-5 w-5 animate-spin" />
-                    در حال ثبت‌نام...
+                    {t("common.loading")}
                   </>
                 ) : (
                   <>
                     <ArrowRight className="ml-2 h-5 w-5" />
-                    ثبت‌نام
+                    {t("auth.signupButton")}
                   </>
                 )}
               </Button>
@@ -249,12 +251,12 @@ const Signup = () => {
             className="mt-6 text-center"
           >
             <p className="text-muted-foreground">
-              قبلاً ثبت‌نام کرده‌اید؟{" "}
+              {t("auth.haveAccount")}{" "}
               <Link 
                 to="/login" 
                 className="text-primary hover:underline font-semibold"
               >
-                وارد شوید
+                {t("auth.backToLogin")}
               </Link>
             </p>
           </motion.div>

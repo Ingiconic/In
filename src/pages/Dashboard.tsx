@@ -8,10 +8,12 @@ import { usePageView } from "@/hooks/usePageView";
 import AppLayout from "@/components/layout/AppLayout";
 import { Button } from "@/components/ui/button";
 import { COIN_COSTS } from "@/lib/coinCosts";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const Dashboard = () => {
   const navigate = useNavigate();
   usePageView();
+  const { t } = useLanguage();
   const [profile, setProfile] = useState<any>(null);
   const [stats, setStats] = useState({
     totalPoints: 0,
@@ -86,10 +88,10 @@ const Dashboard = () => {
           <div className="flex items-center justify-between mb-4">
             <div>
               <h2 className="text-2xl md:text-4xl font-bold mb-2">
-                سلام {profile?.full_name || "کاربر"}! 👋
+                {t("dashboard.welcome")} {profile?.full_name || t("common.user")}! 👋
               </h2>
               <p className="text-muted-foreground text-sm md:text-base">
-                به <span className="text-gradient font-bold">ایزی درس</span> خوش اومدی - همه ابزارهای یادگیری در یک جا!
+                {t("dashboard.welcomeMessage")}
               </p>
             </div>
             <div className="hidden md:flex items-center gap-4">
@@ -98,21 +100,21 @@ const Dashboard = () => {
                   <Coins className="w-6 h-6 text-yellow-500" />
                 </div>
                 <p className="text-2xl font-bold text-yellow-500">{profile?.coins || 0}</p>
-                <p className="text-xs text-muted-foreground">سکه</p>
+                <p className="text-xs text-muted-foreground">{t("header.coins")}</p>
               </div>
               <div className="text-center">
                 <div className="gradient-primary p-3 rounded-xl shadow-glow mb-1">
                   <Trophy className="w-6 h-6 text-white" />
                 </div>
                 <p className="text-2xl font-bold text-primary">{stats.totalPoints}</p>
-                <p className="text-xs text-muted-foreground">امتیاز</p>
+                <p className="text-xs text-muted-foreground">{t("dashboard.totalPoints")}</p>
               </div>
               <div className="text-center">
                 <div className="gradient-secondary p-3 rounded-xl shadow-glow mb-1">
                   <Target className="w-6 h-6 text-white" />
                 </div>
                 <p className="text-2xl font-bold text-secondary">{stats.examsCount}</p>
-                <p className="text-xs text-muted-foreground">آزمون</p>
+                <p className="text-xs text-muted-foreground">{t("dashboard.exams")}</p>
               </div>
             </div>
           </div>
@@ -123,11 +125,11 @@ const Dashboard = () => {
           <TabsList className="grid w-full grid-cols-2 mb-6">
             <TabsTrigger value="tools">
               <Sparkles className="w-4 h-4 ml-1" />
-              ابزارها
+              {t("dashboard.features")}
             </TabsTrigger>
             <TabsTrigger value="stats">
               <TrendingUp className="w-4 h-4 ml-1" />
-              آمار
+              {t("dashboard.studyStats")}
             </TabsTrigger>
           </TabsList>
 
@@ -137,7 +139,7 @@ const Dashboard = () => {
             <div>
               <div className="flex items-center gap-2 mb-4">
                 <Brain className="w-5 h-5 text-primary" />
-                <h3 className="text-xl font-bold">ابزارهای هوش مصنوعی</h3>
+                <h3 className="text-xl font-bold">{t("dashboard.aiTools")}</h3>
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                 <Card 
@@ -149,8 +151,8 @@ const Dashboard = () => {
                       <div className="gradient-primary p-2 md:p-2.5 rounded-xl shadow-glow group-hover:scale-110 transition-transform">
                         <HelpCircle className="w-4 h-4 md:w-5 md:h-5 text-white" />
                       </div>
-                      <CardTitle className="text-xs md:text-base group-hover:text-gradient transition-colors">پرسش درسی</CardTitle>
-                      <CardDescription className="text-[10px] md:text-xs">{COIN_COSTS.QUESTION_ANSWER} سکه</CardDescription>
+                      <CardTitle className="text-xs md:text-base group-hover:text-gradient transition-colors">{t("nav.questions")}</CardTitle>
+                      <CardDescription className="text-[10px] md:text-xs">{COIN_COSTS.QUESTION_ANSWER} {t("header.coins")}</CardDescription>
                     </div>
                   </CardHeader>
                 </Card>
@@ -164,8 +166,8 @@ const Dashboard = () => {
                       <div className="gradient-primary p-2 md:p-2.5 rounded-xl shadow-glow group-hover:scale-110 transition-transform">
                         <FileText className="w-4 h-4 md:w-5 md:h-5 text-white" />
                       </div>
-                      <CardTitle className="text-xs md:text-base group-hover:text-gradient transition-colors">خلاصه‌سازی</CardTitle>
-                      <CardDescription className="text-[10px] md:text-xs">{COIN_COSTS.SUMMARIZE} سکه</CardDescription>
+                      <CardTitle className="text-xs md:text-base group-hover:text-gradient transition-colors">{t("nav.summarize")}</CardTitle>
+                      <CardDescription className="text-[10px] md:text-xs">{COIN_COSTS.SUMMARIZE} {t("header.coins")}</CardDescription>
                     </div>
                   </CardHeader>
                 </Card>
@@ -179,8 +181,8 @@ const Dashboard = () => {
                       <div className="gradient-primary p-2 md:p-2.5 rounded-xl shadow-glow group-hover:scale-110 transition-transform">
                         <CheckSquare className="w-4 h-4 md:w-5 md:h-5 text-white" />
                       </div>
-                      <CardTitle className="text-xs md:text-base group-hover:text-gradient transition-colors">آزمون ساز</CardTitle>
-                      <CardDescription className="text-[10px] md:text-xs">{COIN_COSTS.EXAM_GENERATE} سکه</CardDescription>
+                      <CardTitle className="text-xs md:text-base group-hover:text-gradient transition-colors">{t("nav.exam")}</CardTitle>
+                      <CardDescription className="text-[10px] md:text-xs">{COIN_COSTS.EXAM_GENERATE} {t("header.coins")}</CardDescription>
                     </div>
                   </CardHeader>
                 </Card>
