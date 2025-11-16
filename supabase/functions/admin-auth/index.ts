@@ -71,21 +71,28 @@ serve(async (req) => {
         email_confirm: true,
       });
 
-      if (createError || !newUser.user) {
-        console.error('Error creating admin user:', createError);
-        return new Response(
-          JSON.stringify({ error: 'خطا در ایجاد کاربر مدیریت' }),
-          { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
-      }
+      // If user already exists (edge case where listUsers didn't return them), just continue to sign in
+      if (createError) {
+        if (createError.message?.includes('already been registered')) {
+          console.log('Admin user already exists, proceeding to sign in');
+        } else {
+          console.error('Error creating admin user:', createError);
+          return new Response(
+            JSON.stringify({ error: 'خطا در ایجاد کاربر مدیریت' }),
+            { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+      } else if (newUser?.user) {
+        // Assign admin role for newly created user
+        const { error: roleError } = await supabase
+          .from('user_roles')
+          .insert({ user_id: newUser.user.id, role: 'admin' })
+          .select()
+          .single();
 
-      // Assign admin role
-      const { error: roleError } = await supabase
-        .from('user_roles')
-        .insert({ user_id: newUser.user.id, role: 'admin' });
-
-      if (roleError) {
-        console.error('Error assigning admin role:', roleError);
+        if (roleError && !roleError.message?.includes('duplicate')) {
+          console.error('Error assigning admin role:', roleError);
+        }
       }
     }
 
