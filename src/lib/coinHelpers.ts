@@ -5,35 +5,18 @@ export const checkAndDeductCoins = async (amount: number): Promise<boolean> => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error("کاربر وارد نشده است");
 
-    // Get current coins
-    const { data: profile, error: profileError } = await supabase
-      .from("profiles")
-      .select("coins")
-      .eq("id", user.id)
-      .single();
+    // Use atomic RPC function to prevent race conditions
+    const { data: success, error } = await supabase.rpc('deduct_user_coins', {
+      _amount: amount,
+      _reason: 'tool_usage'
+    });
 
-    if (profileError) throw profileError;
-    
-    if (!profile || profile.coins < amount) {
+    if (error) {
+      console.error("Error deducting coins:", error);
       return false;
     }
 
-    // Deduct coins
-    const { error: updateError } = await supabase
-      .from("profiles")
-      .update({ coins: profile.coins - amount })
-      .eq("id", user.id);
-
-    if (updateError) throw updateError;
-
-    // Log transaction
-    await supabase.from("coin_transactions").insert({
-      user_id: user.id,
-      amount: -amount,
-      reason: "tool_usage",
-    });
-
-    return true;
+    return success === true;
   } catch (error) {
     console.error("Error deducting coins:", error);
     return false;

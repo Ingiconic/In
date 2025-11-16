@@ -32,3 +32,12 @@ verify_jwt = true
 
 [functions.ai-mindmap-generator-v2]
 verify_jwt = true
+
+[functions.voice-to-text]
+verify_jwt = true
+
+[functions.check-username]
+verify_jwt = false
+
+[functions.admin-auth]
+verify_jwt = false

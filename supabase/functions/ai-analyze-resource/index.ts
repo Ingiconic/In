@@ -13,6 +13,8 @@ serve(async (req) => {
   }
 
   try {
+    const MAX_CONTENT_SIZE = 10 * 1024 * 1024; // 10MB
+    
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_ANON_KEY') ?? '',
@@ -53,6 +55,17 @@ serve(async (req) => {
         status: 404,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
+    }
+
+    // Validate content size to prevent memory exhaustion
+    if (resource.content && resource.content.length > MAX_CONTENT_SIZE) {
+      return new Response(
+        JSON.stringify({ error: 'فایل بیش از حد بزرگ است. حداکثر اندازه مجاز ۱۰ مگابایت است.' }),
+        { 
+          status: 413,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        }
+      );
     }
 
     // Analyze with AI
