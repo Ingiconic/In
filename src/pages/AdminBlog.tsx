@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { blogPostSchema } from "@/lib/blogValidation";
 
 interface BlogPost {
   id: string;
@@ -55,19 +56,26 @@ const AdminBlog = () => {
 
   const checkAdminAccess = async () => {
     try {
-      const token = sessionStorage.getItem("admin_token");
-      const expiresAt = sessionStorage.getItem("admin_expires");
+      // Check if user is authenticated
+      const { data: { user } } = await supabase.auth.getUser();
       
-      if (!token || !expiresAt) {
+      if (!user) {
         navigate("/admin");
         return;
       }
 
-      const { data, error } = await supabase.functions.invoke('verify-admin-session', {
-        body: { token, expiresAt: parseInt(expiresAt) }
+      // Verify user has admin role
+      const { data: hasAdmin, error } = await supabase.rpc('has_role', {
+        _user_id: user.id,
+        _role: 'admin'
       });
 
-      if (error || !data?.valid) {
+      if (error || !hasAdmin) {
+        toast({
+          title: "دسترسی غیرمجاز",
+          description: "شما دسترسی به این بخش ندارید",
+          variant: "destructive"
+        });
         navigate("/admin");
         return;
       }
@@ -143,24 +151,34 @@ const AdminBlog = () => {
   };
 
   const handleSavePost = async () => {
-    if (!title.trim() || !content.trim()) {
-      toast({
-        title: "خطا",
-        description: "عنوان و محتوا الزامی است",
-        variant: "destructive"
-      });
-      return;
-    }
-
     setUploading(true);
     try {
+      // Validate input data
+      const slug = generateSlug(title);
+      const validationResult = blogPostSchema.safeParse({
+        title,
+        slug,
+        content,
+        excerpt: excerpt || "",
+        featured_image: imageFile ? "temp" : (editingPost?.featured_image || "")
+      });
+
+      if (!validationResult.success) {
+        const firstError = validationResult.error.errors[0];
+        toast({
+          title: "خطای اعتبارسنجی",
+          description: firstError.message,
+          variant: "destructive"
+        });
+        return;
+      }
+
       let imageUrl = editingPost?.featured_image || null;
 
       if (imageFile) {
         imageUrl = await uploadImage(imageFile);
       }
 
-      const slug = generateSlug(title);
       const postData = {
         title,
         slug,

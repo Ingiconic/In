@@ -54,26 +54,24 @@ const Admin = () => {
 
   const checkAdminAccess = async () => {
     try {
-      // Check if admin token exists
-      const token = sessionStorage.getItem("admin_token");
-      const expiresAt = sessionStorage.getItem("admin_expires");
+      // Check if user is authenticated
+      const { data: { user } } = await supabase.auth.getUser();
       
-      if (!token || !expiresAt) {
+      if (!user) {
         navigate("/admin");
         return;
       }
 
-      // Verify session with edge function
-      const { data, error } = await supabase.functions.invoke('verify-admin-session', {
-        body: { token, expiresAt: parseInt(expiresAt) }
+      // Verify user has admin role
+      const { data: hasAdmin, error } = await supabase.rpc('has_role', {
+        _user_id: user.id,
+        _role: 'admin'
       });
 
-      if (error || !data?.valid) {
-        sessionStorage.removeItem("admin_token");
-        sessionStorage.removeItem("admin_expires");
+      if (error || !hasAdmin) {
         toast({
-          title: "نشست منقضی شد",
-          description: "لطفا دوباره وارد شوید",
+          title: "دسترسی غیرمجاز",
+          description: "شما دسترسی به این بخش ندارید",
           variant: "destructive"
         });
         navigate("/admin");
@@ -148,9 +146,8 @@ const Admin = () => {
     }
   };
 
-  const handleLogout = () => {
-    sessionStorage.removeItem("admin_token");
-    sessionStorage.removeItem("admin_expires");
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
     toast({
       title: "خروج موفق",
       description: "شما از پنل مدیریت خارج شدید"
