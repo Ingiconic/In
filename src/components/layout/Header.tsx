@@ -4,11 +4,19 @@ import {
   Star,
   Trophy,
   Menu,
-  X
+  X,
+  Languages
 } from "lucide-react";
 import { useState } from "react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useNavigate, useLocation } from "react-router-dom";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { 
   MessageSquare, 
   Users, 
@@ -32,6 +40,7 @@ interface HeaderProps {
 
 const Header = ({ profile }: HeaderProps) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [language, setLanguage] = useState("fa");
   const navigate = useNavigate();
   const location = useLocation();
   const { toast } = useToast();
@@ -79,8 +88,19 @@ const Header = ({ profile }: HeaderProps) => {
           <span className="text-lg font-bold text-gradient">ایزی درس</span>
         </div>
 
-        {/* Desktop: Just Stats */}
+        {/* Desktop: Language Selector + Stats */}
         <div className="hidden lg:flex flex-1 items-center justify-end gap-3">
+          <Select value={language} onValueChange={setLanguage}>
+            <SelectTrigger className="w-[140px] bg-card/50 backdrop-blur-sm border-border/30">
+              <Languages className="w-4 h-4 ml-2" />
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="fa">فارسی</SelectItem>
+              <SelectItem value="ar">العربية</SelectItem>
+              <SelectItem value="en">English</SelectItem>
+            </SelectContent>
+          </Select>
           <div className="flex items-center gap-2 bg-card/50 backdrop-blur-sm px-4 py-2 rounded-xl border border-border/30">
             <Trophy className="w-5 h-5 text-primary" />
             <span className="font-bold text-sm">سطح {userLevel}</span>
@@ -91,8 +111,18 @@ const Header = ({ profile }: HeaderProps) => {
           </div>
         </div>
 
-        {/* Mobile: Stats + Menu Button */}
+        {/* Mobile: Language Selector + Stats + Menu Button */}
         <div className="flex items-center gap-2 lg:hidden">
+          <Select value={language} onValueChange={setLanguage}>
+            <SelectTrigger className="w-[90px] h-8 bg-card/50 backdrop-blur-sm border-border/30 text-xs">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="fa">فارسی</SelectItem>
+              <SelectItem value="ar">العربية</SelectItem>
+              <SelectItem value="en">English</SelectItem>
+            </SelectContent>
+          </Select>
           <div className="flex items-center gap-1.5 bg-card/50 backdrop-blur-sm px-3 py-1.5 rounded-lg border border-border/30">
             <Star className="w-4 h-4 text-secondary" />
             <span className="text-xs font-bold">{profile?.points || 0}</span>
