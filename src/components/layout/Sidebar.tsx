@@ -21,6 +21,7 @@ import {
 import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/hooks/use-toast";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface SidebarProps {
   profile: any;
@@ -30,6 +31,7 @@ const Sidebar = ({ profile }: SidebarProps) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { toast } = useToast();
+  const { t } = useLanguage();
 
   const userLevel = profile?.points ? Math.floor(profile.points / 100) + 1 : 1;
 
@@ -37,29 +39,29 @@ const Sidebar = ({ profile }: SidebarProps) => {
     try {
       await supabase.auth.signOut();
       toast({
-        title: "خروج موفق",
-        description: "با موفقیت از حساب خود خارج شدید",
+        title: t("common.success"),
+        description: t("nav.logout"),
       });
       navigate("/");
     } catch (error) {
       toast({
-        title: "خطا",
-        description: "مشکلی در خروج پیش آمد",
+        title: t("common.error"),
+        description: t("common.error"),
         variant: "destructive",
       });
     }
   };
 
   const menuItems = [
-    { icon: LayoutDashboard, label: "داشبورد", path: "/dashboard", coins: 0 },
-    { icon: FileText, label: "منابع من", path: "/resources", coins: 0 },
-    { icon: HelpCircle, label: "پرسش درسی", path: "/questions", coins: 2 },
-    { icon: FileText, label: "خلاصه‌سازی", path: "/summarize", coins: 2 },
-    { icon: CheckSquare, label: "آزمون ساز", path: "/exam-v2", coins: 5 },
-    { icon: PenTool, label: "فلش کارت", path: "/flashcards", coins: 3 },
+    { icon: LayoutDashboard, label: t("nav.dashboard"), path: "/dashboard", coins: 0 },
+    { icon: FileText, label: t("dashboard.resources"), path: "/resources", coins: 0 },
+    { icon: HelpCircle, label: t("nav.questions"), path: "/questions", coins: 2 },
+    { icon: FileText, label: t("nav.summarize"), path: "/summarize", coins: 2 },
+    { icon: CheckSquare, label: t("nav.exam"), path: "/exam-v2", coins: 5 },
+    { icon: PenTool, label: t("dashboard.flashcards"), path: "/flashcards", coins: 3 },
     { icon: Brain, label: "نقشه ذهنی", path: "/mind-map", coins: 4 },
-    { icon: Lightbulb, label: "برنامه مطالعاتی", path: "/study-plan", coins: 3 },
-    { icon: TrendingUp, label: "پیشرفت من", path: "/progress", coins: 0 },
+    { icon: Lightbulb, label: t("dashboard.studyPlan"), path: "/study-plan", coins: 3 },
+    { icon: TrendingUp, label: t("nav.progress"), path: "/progress", coins: 0 },
   ];
 
   const isActive = (path: string) => location.pathname === path;
@@ -68,10 +70,10 @@ const Sidebar = ({ profile }: SidebarProps) => {
     <div className="hidden lg:flex h-screen w-64 flex-col border-l border-border/30 bg-background/95 backdrop-blur-xl">
       {/* Logo & Brand */}
       <div className="flex items-center gap-3 p-6 border-b border-border/30">
-        <img src="/logo.png" alt="ایزی درس" className="w-12 h-12" />
+        <img src="/logo.png" alt={t("app.name")} className="w-12 h-12" />
         <div>
-          <h2 className="text-xl font-bold text-gradient">ایزی درس</h2>
-          <p className="text-xs text-muted-foreground">یادگیری هوشمند</p>
+          <h2 className="text-xl font-bold text-gradient">{t("app.name")}</h2>
+          <p className="text-xs text-muted-foreground">{t("app.tagline")}</p>
         </div>
       </div>
 
@@ -91,7 +93,7 @@ const Sidebar = ({ profile }: SidebarProps) => {
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-1.5 bg-card/50 px-3 py-1.5 rounded-lg border border-border/30">
               <Trophy className="w-4 h-4 text-primary" />
-              <span className="text-xs font-bold">سطح {userLevel}</span>
+              <span className="text-xs font-bold">{t("header.level")} {userLevel}</span>
             </div>
             <div className="flex items-center gap-1.5 bg-card/50 px-3 py-1.5 rounded-lg border border-border/30">
               <Star className="w-4 h-4 text-secondary" />
@@ -150,7 +152,7 @@ const Sidebar = ({ profile }: SidebarProps) => {
           className="w-full justify-start gap-3 h-10 rounded-xl hover:bg-muted/50"
         >
           <User className="w-5 h-5" />
-          <span className="text-sm">پروفایل</span>
+          <span className="text-sm">{t("nav.profile")}</span>
         </Button>
         <Button
           variant="ghost"
@@ -158,7 +160,7 @@ const Sidebar = ({ profile }: SidebarProps) => {
           className="w-full justify-start gap-3 h-10 rounded-xl hover:bg-muted/50"
         >
           <Info className="w-5 h-5" />
-          <span className="text-sm">درباره ما</span>
+          <span className="text-sm">{t("nav.about")}</span>
         </Button>
         <Button
           variant="ghost"
@@ -166,7 +168,7 @@ const Sidebar = ({ profile }: SidebarProps) => {
           className="w-full justify-start gap-3 h-10 rounded-xl hover:bg-destructive/10 hover:text-destructive"
         >
           <LogOut className="w-5 h-5" />
-          <span className="text-sm">خروج</span>
+          <span className="text-sm">{t("nav.logout")}</span>
         </Button>
       </div>
     </div>
