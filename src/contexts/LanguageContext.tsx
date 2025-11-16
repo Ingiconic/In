@@ -78,30 +78,72 @@ const translations = {
       progress: "پیشرفت من",
       profile: "پروفایل",
       about: "درباره ما",
-      logout: "خروج"
+      logout: "خروج",
+      blog: "وبلاگ",
+      shop: "فروشگاه"
     },
     header: {
       level: "سطح",
-      points: "امتیاز"
+      points: "امتیاز",
+      coins: "سکه"
     },
     dashboard: {
-      welcome: "خوش آمدید",
+      welcome: "سلام",
+      welcomeMessage: "به ایزی درس خوش اومدی - همه ابزارهای یادگیری در یک جا!",
       quickAccess: "دسترسی سریع",
       recentActivity: "فعالیت‌های اخیر",
       studyStats: "آمار مطالعه",
       exams: "آزمون‌ها",
       flashcards: "فلش کارت‌ها",
-      resources: "منابع",
-      studyPlan: "برنامه مطالعاتی"
+      resources: "منابع من",
+      studyPlan: "برنامه مطالعاتی",
+      totalPoints: "مجموع امتیاز",
+      examsTaken: "آزمون‌های گرفته شده",
+      messagesSent: "پیام‌های ارسالی",
+      friends: "دوستان",
+      studyPlans: "برنامه‌های مطالعاتی",
+      features: "امکانات",
+      aiTools: "ابزارهای هوشمند",
+      learningFeatures: "ویژگی‌های یادگیری",
+      socialFeatures: "ویژگی‌های اجتماعی",
+      coinShop: "فروشگاه سکه",
+      coinShopDesc: "خرید سکه و امتیاز",
+      chatDesc: "چت گروهی با دوستان",
+      friendsDesc: "مدیریت دوستان",
+      questionsDesc: "پرسش از هوش مصنوعی",
+      summarizeDesc: "خلاصه‌سازی متون",
+      examDesc: "آزمون‌ساز هوشمند",
+      flashcardDesc: "فلش کارت یادگیری",
+      mindmapDesc: "نقشه ذهنی هوشمند",
+      studyPlanDesc: "برنامه‌ریز مطالعاتی",
+      progressDesc: "پیگیری پیشرفت",
+      consultationDesc: "مشاوره هوشمند"
     },
     auth: {
       login: "ورود",
       signup: "ثبت نام",
-      email: "ایمیل",
+      username: "نام کاربری",
+      fullName: "نام کامل",
       password: "رمز عبور",
       forgotPassword: "فراموشی رمز عبور",
       noAccount: "حساب کاربری ندارید؟",
-      haveAccount: "حساب کاربری دارید؟"
+      haveAccount: "حساب کاربری دارید؟",
+      welcomeBack: "خوش اومدی! 👋",
+      loginMessage: "لطفا وارد حساب کاربری خود شوید",
+      createAccount: "حساب کاربری بسازید",
+      signupMessage: "برای شروع، لطفا اطلاعات خود را وارد کنید",
+      loginButton: "ورود به حساب",
+      signupButton: "ایجاد حساب",
+      backToLogin: "بازگشت به ورود",
+      goToSignup: "ثبت نام کنید",
+      fillAllFields: "لطفا تمام فیلدها را پر کنید",
+      invalidCredentials: "نام کاربری یا رمز عبور اشتباه است",
+      welcomeSuccess: "خوش آمدید! 🎉",
+      loginSuccess: "ورود موفقیت‌آمیز بود",
+      passwordMinLength: "رمز عبور باید حداقل ۶ کاراکتر باشد",
+      usernameExists: "این نام کاربری قبلاً ثبت شده است",
+      accountCreated: "حساب شما با موفقیت ساخته شد",
+      problemOccurred: "مشکلی پیش آمد"
     },
     common: {
       save: "ذخیره",
@@ -113,7 +155,8 @@ const translations = {
       loading: "در حال بارگذاری...",
       error: "خطا",
       success: "موفق",
-      confirm: "تأیید"
+      confirm: "تأیید",
+      user: "کاربر"
     }
   },
   en: {
@@ -133,30 +176,72 @@ const translations = {
       progress: "My Progress",
       profile: "Profile",
       about: "About Us",
-      logout: "Logout"
+      logout: "Logout",
+      blog: "Blog",
+      shop: "Shop"
     },
     header: {
       level: "Level",
-      points: "Points"
+      points: "Points",
+      coins: "Coins"
     },
     dashboard: {
-      welcome: "Welcome",
+      welcome: "Hello",
+      welcomeMessage: "Welcome to EasyDers - all learning tools in one place!",
       quickAccess: "Quick Access",
       recentActivity: "Recent Activity",
       studyStats: "Study Stats",
       exams: "Exams",
       flashcards: "Flashcards",
-      resources: "Resources",
-      studyPlan: "Study Plan"
+      resources: "My Resources",
+      studyPlan: "Study Plan",
+      totalPoints: "Total Points",
+      examsTaken: "Exams Taken",
+      messagesSent: "Messages Sent",
+      friends: "Friends",
+      studyPlans: "Study Plans",
+      features: "Features",
+      aiTools: "AI Tools",
+      learningFeatures: "Learning Features",
+      socialFeatures: "Social Features",
+      coinShop: "Coin Shop",
+      coinShopDesc: "Buy coins and points",
+      chatDesc: "Group chat with friends",
+      friendsDesc: "Manage friends",
+      questionsDesc: "Ask AI questions",
+      summarizeDesc: "Summarize texts",
+      examDesc: "Smart exam creator",
+      flashcardDesc: "Learning flashcards",
+      mindmapDesc: "Smart mind map",
+      studyPlanDesc: "Study planner",
+      progressDesc: "Track progress",
+      consultationDesc: "Smart consultation"
     },
     auth: {
       login: "Login",
       signup: "Sign Up",
-      email: "Email",
+      username: "Username",
+      fullName: "Full Name",
       password: "Password",
       forgotPassword: "Forgot Password",
       noAccount: "Don't have an account?",
-      haveAccount: "Already have an account?"
+      haveAccount: "Already have an account?",
+      welcomeBack: "Welcome back! 👋",
+      loginMessage: "Please login to your account",
+      createAccount: "Create Account",
+      signupMessage: "To get started, please fill in your information",
+      loginButton: "Login to Account",
+      signupButton: "Create Account",
+      backToLogin: "Back to Login",
+      goToSignup: "Sign Up",
+      fillAllFields: "Please fill in all fields",
+      invalidCredentials: "Invalid username or password",
+      welcomeSuccess: "Welcome! 🎉",
+      loginSuccess: "Login successful",
+      passwordMinLength: "Password must be at least 6 characters",
+      usernameExists: "This username is already taken",
+      accountCreated: "Your account has been created successfully",
+      problemOccurred: "A problem occurred"
     },
     common: {
       save: "Save",
@@ -168,7 +253,8 @@ const translations = {
       loading: "Loading...",
       error: "Error",
       success: "Success",
-      confirm: "Confirm"
+      confirm: "Confirm",
+      user: "User"
     }
   },
   ar: {
@@ -188,30 +274,72 @@ const translations = {
       progress: "تقدمي",
       profile: "الملف الشخصي",
       about: "من نحن",
-      logout: "تسجيل الخروج"
+      logout: "تسجيل الخروج",
+      blog: "المدونة",
+      shop: "المتجر"
     },
     header: {
       level: "المستوى",
-      points: "النقاط"
+      points: "النقاط",
+      coins: "العملات"
     },
     dashboard: {
       welcome: "مرحباً",
+      welcomeMessage: "مرحباً بك في إيزي درس - جميع أدوات التعلم في مكان واحد!",
       quickAccess: "وصول سريع",
       recentActivity: "النشاط الأخير",
       studyStats: "إحصائيات الدراسة",
       exams: "الاختبارات",
       flashcards: "البطاقات التعليمية",
-      resources: "الموارد",
-      studyPlan: "خطة الدراسة"
+      resources: "مواردي",
+      studyPlan: "خطة الدراسة",
+      totalPoints: "مجموع النقاط",
+      examsTaken: "الاختبارات المأخوذة",
+      messagesSent: "الرسائل المرسلة",
+      friends: "الأصدقاء",
+      studyPlans: "خطط الدراسة",
+      features: "المميزات",
+      aiTools: "أدوات الذكاء الاصطناعي",
+      learningFeatures: "مميزات التعلم",
+      socialFeatures: "المميزات الاجتماعية",
+      coinShop: "متجر العملات",
+      coinShopDesc: "شراء العملات والنقاط",
+      chatDesc: "الدردشة الجماعية مع الأصدقاء",
+      friendsDesc: "إدارة الأصدقاء",
+      questionsDesc: "اسأل الذكاء الاصطناعي",
+      summarizeDesc: "تلخيص النصوص",
+      examDesc: "منشئ اختبارات ذكي",
+      flashcardDesc: "بطاقات تعليمية",
+      mindmapDesc: "خريطة ذهنية ذكية",
+      studyPlanDesc: "مخطط الدراسة",
+      progressDesc: "تتبع التقدم",
+      consultationDesc: "استشارة ذكية"
     },
     auth: {
       login: "تسجيل الدخول",
       signup: "إنشاء حساب",
-      email: "البريد الإلكتروني",
+      username: "اسم المستخدم",
+      fullName: "الاسم الكامل",
       password: "كلمة المرور",
       forgotPassword: "نسيت كلمة المرور",
       noAccount: "ليس لديك حساب؟",
-      haveAccount: "لديك حساب بالفعل؟"
+      haveAccount: "لديك حساب بالفعل؟",
+      welcomeBack: "مرحباً بعودتك! 👋",
+      loginMessage: "يرجى تسجيل الدخول إلى حسابك",
+      createAccount: "إنشاء حساب",
+      signupMessage: "للبدء، يرجى ملء معلوماتك",
+      loginButton: "تسجيل الدخول",
+      signupButton: "إنشاء الحساب",
+      backToLogin: "العودة إلى تسجيل الدخول",
+      goToSignup: "إنشاء حساب",
+      fillAllFields: "يرجى ملء جميع الحقول",
+      invalidCredentials: "اسم المستخدم أو كلمة المرور غير صحيحة",
+      welcomeSuccess: "مرحباً! 🎉",
+      loginSuccess: "تم تسجيل الدخول بنجاح",
+      passwordMinLength: "يجب أن تكون كلمة المرور 6 أحرف على الأقل",
+      usernameExists: "اسم المستخدم هذا مسجل بالفعل",
+      accountCreated: "تم إنشاء حسابك بنجاح",
+      problemOccurred: "حدثت مشكلة"
     },
     common: {
       save: "حفظ",
@@ -223,7 +351,8 @@ const translations = {
       loading: "جاري التحميل...",
       error: "خطأ",
       success: "نجاح",
-      confirm: "تأكيد"
+      confirm: "تأكيد",
+      user: "مستخدم"
     }
   }
 };
