@@ -30,8 +30,8 @@ const AdminLogin = () => {
     setLoading(true);
     
     try {
-      // Call secure edge function
-      const { data, error } = await supabase.functions.invoke('admin-login', {
+      // Call secure admin auth edge function
+      const { data, error } = await supabase.functions.invoke('admin-auth', {
         body: { username, password }
       });
 
@@ -39,9 +39,10 @@ const AdminLogin = () => {
         throw new Error(data?.error || 'نام کاربری یا رمز عبور اشتباه است');
       }
 
-      // Store secure session token
-      sessionStorage.setItem("admin_token", data.token);
-      sessionStorage.setItem("admin_expires", data.expiresAt.toString());
+      // Set the session in Supabase client
+      if (data.session) {
+        await supabase.auth.setSession(data.session);
+      }
       
       toast({ 
         title: "خوش آمدید! 🎉", 
