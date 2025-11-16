@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/lib/supabase";
-import { Sparkles, FileText, Loader2, Image, Mic, MicOff, Coins, ShoppingCart } from "lucide-react";
+import { Sparkles, FileText, Loader2, Image, Coins, ShoppingCart } from "lucide-react";
 import ResourceSelector from "@/components/ResourceSelector";
 import { usePageView } from "@/hooks/usePageView";
 import { logger } from "@/lib/logger";
@@ -27,11 +27,8 @@ const Summarize = () => {
   const [type, setType] = useState<"summarize" | "explain">("summarize");
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>("");
-  const [isRecording, setIsRecording] = useState(false);
   const [selectedResource, setSelectedResource] = useState<any>(null);
   const [userCoins, setUserCoins] = useState<number>(0);
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-  const audioChunksRef = useRef<Blob[]>([]);
 
   useEffect(() => {
     loadUserCoins();
@@ -52,59 +49,6 @@ const Summarize = () => {
     }
   };
 
-  const startRecording = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      mediaRecorderRef.current = new MediaRecorder(stream);
-      audioChunksRef.current = [];
-
-      mediaRecorderRef.current.ondataavailable = (event) => {
-        audioChunksRef.current.push(event.data);
-      };
-
-      mediaRecorderRef.current.onstop = async () => {
-        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
-        await transcribeAudio(audioBlob);
-        stream.getTracks().forEach(track => track.stop());
-      };
-
-      mediaRecorderRef.current.start();
-      setIsRecording(true);
-      toast({ title: "ضبط صدا", description: "صدای شما در حال ضبط است..." });
-    } catch (error) {
-      toast({ title: "خطا", description: "دسترسی به میکروفون ممکن نیست", variant: "destructive" });
-    }
-  };
-
-  const stopRecording = () => {
-    if (mediaRecorderRef.current && isRecording) {
-      mediaRecorderRef.current.stop();
-      setIsRecording(false);
-    }
-  };
-
-  const transcribeAudio = async (audioBlob: Blob) => {
-    setLoading(true);
-    try {
-      const reader = new FileReader();
-      reader.readAsDataURL(audioBlob);
-      reader.onloadend = async () => {
-        const base64Audio = reader.result?.toString().split(',')[1];
-        
-        const { data, error } = await supabase.functions.invoke('voice-to-text', {
-          body: { audio: base64Audio }
-        });
-
-        if (error) throw error;
-        setContent(data.text);
-        toast({ title: "موفق", description: "متن از صدا استخراج شد" });
-      };
-    } catch (error: any) {
-      toast({ title: "خطا", description: error.message, variant: "destructive" });
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleSummarize = async () => {
     if (!content.trim() && !imageFile && !selectedResource) {
@@ -186,7 +130,7 @@ const Summarize = () => {
               </h1>
             </div>
             <p className="text-sm text-muted-foreground">
-              متن، تصویر، صدا یا منبع خود را انتخاب کنید
+              متن، تصویر یا منبع خود را انتخاب کنید
             </p>
             {selectedResource && (
               <Card className="mt-3 p-2 bg-primary/5 border-primary/20">
@@ -236,13 +180,6 @@ const Summarize = () => {
                 onChange={handleImageUpload}
               />
             </label>
-            <Button
-              variant="outline"
-              onClick={isRecording ? stopRecording : startRecording}
-              className={isRecording ? "bg-destructive/10" : ""}
-            >
-              {isRecording ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
-            </Button>
           </div>
 
           {imagePreview && (
