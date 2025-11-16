@@ -7,17 +7,19 @@ import {
   Newspaper,
 } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const BottomNav = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useLanguage();
 
   const navItems = [
-    { icon: LayoutDashboard, label: "خانه", path: "/dashboard" },
+    { icon: LayoutDashboard, label: t("nav.dashboard"), path: "/dashboard" },
     { icon: ShoppingBag, label: "فروشگاه", path: "/coin-shop" },
     { icon: Newspaper, label: "وبلاگ", path: "/blog" },
-    { icon: HelpCircle, label: "پرسش", path: "/questions" },
-    { icon: User, label: "پروفایل", path: "/profile" },
+    { icon: HelpCircle, label: t("nav.questions"), path: "/questions" },
+    { icon: User, label: t("nav.profile"), path: "/profile" },
   ];
 
   const isActive = (path: string) => location.pathname === path;

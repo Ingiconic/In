@@ -17,6 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { 
   MessageSquare, 
   Users, 
@@ -40,7 +41,7 @@ interface HeaderProps {
 
 const Header = ({ profile }: HeaderProps) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [language, setLanguage] = useState("fa");
+  const { language, setLanguage, t } = useLanguage();
   const navigate = useNavigate();
   const location = useLocation();
   const { toast } = useToast();
@@ -51,14 +52,14 @@ const Header = ({ profile }: HeaderProps) => {
     try {
       await supabase.auth.signOut();
       toast({
-        title: "خروج موفق",
-        description: "با موفقیت از حساب خود خارج شدید",
+        title: t("common.success"),
+        description: t("nav.logout"),
       });
       navigate("/");
     } catch (error) {
       toast({
-        title: "خطا",
-        description: "مشکلی در خروج پیش آمد",
+        title: t("common.error"),
+        description: t("common.error"),
         variant: "destructive",
       });
     }
@@ -66,15 +67,15 @@ const Header = ({ profile }: HeaderProps) => {
   };
 
   const menuItems = [
-    { icon: LayoutDashboard, label: "داشبورد", path: "/dashboard" },
-    { icon: MessageSquare, label: "پیام‌رسان", path: "/chat" },
-    { icon: Users, label: "دوستان", path: "/chat-friends" },
-    { icon: HelpCircle, label: "پرسش درسی", path: "/questions" },
-    { icon: FileText, label: "خلاصه‌سازی", path: "/summarize" },
-    { icon: CheckSquare, label: "آزمون ساز", path: "/exam" },
-    { icon: PenTool, label: "حل تمرین", path: "/step-by-step" },
-    { icon: Brain, label: "مشاور هوشمند", path: "/consultation" },
-    { icon: TrendingUp, label: "پیشرفت من", path: "/progress" },
+    { icon: LayoutDashboard, label: t("nav.dashboard"), path: "/dashboard" },
+    { icon: MessageSquare, label: t("nav.chat"), path: "/chat" },
+    { icon: Users, label: t("nav.friends"), path: "/chat-friends" },
+    { icon: HelpCircle, label: t("nav.questions"), path: "/questions" },
+    { icon: FileText, label: t("nav.summarize"), path: "/summarize" },
+    { icon: CheckSquare, label: t("nav.exam"), path: "/exam" },
+    { icon: PenTool, label: t("nav.stepByStep"), path: "/step-by-step" },
+    { icon: Brain, label: t("nav.consultation"), path: "/consultation" },
+    { icon: TrendingUp, label: t("nav.progress"), path: "/progress" },
   ];
 
   const isActive = (path: string) => location.pathname === path;
@@ -84,8 +85,8 @@ const Header = ({ profile }: HeaderProps) => {
       <div className="flex h-16 items-center justify-between px-4 lg:px-6">
         {/* Logo - Hidden on Desktop (shown in sidebar) */}
         <div className="flex items-center gap-3 lg:hidden">
-          <img src="/logo.png" alt="ایزی درس" className="w-10 h-10" />
-          <span className="text-lg font-bold text-gradient">ایزی درس</span>
+          <img src="/logo.png" alt={t("app.name")} className="w-10 h-10" />
+          <span className="text-lg font-bold text-gradient">{t("app.name")}</span>
         </div>
 
         {/* Desktop: Language Selector + Stats */}
@@ -103,7 +104,7 @@ const Header = ({ profile }: HeaderProps) => {
           </Select>
           <div className="flex items-center gap-2 bg-card/50 backdrop-blur-sm px-4 py-2 rounded-xl border border-border/30">
             <Trophy className="w-5 h-5 text-primary" />
-            <span className="font-bold text-sm">سطح {userLevel}</span>
+            <span className="font-bold text-sm">{t("header.level")} {userLevel}</span>
           </div>
           <div className="flex items-center gap-2 bg-card/50 backdrop-blur-sm px-4 py-2 rounded-xl border border-border/30">
             <Star className="w-5 h-5 text-secondary" />
@@ -140,8 +141,8 @@ const Header = ({ profile }: HeaderProps) => {
                 {/* Mobile Menu Header */}
                 <div className="flex items-center justify-between p-6 border-b border-border/30">
                   <div className="flex items-center gap-3">
-                    <img src="/logo.png" alt="ایزی درس" className="w-10 h-10" />
-                    <span className="text-lg font-bold text-gradient">ایزی درس</span>
+                    <img src="/logo.png" alt={t("app.name")} className="w-10 h-10" />
+                    <span className="text-lg font-bold text-gradient">{t("app.name")}</span>
                   </div>
                   <Button
                     variant="ghost"
@@ -169,7 +170,7 @@ const Header = ({ profile }: HeaderProps) => {
                     <div className="flex items-center justify-between gap-2">
                       <div className="flex items-center gap-1.5 bg-card/50 px-3 py-1.5 rounded-lg border border-border/30">
                         <Trophy className="w-4 h-4 text-primary" />
-                        <span className="text-xs font-bold">سطح {userLevel}</span>
+                        <span className="text-xs font-bold">{t("header.level")} {userLevel}</span>
                       </div>
                       <div className="flex items-center gap-1.5 bg-card/50 px-3 py-1.5 rounded-lg border border-border/30">
                         <Star className="w-4 h-4 text-secondary" />
@@ -214,7 +215,7 @@ const Header = ({ profile }: HeaderProps) => {
                     className="w-full justify-start gap-3 h-10 rounded-xl hover:bg-muted/50"
                   >
                     <Info className="w-5 h-5" />
-                    <span className="text-sm">درباره ما</span>
+                    <span className="text-sm">{t("nav.about")}</span>
                   </Button>
                   <Button
                     variant="ghost"
@@ -222,7 +223,7 @@ const Header = ({ profile }: HeaderProps) => {
                     className="w-full justify-start gap-3 h-10 rounded-xl hover:bg-destructive/10 hover:text-destructive"
                   >
                     <LogOut className="w-5 h-5" />
-                    <span className="text-sm">خروج</span>
+                    <span className="text-sm">{t("nav.logout")}</span>
                   </Button>
                 </div>
               </div>
