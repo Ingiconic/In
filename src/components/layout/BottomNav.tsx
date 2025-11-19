@@ -2,7 +2,7 @@ import {
   LayoutDashboard,
   ShoppingBag, 
   HelpCircle, 
-  FileText, 
+  BookText, 
   User,
 } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -16,7 +16,7 @@ const BottomNav = () => {
   const navItems = [
     { icon: LayoutDashboard, label: t("nav.dashboard"), path: "/dashboard" },
     { icon: HelpCircle, label: t("nav.questions"), path: "/questions" },
-    { icon: FileText, label: t("nav.summarize"), path: "/summarize" },
+    { icon: BookText, label: "بلاگ", path: "/blog" },
     { icon: ShoppingBag, label: "فروشگاه", path: "/coin-shop" },
     { icon: User, label: t("nav.profile"), path: "/profile" },
   ];

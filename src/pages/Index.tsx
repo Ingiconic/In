@@ -22,10 +22,10 @@ const Index = () => {
   
   return (
     <div className="min-h-screen bg-background overflow-hidden" ref={containerRef}>
-      {/* Animated Background Mesh */}
+      {/* Animated Background Mesh - Simplified for mobile */}
       <div className="fixed inset-0 pointer-events-none">
         <motion.div
-          className="absolute top-0 left-0 w-full h-full opacity-40"
+          className="absolute top-0 left-0 w-full h-full opacity-40 hidden md:block"
           style={{
             background: `
               radial-gradient(circle at 20% 20%, hsl(248 73% 62% / 0.15) 0%, transparent 50%),
@@ -44,72 +44,69 @@ const Index = () => {
           }}
         />
         
-        {/* Floating Particles */}
-        {[...Array(15)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute rounded-full"
-            style={{
-              width: Math.random() * 4 + 2,
-              height: Math.random() * 4 + 2,
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              background: `hsl(${248 + Math.random() * 100} 73% 62%)`,
-              boxShadow: `0 0 ${Math.random() * 20 + 10}px hsl(${248 + Math.random() * 100} 73% 62% / 0.8)`
-            }}
-            animate={{
-              y: [0, -30, 0],
-              x: [0, Math.random() * 20 - 10, 0],
-              opacity: [0.2, 1, 0.2],
-            }}
-            transition={{
-              duration: Math.random() * 3 + 2,
-              repeat: Infinity,
-              delay: Math.random() * 2,
-              ease: "easeInOut"
-            }}
-          />
-        ))}
+        {/* Floating Particles - Desktop only */}
+        <div className="hidden lg:block">
+          {[...Array(8)].map((_, i) => (
+            <motion.div
+              key={i}
+              className="absolute rounded-full"
+              style={{
+                width: Math.random() * 4 + 2,
+                height: Math.random() * 4 + 2,
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+                background: `hsl(${248 + Math.random() * 100} 73% 62%)`,
+                boxShadow: `0 0 ${Math.random() * 20 + 10}px hsl(${248 + Math.random() * 100} 73% 62% / 0.8)`
+              }}
+              animate={{
+                y: [0, -30, 0],
+                x: [0, Math.random() * 20 - 10, 0],
+                opacity: [0.2, 1, 0.2],
+              }}
+              transition={{
+                duration: Math.random() * 3 + 2,
+                repeat: Infinity,
+                delay: Math.random() * 2,
+                ease: "easeInOut"
+              }}
+            />
+          ))}
+        </div>
       </div>
 
       {/* Header */}
       <motion.header 
-        className="fixed top-0 left-0 right-0 z-50 bg-background/60 backdrop-blur-2xl border-b border-border/30"
+        className="fixed top-0 left-0 right-0 z-50 bg-background/60 backdrop-blur-xl border-b border-border/30"
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
       >
-        <div className="container mx-auto px-4 py-4">
+        <div className="container mx-auto px-4 py-3 md:py-4">
           <div className="flex items-center justify-between">
-            <motion.div 
-              className="flex items-center gap-3"
-              whileHover={{ scale: 1.05 }}
-            >
-              <div className="w-11 h-11 rounded-2xl gradient-primary flex items-center justify-center shadow-glow">
-                <Brain className="w-6 h-6 text-white" />
+            <div className="flex items-center gap-2 md:gap-3">
+              <div className="w-9 h-9 md:w-11 md:h-11 rounded-xl md:rounded-2xl gradient-primary flex items-center justify-center shadow-glow">
+                <Brain className="w-5 h-5 md:w-6 md:h-6 text-white" />
               </div>
-              <span className="text-2xl font-bold text-gradient">Easy Dars</span>
-            </motion.div>
+              <span className="text-xl md:text-2xl font-bold text-gradient">Easy Dars</span>
+            </div>
             
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 md:gap-3">
               <Button 
                 variant="ghost" 
                 size="sm" 
                 onClick={() => navigate("/login")}
-                className="hover:bg-primary/10 transition-all"
+                className="hover:bg-primary/10 transition-all text-xs md:text-sm"
               >
                 ورود
               </Button>
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Button 
-                  size="sm"
-                  className="gradient-primary shadow-glow hover:shadow-neon transition-all" 
-                  onClick={() => navigate("/signup")}
-                >
-                  شروع رایگان
-                  <Sparkles className="w-4 h-4 mr-2" />
-                </Button>
-              </motion.div>
+              <Button 
+                size="sm"
+                className="gradient-primary shadow-glow hover:shadow-neon transition-all text-xs md:text-sm px-3 md:px-4" 
+                onClick={() => navigate("/signup")}
+              >
+                شروع رایگان
+                <Sparkles className="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2" />
+              </Button>
             </div>
           </div>
         </div>
@@ -142,14 +139,14 @@ const Index = () => {
 
             {/* Main Heading */}
             <motion.h1 
-              className="text-5xl md:text-7xl lg:text-8xl font-black leading-tight"
+              className="text-3xl md:text-5xl lg:text-7xl font-black leading-tight"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.3 }}
             >
-              <span className="block mb-4">هوش مصنوعی</span>
+              <span className="block mb-2 md:mb-4">هوش مصنوعی</span>
               <motion.span 
-                className="block text-gradient animate-neon-pulse"
+                className="block text-gradient"
                 animate={{ 
                   backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
                 }}
@@ -157,14 +154,14 @@ const Index = () => {
               >
                 معلم شخصی تو
               </motion.span>
-              <span className="block mt-4 text-4xl md:text-6xl lg:text-7xl">
+              <span className="block mt-2 md:mt-4 text-2xl md:text-4xl lg:text-6xl">
                 برای یادگیری بهتر
               </span>
             </motion.h1>
 
             {/* Description */}
             <motion.p 
-              className="text-lg md:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed"
+              className="text-sm md:text-lg lg:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed px-4"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.5 }}
