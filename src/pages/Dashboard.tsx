@@ -2,8 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ShoppingBag, Users, FileText, CheckSquare, HelpCircle, Sparkles, Trophy, PenTool, Brain, TrendingUp, Award, Target, BookOpen, Calendar, Lightbulb, CreditCard, Coins, MessageSquare } from "lucide-react";
+import { ShoppingBag, Users, FileText, CheckSquare, HelpCircle, Trophy, PenTool, Brain, BookOpen, Lightbulb, CreditCard, Coins, MessageSquare } from "lucide-react";
 import { usePageView } from "@/hooks/usePageView";
 import AppLayout from "@/components/layout/AppLayout";
 import { Button } from "@/components/ui/button";
@@ -82,80 +81,55 @@ const Dashboard = () => {
 
   return (
     <AppLayout>
-      <div className="container mx-auto px-4 md:px-6 py-6 md:py-8 max-w-7xl">
-        {/* Welcome Hero */}
-        <div className="bg-gradient-to-br from-primary/10 via-primary/5 to-secondary/10 rounded-2xl p-6 md:p-8 mb-6 border border-primary/20 shadow-glow">
-          <div className="flex items-center justify-between mb-4">
+      <div className="container mx-auto px-4 md:px-6 py-4 md:py-6 max-w-7xl">
+        {/* Welcome Hero - Compact */}
+        <div className="bg-gradient-to-br from-primary/10 via-primary/5 to-secondary/10 rounded-xl p-3 md:p-4 mb-4 border border-primary/20">
+          <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-2xl md:text-4xl font-bold mb-2">
+              <h2 className="text-lg md:text-xl font-bold">
                 {t("dashboard.welcome")} {profile?.full_name || t("common.user")}! 👋
               </h2>
-              <p className="text-muted-foreground text-sm md:text-base">
-                {t("dashboard.welcomeMessage")}
-              </p>
             </div>
-            <div className="hidden md:flex items-center gap-4">
+            <div className="flex items-center gap-2 md:gap-3">
               <div className="text-center">
-                <div className="bg-yellow-500/10 p-3 rounded-xl border border-yellow-500/30 mb-1">
-                  <Coins className="w-6 h-6 text-yellow-500" />
+                <div className="bg-yellow-500/10 p-2 rounded-lg border border-yellow-500/30">
+                  <Coins className="w-4 h-4 text-yellow-500" />
                 </div>
-                <p className="text-2xl font-bold text-yellow-500">{profile?.coins || 0}</p>
-                <p className="text-xs text-muted-foreground">{t("header.coins")}</p>
+                <p className="text-sm font-bold text-yellow-500 mt-0.5">{profile?.coins || 0}</p>
               </div>
-              <div className="text-center">
-                <div className="gradient-primary p-3 rounded-xl shadow-glow mb-1">
-                  <Trophy className="w-6 h-6 text-white" />
+              <div className="text-center hidden sm:block">
+                <div className="gradient-primary p-2 rounded-lg">
+                  <Trophy className="w-4 h-4 text-white" />
                 </div>
-                <p className="text-2xl font-bold text-primary">{stats.totalPoints}</p>
-                <p className="text-xs text-muted-foreground">{t("dashboard.totalPoints")}</p>
-              </div>
-              <div className="text-center">
-                <div className="gradient-secondary p-3 rounded-xl shadow-glow mb-1">
-                  <Target className="w-6 h-6 text-white" />
-                </div>
-                <p className="text-2xl font-bold text-secondary">{stats.examsCount}</p>
-                <p className="text-xs text-muted-foreground">{t("dashboard.exams")}</p>
+                <p className="text-sm font-bold text-primary mt-0.5">{stats.totalPoints}</p>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Main Unified Interface */}
-        <Tabs defaultValue="tools" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-6">
-            <TabsTrigger value="tools">
-              <Sparkles className="w-4 h-4 ml-1" />
-              {t("dashboard.features")}
-            </TabsTrigger>
-            <TabsTrigger value="stats">
-              <TrendingUp className="w-4 h-4 ml-1" />
-              {t("dashboard.studyStats")}
-            </TabsTrigger>
-          </TabsList>
-
-          {/* Tools Tab */}
-          <TabsContent value="tools" className="space-y-6">
-            {/* AI Tools Section */}
-            <div>
-              <div className="flex items-center gap-2 mb-4">
-                <Brain className="w-5 h-5 text-primary" />
-                <h3 className="text-xl font-bold">{t("dashboard.aiTools")}</h3>
-              </div>
-              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                <Card 
-                  className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group border-primary/10"
-                  onClick={() => navigate("/questions")}
-                >
-                  <CardHeader className="p-4 md:p-5">
-                    <div className="flex flex-col items-center gap-2.5 text-center">
-                      <div className="gradient-primary p-3 rounded-2xl shadow-glow group-hover:scale-110 transition-transform">
-                        <HelpCircle className="w-6 h-6 text-white" />
-                      </div>
-                      <CardTitle className="text-sm md:text-base font-bold">{t("nav.questions")}</CardTitle>
-                      <CardDescription className="text-xs">{COIN_COSTS.QUESTION_ANSWER} {t("header.coins")}</CardDescription>
+        {/* Tools */}
+        <div className="space-y-5">
+          {/* AI Tools Section */}
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <Brain className="w-5 h-5 text-primary" />
+              <h3 className="text-lg font-bold">{t("dashboard.aiTools")}</h3>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+              <Card 
+                className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10"
+                onClick={() => navigate("/questions")}
+              >
+                <CardHeader className="p-4">
+                  <div className="flex flex-col items-center gap-2 text-center">
+                    <div className="gradient-primary p-3 rounded-xl shadow-lg group-hover:scale-110 transition-transform">
+                      <HelpCircle className="w-6 h-6 text-white" />
                     </div>
-                  </CardHeader>
-                </Card>
+                    <CardTitle className="text-sm font-bold">{t("nav.questions")}</CardTitle>
+                    <CardDescription className="text-xs opacity-80">{COIN_COSTS.QUESTION_ANSWER} {t("header.coins")}</CardDescription>
+                  </div>
+                </CardHeader>
+              </Card>
 
                 <Card 
                   className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group border-primary/10"
