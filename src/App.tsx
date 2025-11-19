@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { LanguageProvider } from "@/contexts/LanguageContext";
+import InstallPrompt from "@/components/InstallPrompt";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
@@ -26,6 +27,7 @@ import MindMapAI from "./pages/MindMapAI";
 import Flashcards from "./pages/Flashcards";
 import Resources from "./pages/Resources";
 import CoinShop from "./pages/CoinShop";
+import Install from "./pages/Install";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -36,6 +38,7 @@ const App = () => (
       <TooltipProvider>
         <Toaster />
         <Sonner />
+        <InstallPrompt />
         <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
@@ -60,6 +63,9 @@ const App = () => (
           <Route path="/flashcards" element={<Flashcards />} />
           <Route path="/resources" element={<Resources />} />
           <Route path="/coin-shop" element={<CoinShop />} />
+          <Route path="/install" element={<Install />} />
+          <Route path="/chat" element={<Chat />} />
+          <Route path="/chat-friends" element={<ChatFriends />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
