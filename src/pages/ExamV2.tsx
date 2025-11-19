@@ -39,6 +39,22 @@ const ExamV2 = () => {
       return;
     }
 
+    // Check if user has enough coins
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("coins")
+      .eq("id", (await supabase.auth.getUser()).data.user?.id)
+      .single();
+
+    if ((profile?.coins || 0) < COIN_COSTS.EXAM_GENERATE) {
+      toast({
+        title: "سکه کافی نیست",
+        description: `برای این عملیات به ${COIN_COSTS.EXAM_GENERATE} سکه نیاز دارید.`,
+        variant: "destructive",
+      });
+      return;
+    }
+
     setLoading(true);
     try {
       let finalContent = content;

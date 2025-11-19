@@ -94,6 +94,22 @@ const StudyPlan = () => {
       return;
     }
 
+    // Check if user has enough coins
+    const { data: profileData } = await supabase
+      .from("profiles")
+      .select("coins")
+      .eq("id", (await supabase.auth.getUser()).data.user?.id)
+      .single();
+
+    if ((profileData?.coins || 0) < COIN_COSTS.STUDY_PLAN) {
+      toast({
+        title: "سکه کافی نیست",
+        description: `برای این عملیات به ${COIN_COSTS.STUDY_PLAN} سکه نیاز دارید.`,
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
       setGenerating(true);
 
