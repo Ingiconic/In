@@ -146,13 +146,13 @@ const Dashboard = () => {
                   className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group border-primary/10"
                   onClick={() => navigate("/questions")}
                 >
-                  <CardHeader className="p-3 md:p-5">
-                    <div className="flex flex-col items-center gap-2 text-center">
-                      <div className="gradient-primary p-2 md:p-2.5 rounded-xl shadow-glow group-hover:scale-110 transition-transform">
-                        <HelpCircle className="w-4 h-4 md:w-5 md:h-5 text-white" />
+                  <CardHeader className="p-4 md:p-5">
+                    <div className="flex flex-col items-center gap-2.5 text-center">
+                      <div className="gradient-primary p-3 rounded-2xl shadow-glow group-hover:scale-110 transition-transform">
+                        <HelpCircle className="w-6 h-6 text-white" />
                       </div>
-                      <CardTitle className="text-xs md:text-base group-hover:text-gradient transition-colors">{t("nav.questions")}</CardTitle>
-                      <CardDescription className="text-[10px] md:text-xs">{COIN_COSTS.QUESTION_ANSWER} {t("header.coins")}</CardDescription>
+                      <CardTitle className="text-sm md:text-base font-bold">{t("nav.questions")}</CardTitle>
+                      <CardDescription className="text-xs">{COIN_COSTS.QUESTION_ANSWER} {t("header.coins")}</CardDescription>
                     </div>
                   </CardHeader>
                 </Card>
@@ -161,13 +161,13 @@ const Dashboard = () => {
                   className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group border-primary/10"
                   onClick={() => navigate("/summarize")}
                 >
-                  <CardHeader className="p-3 md:p-5">
-                    <div className="flex flex-col items-center gap-2 text-center">
-                      <div className="gradient-primary p-2 md:p-2.5 rounded-xl shadow-glow group-hover:scale-110 transition-transform">
-                        <FileText className="w-4 h-4 md:w-5 md:h-5 text-white" />
+                  <CardHeader className="p-4 md:p-5">
+                    <div className="flex flex-col items-center gap-2.5 text-center">
+                      <div className="gradient-secondary p-3 rounded-2xl shadow-glow group-hover:scale-110 transition-transform">
+                        <FileText className="w-6 h-6 text-white" />
                       </div>
-                      <CardTitle className="text-xs md:text-base group-hover:text-gradient transition-colors">{t("nav.summarize")}</CardTitle>
-                      <CardDescription className="text-[10px] md:text-xs">{COIN_COSTS.SUMMARIZE} {t("header.coins")}</CardDescription>
+                      <CardTitle className="text-sm md:text-base font-bold">{t("nav.summarize")}</CardTitle>
+                      <CardDescription className="text-xs">{COIN_COSTS.SUMMARIZE} {t("header.coins")}</CardDescription>
                     </div>
                   </CardHeader>
                 </Card>
@@ -176,13 +176,13 @@ const Dashboard = () => {
                   className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group border-primary/10"
                   onClick={() => navigate("/exam")}
                 >
-                  <CardHeader className="p-3 md:p-5">
-                    <div className="flex flex-col items-center gap-2 text-center">
-                      <div className="gradient-primary p-2 md:p-2.5 rounded-xl shadow-glow group-hover:scale-110 transition-transform">
-                        <CheckSquare className="w-4 h-4 md:w-5 md:h-5 text-white" />
+                  <CardHeader className="p-4 md:p-5">
+                    <div className="flex flex-col items-center gap-2.5 text-center">
+                      <div className="gradient-accent p-3 rounded-2xl shadow-glow group-hover:scale-110 transition-transform">
+                        <CheckSquare className="w-6 h-6 text-white" />
                       </div>
-                      <CardTitle className="text-xs md:text-base group-hover:text-gradient transition-colors">{t("nav.exam")}</CardTitle>
-                      <CardDescription className="text-[10px] md:text-xs">{COIN_COSTS.EXAM_GENERATE} {t("header.coins")}</CardDescription>
+                      <CardTitle className="text-sm md:text-base font-bold">{t("nav.exam")}</CardTitle>
+                      <CardDescription className="text-xs">{COIN_COSTS.EXAM_GENERATE} {t("header.coins")}</CardDescription>
                     </div>
                   </CardHeader>
                 </Card>
@@ -191,13 +191,13 @@ const Dashboard = () => {
                   className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group border-primary/10"
                   onClick={() => navigate("/consultation")}
                 >
-                  <CardHeader className="p-3 md:p-5">
-                    <div className="flex flex-col items-center gap-2 text-center">
-                      <div className="gradient-primary p-2 md:p-2.5 rounded-xl shadow-glow group-hover:scale-110 transition-transform">
-                        <Brain className="w-4 h-4 md:w-5 md:h-5 text-white" />
+                  <CardHeader className="p-4 md:p-5">
+                    <div className="flex flex-col items-center gap-2.5 text-center">
+                      <div className="gradient-primary p-3 rounded-2xl shadow-glow group-hover:scale-110 transition-transform">
+                        <Brain className="w-6 h-6 text-white" />
                       </div>
-                      <CardTitle className="text-xs md:text-base group-hover:text-gradient transition-colors">مشاور هوشمند</CardTitle>
-                      <CardDescription className="text-[10px] md:text-xs">{COIN_COSTS.CONSULTATION} سکه</CardDescription>
+                      <CardTitle className="text-sm md:text-base font-bold">مشاور هوشمند</CardTitle>
+                      <CardDescription className="text-xs">{COIN_COSTS.CONSULTATION} سکه</CardDescription>
                     </div>
                   </CardHeader>
                 </Card>
@@ -215,13 +215,13 @@ const Dashboard = () => {
                   className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group border-secondary/10"
                   onClick={() => navigate("/mind-map")}
                 >
-                  <CardHeader className="p-3 md:p-5">
-                    <div className="flex flex-col items-center gap-2 text-center">
-                      <div className="gradient-secondary p-2 md:p-2.5 rounded-xl shadow-glow group-hover:scale-110 transition-transform">
-                        <Lightbulb className="w-4 h-4 md:w-5 md:h-5 text-white" />
+                  <CardHeader className="p-4 md:p-5">
+                    <div className="flex flex-col items-center gap-2.5 text-center">
+                      <div className="gradient-secondary p-3 rounded-2xl shadow-glow group-hover:scale-110 transition-transform">
+                        <Lightbulb className="w-6 h-6 text-white" />
                       </div>
-                      <CardTitle className="text-xs md:text-base group-hover:text-gradient transition-colors">نقشه ذهنی</CardTitle>
-                      <CardDescription className="text-[10px] md:text-xs">{COIN_COSTS.MINDMAP_GENERATE} سکه</CardDescription>
+                      <CardTitle className="text-sm md:text-base font-bold">نقشه ذهنی</CardTitle>
+                      <CardDescription className="text-xs">{COIN_COSTS.MINDMAP_GENERATE} سکه</CardDescription>
                     </div>
                   </CardHeader>
                 </Card>
@@ -230,13 +230,13 @@ const Dashboard = () => {
                   className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group border-secondary/10"
                   onClick={() => navigate("/flashcards")}
                 >
-                  <CardHeader className="p-3 md:p-5">
-                    <div className="flex flex-col items-center gap-2 text-center">
-                      <div className="gradient-secondary p-2 md:p-2.5 rounded-xl shadow-glow group-hover:scale-110 transition-transform">
-                        <CreditCard className="w-4 h-4 md:w-5 md:h-5 text-white" />
+                  <CardHeader className="p-4 md:p-5">
+                    <div className="flex flex-col items-center gap-2.5 text-center">
+                      <div className="gradient-accent p-3 rounded-2xl shadow-glow group-hover:scale-110 transition-transform">
+                        <CreditCard className="w-6 h-6 text-white" />
                       </div>
-                      <CardTitle className="text-xs md:text-base group-hover:text-gradient transition-colors">فلش کارت</CardTitle>
-                      <CardDescription className="text-[10px] md:text-xs">{COIN_COSTS.FLASHCARD_GENERATE} سکه</CardDescription>
+                      <CardTitle className="text-sm md:text-base font-bold">فلش کارت</CardTitle>
+                      <CardDescription className="text-xs">{COIN_COSTS.FLASHCARD_GENERATE} سکه</CardDescription>
                     </div>
                   </CardHeader>
                 </Card>
@@ -245,13 +245,13 @@ const Dashboard = () => {
                   className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group border-secondary/10"
                   onClick={() => navigate("/resources")}
                 >
-                  <CardHeader className="p-3 md:p-5">
-                    <div className="flex flex-col items-center gap-2 text-center">
-                      <div className="gradient-secondary p-2 md:p-2.5 rounded-xl shadow-glow group-hover:scale-110 transition-transform">
-                        <BookOpen className="w-4 h-4 md:w-5 md:h-5 text-white" />
+                  <CardHeader className="p-4 md:p-5">
+                    <div className="flex flex-col items-center gap-2.5 text-center">
+                      <div className="bg-gradient-to-br from-green-500 to-emerald-600 p-3 rounded-2xl shadow-glow group-hover:scale-110 transition-transform">
+                        <BookOpen className="w-6 h-6 text-white" />
                       </div>
-                      <CardTitle className="text-xs md:text-base group-hover:text-gradient transition-colors">منابع</CardTitle>
-                      <CardDescription className="text-[10px] md:text-xs">رایگان</CardDescription>
+                      <CardTitle className="text-sm md:text-base font-bold">منابع</CardTitle>
+                      <CardDescription className="text-xs">رایگان</CardDescription>
                     </div>
                   </CardHeader>
                 </Card>
@@ -260,13 +260,13 @@ const Dashboard = () => {
                   className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group border-secondary/10"
                   onClick={() => navigate("/coin-shop")}
                 >
-                  <CardHeader className="p-3 md:p-5">
-                    <div className="flex flex-col items-center gap-2 text-center">
-                      <div className="gradient-secondary p-2 md:p-2.5 rounded-xl shadow-glow group-hover:scale-110 transition-transform">
-                        <ShoppingBag className="w-4 h-4 md:w-5 md:h-5 text-white" />
+                  <CardHeader className="p-4 md:p-5">
+                    <div className="flex flex-col items-center gap-2.5 text-center">
+                      <div className="bg-gradient-to-br from-yellow-500 to-amber-600 p-3 rounded-2xl shadow-glow group-hover:scale-110 transition-transform">
+                        <ShoppingBag className="w-6 h-6 text-white" />
                       </div>
-                      <CardTitle className="text-xs md:text-base group-hover:text-gradient transition-colors">فروشگاه سکه</CardTitle>
-                      <CardDescription className="text-[10px] md:text-xs">خرید سکه</CardDescription>
+                      <CardTitle className="text-sm md:text-base font-bold">فروشگاه سکه</CardTitle>
+                      <CardDescription className="text-xs">خرید سکه</CardDescription>
                     </div>
                   </CardHeader>
                 </Card>
