@@ -105,7 +105,11 @@ const Blog = () => {
                   {post.excerpt && (
                     <p className="text-muted-foreground line-clamp-3 mb-4">{post.excerpt}</p>
                   )}
-                  <Button variant="ghost" className="w-full group-hover:bg-primary/10">
+                  <Button 
+                    variant="ghost" 
+                    className="w-full group-hover:bg-primary/10"
+                    onClick={() => navigate(`/blog/${post.slug}`)}
+                  >
                     مشاهده پست
                     <ArrowLeft className="mr-2 w-4 h-4" />
                   </Button>

@@ -17,8 +17,16 @@ const Signup = () => {
   const [username, setUsername] = useState("");
   const [fullName, setFullName] = useState("");
   const [password, setPassword] = useState("");
+  const [referralCode, setReferralCode] = useState<string | null>(null);
 
   useEffect(() => {
+    // Get referral code from URL
+    const params = new URLSearchParams(window.location.search);
+    const ref = params.get("ref");
+    if (ref) {
+      setReferralCode(ref);
+    }
+
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) navigate("/dashboard");
@@ -76,6 +84,7 @@ const Signup = () => {
           data: {
             full_name: fullName,
             username: username.toLowerCase().trim(),
+            ...(referralCode && { referral_code: referralCode }),
           },
         },
       });

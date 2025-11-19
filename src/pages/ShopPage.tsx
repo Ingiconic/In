@@ -4,10 +4,11 @@ import AppLayout from "@/components/layout/AppLayout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ShoppingCart, Sparkles, Zap, Palette, User, Check } from "lucide-react";
+import { ShoppingCart, Sparkles, Zap, Palette, User, Check, Gift } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
 interface ShopItem {
   id: string;
@@ -34,6 +35,7 @@ const ShopPage = () => {
   const [userCoins, setUserCoins] = useState(0);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   useEffect(() => {
     loadShopData();
@@ -215,6 +217,33 @@ const ShopPage = () => {
             </CardContent>
           </Card>
         </div>
+
+        {/* Referral Card */}
+        <Card className="bg-gradient-to-br from-primary/20 via-purple-500/20 to-pink-500/20 border-primary/30 overflow-hidden relative">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-primary/30 to-transparent rounded-full blur-3xl" />
+          <CardContent className="p-6 relative z-10">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+              <div className="flex items-center gap-4">
+                <div className="bg-gradient-to-br from-primary to-purple-500 p-4 rounded-2xl">
+                  <Gift className="w-8 h-8 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-2xl font-bold mb-1">دعوت از دوستان 🎁</h3>
+                  <p className="text-muted-foreground">
+                    به ازای هر دعوت موفق، <span className="font-bold text-amber-500">500 سکه</span> دریافت کنید!
+                  </p>
+                </div>
+              </div>
+              <Button
+                size="lg"
+                onClick={() => navigate("/referral")}
+                className="bg-gradient-to-r from-primary to-purple-500 hover:from-primary/90 hover:to-purple-500/90"
+              >
+                مشاهده لینک دعوت
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Shop Tabs */}
         <Tabs defaultValue="all" className="space-y-6">

@@ -870,6 +870,8 @@ export type Database = {
           last_activity_date: string | null
           level: number | null
           points: number | null
+          referral_code: string | null
+          referred_by: string | null
           streak_days: number | null
           theme: string | null
           updated_at: string
@@ -892,6 +894,8 @@ export type Database = {
           last_activity_date?: string | null
           level?: number | null
           points?: number | null
+          referral_code?: string | null
+          referred_by?: string | null
           streak_days?: number | null
           theme?: string | null
           updated_at?: string
@@ -914,13 +918,30 @@ export type Database = {
           last_activity_date?: string | null
           level?: number | null
           points?: number | null
+          referral_code?: string | null
+          referred_by?: string | null
           streak_days?: number | null
           theme?: string | null
           updated_at?: string
           username?: string | null
           xp?: number | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profiles_referred_by_fkey"
+            columns: ["referred_by"]
+            isOneToOne: false
+            referencedRelation: "leaderboard"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "profiles_referred_by_fkey"
+            columns: ["referred_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       questions: {
         Row: {
@@ -948,6 +969,59 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      referrals: {
+        Row: {
+          created_at: string | null
+          id: string
+          referred_id: string
+          referrer_id: string
+          reward_claimed: boolean | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          referred_id: string
+          referrer_id: string
+          reward_claimed?: boolean | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          referred_id?: string
+          referrer_id?: string
+          reward_claimed?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referrals_referred_id_fkey"
+            columns: ["referred_id"]
+            isOneToOne: false
+            referencedRelation: "leaderboard"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "referrals_referred_id_fkey"
+            columns: ["referred_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "referrals_referrer_id_fkey"
+            columns: ["referrer_id"]
+            isOneToOne: false
+            referencedRelation: "leaderboard"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "referrals_referrer_id_fkey"
+            columns: ["referrer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       resources: {
         Row: {
@@ -1402,6 +1476,7 @@ export type Database = {
         Args: { _amount: number; _reason: string }
         Returns: boolean
       }
+      generate_referral_code: { Args: never; Returns: string }
       get_user_coins: { Args: never; Returns: number }
       has_role: {
         Args: {

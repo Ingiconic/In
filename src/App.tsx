@@ -35,6 +35,8 @@ import ShopPage from "./pages/ShopPage";
 import FocusMode from "./pages/FocusMode";
 import Forum from "./pages/Forum";
 import ThemeSettings from "./pages/ThemeSettings";
+import BlogPost from "./pages/BlogPost";
+import Referral from "./pages/Referral";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -80,6 +82,8 @@ const App = () => (
               <Route path="/focus" element={<FocusMode />} />
               <Route path="/forum" element={<Forum />} />
               <Route path="/theme" element={<ThemeSettings />} />
+              <Route path="/blog/:slug" element={<BlogPost />} />
+              <Route path="/referral" element={<Referral />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
