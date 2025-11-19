@@ -3,7 +3,6 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { LanguageProvider } from "@/contexts/LanguageContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import InstallPrompt from "@/components/InstallPrompt";
 import Index from "./pages/Index";
@@ -34,6 +33,7 @@ import StudyCalendar from "./pages/StudyCalendar";
 import ShopPage from "./pages/ShopPage";
 import FocusMode from "./pages/FocusMode";
 import Forum from "./pages/Forum";
+import ForumCategory from "./pages/ForumCategory";
 import ThemeSettings from "./pages/ThemeSettings";
 import BlogPost from "./pages/BlogPost";
 import Referral from "./pages/Referral";
@@ -44,13 +44,12 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <ThemeProvider>
-      <LanguageProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <InstallPrompt />
-            <Routes>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <InstallPrompt />
+          <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
@@ -81,15 +80,15 @@ const App = () => (
               <Route path="/shop" element={<ShopPage />} />
               <Route path="/focus" element={<FocusMode />} />
               <Route path="/forum" element={<Forum />} />
+              <Route path="/forum/:categoryId" element={<ForumCategory />} />
               <Route path="/theme" element={<ThemeSettings />} />
               <Route path="/blog/:slug" element={<BlogPost />} />
               <Route path="/referral" element={<Referral />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
-            </Routes>
-          </BrowserRouter>
-        </TooltipProvider>
-      </LanguageProvider>
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
     </ThemeProvider>
   </QueryClientProvider>
 );
