@@ -2,12 +2,13 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { ShoppingBag, Users, FileText, CheckSquare, HelpCircle, Trophy, PenTool, Brain, BookOpen, Lightbulb, CreditCard, Coins, MessageSquare } from "lucide-react";
+import { ShoppingBag, Users, FileText, CheckSquare, HelpCircle, Trophy, PenTool, Brain, BookOpen, Lightbulb, CreditCard, Coins, MessageSquare, Calendar, Award, Flame } from "lucide-react";
 import { usePageView } from "@/hooks/usePageView";
 import AppLayout from "@/components/layout/AppLayout";
 import { Button } from "@/components/ui/button";
 import { COIN_COSTS } from "@/lib/coinCosts";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { GamificationWidget } from "@/components/gamification/GamificationWidget";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -180,67 +181,120 @@ const Dashboard = () => {
 
             {/* Study Tools */}
             <div>
-              <div className="flex items-center gap-2 mb-4">
-                <BookOpen className="w-5 h-5 text-secondary" />
-                <h3 className="text-xl font-bold">ابزارهای مطالعه</h3>
+              <div className="flex items-center gap-2 mb-3">
+                <Lightbulb className="w-5 h-5 text-amber-500" />
+                <h3 className="text-lg font-bold">{t("dashboard.studyTools")}</h3>
               </div>
-              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                {/* Gamification Widget - Full Width on Mobile */}
+                <div className="col-span-2 sm:col-span-3 lg:col-span-4">
+                  <GamificationWidget />
+                </div>
+
                 <Card 
-                  className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group border-secondary/10"
-                  onClick={() => navigate("/mind-map")}
+                  className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group"
+                  onClick={() => navigate("/mindmap-ai")}
                 >
-                  <CardHeader className="p-4 md:p-5">
-                    <div className="flex flex-col items-center gap-2.5 text-center">
-                      <div className="gradient-secondary p-3 rounded-2xl shadow-glow group-hover:scale-110 transition-transform">
-                        <Lightbulb className="w-6 h-6 text-white" />
+                  <CardHeader className="p-4">
+                    <div className="flex flex-col items-center gap-2 text-center">
+                      <div className="gradient-secondary p-3 rounded-xl shadow-lg group-hover:scale-110 transition-transform">
+                        <PenTool className="w-6 h-6 text-white" />
                       </div>
-                      <CardTitle className="text-sm md:text-base font-bold">نقشه ذهنی</CardTitle>
-                      <CardDescription className="text-xs">{COIN_COSTS.MINDMAP_GENERATE} سکه</CardDescription>
+                      <CardTitle className="text-sm font-bold">{t("nav.mindMap")}</CardTitle>
+                      <CardDescription className="text-xs">{COIN_COSTS.MINDMAP_GENERATE} {t("header.coins")}</CardDescription>
                     </div>
                   </CardHeader>
                 </Card>
 
                 <Card 
-                  className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group border-secondary/10"
+                  className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group"
                   onClick={() => navigate("/flashcards")}
                 >
-                  <CardHeader className="p-4 md:p-5">
-                    <div className="flex flex-col items-center gap-2.5 text-center">
-                      <div className="gradient-accent p-3 rounded-2xl shadow-glow group-hover:scale-110 transition-transform">
-                        <CreditCard className="w-6 h-6 text-white" />
-                      </div>
-                      <CardTitle className="text-sm md:text-base font-bold">فلش کارت</CardTitle>
-                      <CardDescription className="text-xs">{COIN_COSTS.FLASHCARD_GENERATE} سکه</CardDescription>
-                    </div>
-                  </CardHeader>
-                </Card>
-
-                <Card 
-                  className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group border-secondary/10"
-                  onClick={() => navigate("/resources")}
-                >
-                  <CardHeader className="p-4 md:p-5">
-                    <div className="flex flex-col items-center gap-2.5 text-center">
-                      <div className="bg-gradient-to-br from-green-500 to-emerald-600 p-3 rounded-2xl shadow-glow group-hover:scale-110 transition-transform">
+                  <CardHeader className="p-4">
+                    <div className="flex flex-col items-center gap-2 text-center">
+                      <div className="gradient-accent p-3 rounded-xl shadow-lg group-hover:scale-110 transition-transform">
                         <BookOpen className="w-6 h-6 text-white" />
                       </div>
-                      <CardTitle className="text-sm md:text-base font-bold">منابع</CardTitle>
-                      <CardDescription className="text-xs">رایگان</CardDescription>
+                      <CardTitle className="text-sm font-bold">{t("nav.flashcards")}</CardTitle>
+                      <CardDescription className="text-xs">{COIN_COSTS.FLASHCARD_GENERATE} {t("header.coins")}</CardDescription>
                     </div>
                   </CardHeader>
                 </Card>
 
                 <Card 
-                  className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group border-secondary/10"
-                  onClick={() => navigate("/coin-shop")}
+                  className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group"
+                  onClick={() => navigate("/resources")}
                 >
-                  <CardHeader className="p-4 md:p-5">
-                    <div className="flex flex-col items-center gap-2.5 text-center">
-                      <div className="bg-gradient-to-br from-yellow-500 to-amber-600 p-3 rounded-2xl shadow-glow group-hover:scale-110 transition-transform">
+                  <CardHeader className="p-4">
+                    <div className="flex flex-col items-center gap-2 text-center">
+                      <div className="gradient-primary p-3 rounded-xl shadow-lg group-hover:scale-110 transition-transform">
+                        <FileText className="w-6 h-6 text-white" />
+                      </div>
+                      <CardTitle className="text-sm font-bold">{t("nav.resources")}</CardTitle>
+                      <CardDescription className="text-xs">{t("dashboard.freeTools")}</CardDescription>
+                    </div>
+                  </CardHeader>
+                </Card>
+
+                {/* Leaderboard */}
+                <Card 
+                  className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group border-amber-500/20 bg-gradient-to-br from-amber-500/5 to-amber-500/10"
+                  onClick={() => navigate("/leaderboard")}
+                >
+                  <CardHeader className="p-4">
+                    <div className="flex flex-col items-center gap-2 text-center">
+                      <div className="bg-gradient-to-r from-amber-500 to-amber-600 p-3 rounded-xl shadow-lg group-hover:scale-110 transition-transform">
+                        <Trophy className="w-6 h-6 text-white" />
+                      </div>
+                      <CardTitle className="text-sm font-bold">جدول امتیازات</CardTitle>
+                      <CardDescription className="text-xs">مقایسه با دیگران</CardDescription>
+                    </div>
+                  </CardHeader>
+                </Card>
+
+                {/* Study Calendar */}
+                <Card 
+                  className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group border-blue-500/20 bg-gradient-to-br from-blue-500/5 to-blue-500/10"
+                  onClick={() => navigate("/calendar")}
+                >
+                  <CardHeader className="p-4">
+                    <div className="flex flex-col items-center gap-2 text-center">
+                      <div className="bg-gradient-to-r from-blue-500 to-blue-600 p-3 rounded-xl shadow-lg group-hover:scale-110 transition-transform">
+                        <Calendar className="w-6 h-6 text-white" />
+                      </div>
+                      <CardTitle className="text-sm font-bold">تقویم مطالعاتی</CardTitle>
+                      <CardDescription className="text-xs">برنامه‌ریزی</CardDescription>
+                    </div>
+                  </CardHeader>
+                </Card>
+
+                {/* Shop */}
+                <Card 
+                  className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group border-purple-500/20 bg-gradient-to-br from-purple-500/5 to-purple-500/10"
+                  onClick={() => navigate("/shop")}
+                >
+                  <CardHeader className="p-4">
+                    <div className="flex flex-col items-center gap-2 text-center">
+                      <div className="bg-gradient-to-r from-purple-500 to-purple-600 p-3 rounded-xl shadow-lg group-hover:scale-110 transition-transform">
                         <ShoppingBag className="w-6 h-6 text-white" />
                       </div>
-                      <CardTitle className="text-sm md:text-base font-bold">فروشگاه سکه</CardTitle>
-                      <CardDescription className="text-xs">خرید سکه</CardDescription>
+                      <CardTitle className="text-sm font-bold">فروشگاه</CardTitle>
+                      <CardDescription className="text-xs">خرید با سکه</CardDescription>
+                    </div>
+                  </CardHeader>
+                </Card>
+
+                <Card 
+                  className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group"
+                  onClick={() => navigate("/coin-shop")}
+                >
+                  <CardHeader className="p-4">
+                    <div className="flex flex-col items-center gap-2 text-center">
+                      <div className="bg-gradient-to-r from-yellow-500 to-amber-600 p-3 rounded-xl shadow-lg group-hover:scale-110 transition-transform">
+                        <Coins className="w-6 h-6 text-white" />
+                      </div>
+                      <CardTitle className="text-sm font-bold">{t("nav.coinShop")}</CardTitle>
+                      <CardDescription className="text-xs">{t("dashboard.purchaseCoins")}</CardDescription>
                     </div>
                   </CardHeader>
                 </Card>

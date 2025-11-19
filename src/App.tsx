@@ -28,6 +28,9 @@ import Flashcards from "./pages/Flashcards";
 import Resources from "./pages/Resources";
 import CoinShop from "./pages/CoinShop";
 import Install from "./pages/Install";
+import Leaderboard from "./pages/Leaderboard";
+import StudyCalendar from "./pages/StudyCalendar";
+import ShopPage from "./pages/ShopPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -66,6 +69,9 @@ const App = () => (
             <Route path="/install" element={<Install />} />
             <Route path="/chat" element={<Chat />} />
             <Route path="/chat-friends" element={<ChatFriends />} />
+            <Route path="/leaderboard" element={<Leaderboard />} />
+            <Route path="/calendar" element={<StudyCalendar />} />
+            <Route path="/shop" element={<ShopPage />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
