@@ -14,6 +14,51 @@ export type Database = {
   }
   public: {
     Tables: {
+      achievements: {
+        Row: {
+          category: string
+          created_at: string | null
+          description: string
+          icon: string
+          id: string
+          name: string
+          name_fa: string
+          rarity: string
+          requirement_type: string
+          requirement_value: number
+          reward_coins: number | null
+          reward_xp: number | null
+        }
+        Insert: {
+          category: string
+          created_at?: string | null
+          description: string
+          icon: string
+          id?: string
+          name: string
+          name_fa: string
+          rarity?: string
+          requirement_type: string
+          requirement_value: number
+          reward_coins?: number | null
+          reward_xp?: number | null
+        }
+        Update: {
+          category?: string
+          created_at?: string | null
+          description?: string
+          icon?: string
+          id?: string
+          name?: string
+          name_fa?: string
+          rarity?: string
+          requirement_type?: string
+          requirement_value?: number
+          reward_coins?: number | null
+          reward_xp?: number | null
+        }
+        Relationships: []
+      }
       blog_posts: {
         Row: {
           content: string
@@ -462,6 +507,36 @@ export type Database = {
         }
         Relationships: []
       }
+      levels: {
+        Row: {
+          color: string | null
+          icon: string | null
+          level: number
+          name: string
+          name_fa: string
+          reward_coins: number | null
+          xp_required: number
+        }
+        Insert: {
+          color?: string | null
+          icon?: string | null
+          level: number
+          name: string
+          name_fa: string
+          reward_coins?: number | null
+          xp_required: number
+        }
+        Update: {
+          color?: string | null
+          icon?: string | null
+          level?: number
+          name?: string
+          name_fa?: string
+          reward_coins?: number | null
+          xp_required?: number
+        }
+        Relationships: []
+      }
       mind_maps: {
         Row: {
           created_at: string
@@ -567,9 +642,13 @@ export type Database = {
           full_name: string
           grade: string | null
           id: string
+          last_activity_date: string | null
+          level: number | null
           points: number | null
+          streak_days: number | null
           updated_at: string
           username: string | null
+          xp: number | null
         }
         Insert: {
           avatar_url?: string | null
@@ -582,9 +661,13 @@ export type Database = {
           full_name: string
           grade?: string | null
           id: string
+          last_activity_date?: string | null
+          level?: number | null
           points?: number | null
+          streak_days?: number | null
           updated_at?: string
           username?: string | null
+          xp?: number | null
         }
         Update: {
           avatar_url?: string | null
@@ -597,9 +680,13 @@ export type Database = {
           full_name?: string
           grade?: string | null
           id?: string
+          last_activity_date?: string | null
+          level?: number | null
           points?: number | null
+          streak_days?: number | null
           updated_at?: string
           username?: string | null
+          xp?: number | null
         }
         Relationships: []
       }
@@ -825,6 +912,35 @@ export type Database = {
         }
         Relationships: []
       }
+      user_achievements: {
+        Row: {
+          achievement_id: string
+          id: string
+          unlocked_at: string | null
+          user_id: string
+        }
+        Insert: {
+          achievement_id: string
+          id?: string
+          unlocked_at?: string | null
+          user_id: string
+        }
+        Update: {
+          achievement_id?: string
+          id?: string
+          unlocked_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_achievements_achievement_id_fkey"
+            columns: ["achievement_id"]
+            isOneToOne: false
+            referencedRelation: "achievements"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string | null
@@ -863,6 +979,11 @@ export type Database = {
         Args: { exam_id_param: string; points_to_award: number }
         Returns: undefined
       }
+      award_xp: {
+        Args: { _reason: string; _user_id: string; _xp_amount: number }
+        Returns: Json
+      }
+      check_achievements: { Args: { _user_id: string }; Returns: Json }
       create_friendship: { Args: { request_id: string }; Returns: undefined }
       deduct_user_coins: {
         Args: { _amount: number; _reason: string }
