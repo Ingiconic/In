@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { ShoppingBag, Users, FileText, CheckSquare, HelpCircle, Trophy, PenTool, Brain, BookOpen, Lightbulb, CreditCard, Coins, MessageSquare, Calendar, Award, Flame } from "lucide-react";
+import { ShoppingBag, Users, FileText, CheckSquare, HelpCircle, Trophy, PenTool, Brain, BookOpen, Lightbulb, CreditCard, Coins, MessageSquare, Calendar, Award, Flame, Target } from "lucide-react";
 import { usePageView } from "@/hooks/usePageView";
 import AppLayout from "@/components/layout/AppLayout";
 import { Button } from "@/components/ui/button";
@@ -183,7 +183,7 @@ const Dashboard = () => {
             <div>
               <div className="flex items-center gap-2 mb-3">
                 <Lightbulb className="w-5 h-5 text-amber-500" />
-                <h3 className="text-lg font-bold">{t("dashboard.studyTools")}</h3>
+                <h3 className="text-lg font-bold">ابزارهای مطالعاتی</h3>
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
                 {/* Gamification Widget - Full Width on Mobile */}
@@ -221,17 +221,34 @@ const Dashboard = () => {
                   </CardHeader>
                 </Card>
 
+                {/* Focus Mode */}
                 <Card 
-                  className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group"
-                  onClick={() => navigate("/resources")}
+                  className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group border-purple-500/20 bg-gradient-to-br from-purple-500/5 to-purple-500/10"
+                  onClick={() => navigate("/focus")}
                 >
                   <CardHeader className="p-4">
                     <div className="flex flex-col items-center gap-2 text-center">
-                      <div className="gradient-primary p-3 rounded-xl shadow-lg group-hover:scale-110 transition-transform">
-                        <FileText className="w-6 h-6 text-white" />
+                      <div className="bg-gradient-to-r from-purple-500 to-purple-600 p-3 rounded-xl shadow-lg group-hover:scale-110 transition-transform">
+                        <Target className="w-6 h-6 text-white" />
                       </div>
-                      <CardTitle className="text-sm font-bold">{t("nav.resources")}</CardTitle>
-                      <CardDescription className="text-xs">{t("dashboard.freeTools")}</CardDescription>
+                      <CardTitle className="text-sm font-bold">حالت تمرکز</CardTitle>
+                      <CardDescription className="text-xs">پومودورو</CardDescription>
+                    </div>
+                  </CardHeader>
+                </Card>
+
+                {/* Forum */}
+                <Card 
+                  className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group border-green-500/20 bg-gradient-to-br from-green-500/5 to-green-500/10"
+                  onClick={() => navigate("/forum")}
+                >
+                  <CardHeader className="p-4">
+                    <div className="flex flex-col items-center gap-2 text-center">
+                      <div className="bg-gradient-to-r from-green-500 to-green-600 p-3 rounded-xl shadow-lg group-hover:scale-110 transition-transform">
+                        <MessageSquare className="w-6 h-6 text-white" />
+                      </div>
+                      <CardTitle className="text-sm font-bold">انجمن بحث</CardTitle>
+                      <CardDescription className="text-xs">پرسش و پاسخ</CardDescription>
                     </div>
                   </CardHeader>
                 </Card>
@@ -280,6 +297,22 @@ const Dashboard = () => {
                       </div>
                       <CardTitle className="text-sm font-bold">فروشگاه</CardTitle>
                       <CardDescription className="text-xs">خرید با سکه</CardDescription>
+                    </div>
+                  </CardHeader>
+                </Card>
+
+                {/* Theme Settings */}
+                <Card 
+                  className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group border-pink-500/20 bg-gradient-to-br from-pink-500/5 to-pink-500/10"
+                  onClick={() => navigate("/theme")}
+                >
+                  <CardHeader className="p-4">
+                    <div className="flex flex-col items-center gap-2 text-center">
+                      <div className="bg-gradient-to-r from-pink-500 to-pink-600 p-3 rounded-xl shadow-lg group-hover:scale-110 transition-transform">
+                        <Award className="w-6 h-6 text-white" />
+                      </div>
+                      <CardTitle className="text-sm font-bold">تنظیمات ظاهری</CardTitle>
+                      <CardDescription className="text-xs">شخصی‌سازی</CardDescription>
                     </div>
                   </CardHeader>
                 </Card>
