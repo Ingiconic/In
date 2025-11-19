@@ -6,26 +6,23 @@ import {
   User,
 } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useLanguage } from "@/contexts/LanguageContext";
 
 const BottomNav = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { t } = useLanguage();
 
   const navItems = [
-    { icon: LayoutDashboard, label: t("nav.dashboard"), path: "/dashboard" },
-    { icon: HelpCircle, label: t("nav.questions"), path: "/questions" },
+    { icon: LayoutDashboard, label: "داشبورد", path: "/dashboard" },
+    { icon: HelpCircle, label: "پرسش درسی", path: "/questions" },
     { icon: BookText, label: "بلاگ", path: "/blog" },
     { icon: ShoppingBag, label: "فروشگاه", path: "/coin-shop" },
-    { icon: User, label: t("nav.profile"), path: "/profile" },
+    { icon: User, label: "پروفایل", path: "/profile" },
   ];
 
   const isActive = (path: string) => location.pathname === path;
 
   return (
     <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 safe-area-pb">
-      {/* Simplified Glass Background */}
       <div className="bg-background/80 backdrop-blur-xl border-t border-border/20">
         <div className="flex items-center justify-around h-16 px-2">
           {navItems.map((item) => {
@@ -57,4 +54,3 @@ const BottomNav = () => {
 };
 
 export default BottomNav;
-
