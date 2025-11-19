@@ -38,37 +38,37 @@ const App = () => (
       <TooltipProvider>
         <Toaster />
         <Sonner />
-        <InstallPrompt />
         <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/auth" element={<Login />} />
-          <Route path="/admin" element={<AdminLogin />} />
-          <Route path="/admin/dashboard" element={<Admin />} />
-          <Route path="/admin/blog" element={<AdminBlog />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/blog" element={<Blog />} />
-          <Route path="/summarize" element={<Summarize />} />
-          <Route path="/questions" element={<Questions />} />
-          <Route path="/consultation" element={<Consultation />} />
-          <Route path="/study-plan" element={<StudyPlan />} />
-          <Route path="/exam" element={<ExamV2 />} />
-          <Route path="/exam-v2" element={<ExamV2 />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/progress" element={<Progress />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/mind-map" element={<MindMapAI />} />
-          <Route path="/flashcards" element={<Flashcards />} />
-          <Route path="/resources" element={<Resources />} />
-          <Route path="/coin-shop" element={<CoinShop />} />
-          <Route path="/install" element={<Install />} />
-          <Route path="/chat" element={<Chat />} />
-          <Route path="/chat-friends" element={<ChatFriends />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+          <InstallPrompt />
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route path="/auth" element={<Login />} />
+            <Route path="/admin" element={<AdminLogin />} />
+            <Route path="/admin/dashboard" element={<Admin />} />
+            <Route path="/admin/blog" element={<AdminBlog />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/blog" element={<Blog />} />
+            <Route path="/summarize" element={<Summarize />} />
+            <Route path="/questions" element={<Questions />} />
+            <Route path="/consultation" element={<Consultation />} />
+            <Route path="/study-plan" element={<StudyPlan />} />
+            <Route path="/exam" element={<ExamV2 />} />
+            <Route path="/exam-v2" element={<ExamV2 />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/progress" element={<Progress />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/mind-map" element={<MindMapAI />} />
+            <Route path="/flashcards" element={<Flashcards />} />
+            <Route path="/resources" element={<Resources />} />
+            <Route path="/coin-shop" element={<CoinShop />} />
+            <Route path="/install" element={<Install />} />
+            <Route path="/chat" element={<Chat />} />
+            <Route path="/chat-friends" element={<ChatFriends />} />
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
         </BrowserRouter>
       </TooltipProvider>
     </LanguageProvider>
