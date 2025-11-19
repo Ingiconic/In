@@ -80,7 +80,10 @@ const translations = {
       about: "درباره ما",
       logout: "خروج",
       blog: "وبلاگ",
-      shop: "فروشگاه"
+      shop: "فروشگاه",
+      flashcards: "فلش کارت",
+      mindMap: "نقشه ذهنی",
+      coinShop: "فروشگاه سکه"
     },
     header: {
       level: "سطح",
@@ -178,7 +181,10 @@ const translations = {
       about: "About Us",
       logout: "Logout",
       blog: "Blog",
-      shop: "Shop"
+      shop: "Shop",
+      flashcards: "Flashcards",
+      mindMap: "Mind Map",
+      coinShop: "Coin Shop"
     },
     header: {
       level: "Level",
@@ -276,7 +282,10 @@ const translations = {
       about: "من نحن",
       logout: "تسجيل الخروج",
       blog: "المدونة",
-      shop: "المتجر"
+      shop: "المتجر",
+      flashcards: "البطاقات التعليمية",
+      mindMap: "الخريطة الذهنية",
+      coinShop: "متجر العملات"
     },
     header: {
       level: "المستوى",
