@@ -142,6 +142,17 @@ const Flashcards = () => {
       return;
     }
 
+    // Check if user has enough coins
+    const coins = await getUserCoins();
+    if (coins < COIN_COSTS.FLASHCARD_GENERATE) {
+      toast({
+        title: "سکه کافی نیست",
+        description: `برای این عملیات به ${COIN_COSTS.FLASHCARD_GENERATE} سکه نیاز دارید.`,
+        variant: "destructive",
+      });
+      return;
+    }
+
     setGeneratingCards(true);
     try {
       const { data, error } = await supabase.functions.invoke('ai-flashcard-generator', {

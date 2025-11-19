@@ -88,26 +88,35 @@ const Referral = () => {
           </p>
         </div>
 
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Gift className="w-5 h-5 text-primary" />
+        <Card className="mb-6 border-2 border-primary/30">
+          <CardHeader className="bg-gradient-to-r from-primary/10 to-secondary/10 pb-8">
+            <CardTitle className="flex items-center gap-3 text-2xl">
+              <Gift className="w-8 h-8 text-primary" />
               لینک دعوت شما
             </CardTitle>
-            <CardDescription>
-              این لینک را با دوستان خود به اشتراک بگذارید
+            <CardDescription className="text-base">
+              این لینک را با دوستان خود به اشتراک بگذارید و به ازای هر نفر 500 سکه دریافت کنید!
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex gap-2">
-              <Input value={referralLink} readOnly className="font-mono text-sm" />
-              <Button onClick={copyToClipboard} size="sm">
-                <Copy className="w-4 h-4" />
+          <CardContent className="space-y-6 pt-6">
+            <div className="flex gap-3">
+              <Input 
+                value={referralLink} 
+                readOnly 
+                className="font-mono text-base h-14 text-lg" 
+                dir="ltr"
+              />
+              <Button onClick={copyToClipboard} size="lg" className="gap-2">
+                <Copy className="w-5 h-5" />
+                کپی
               </Button>
             </div>
-            <div className="bg-primary/10 rounded-lg p-4 text-center">
-              <p className="text-sm text-muted-foreground mb-2">کد دعوت شما:</p>
-              <p className="text-2xl font-bold text-primary">{stats?.referral_code}</p>
+            <div className="bg-gradient-to-br from-primary/20 to-secondary/20 rounded-xl p-6 text-center border border-primary/30">
+              <p className="text-base text-muted-foreground mb-3">کد دعوت شما:</p>
+              <p className="text-4xl font-bold text-primary tracking-wider">{stats?.referral_code}</p>
+              <p className="text-sm text-muted-foreground mt-3">
+                دوستان شما می‌توانند هنگام ثبت‌نام از این کد استفاده کنند
+              </p>
             </div>
           </CardContent>
         </Card>
