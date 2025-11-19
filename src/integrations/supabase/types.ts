@@ -567,6 +567,42 @@ export type Database = {
         }
         Relationships: []
       }
+      notifications: {
+        Row: {
+          action_url: string | null
+          created_at: string | null
+          icon: string | null
+          id: string
+          message: string
+          read: boolean | null
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          action_url?: string | null
+          created_at?: string | null
+          icon?: string | null
+          id?: string
+          message: string
+          read?: boolean | null
+          title: string
+          type: string
+          user_id: string
+        }
+        Update: {
+          action_url?: string | null
+          created_at?: string | null
+          icon?: string | null
+          id?: string
+          message?: string
+          read?: boolean | null
+          title?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       page_views: {
         Row: {
           id: string
@@ -625,6 +661,13 @@ export type Database = {
             foreignKeyName: "points_history_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
+            referencedRelation: "leaderboard"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "points_history_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
@@ -632,6 +675,8 @@ export type Database = {
       }
       profiles: {
         Row: {
+          active_avatar: string | null
+          active_theme: string | null
           avatar_url: string | null
           bio: string | null
           birth_date: string | null
@@ -646,11 +691,14 @@ export type Database = {
           level: number | null
           points: number | null
           streak_days: number | null
+          theme: string | null
           updated_at: string
           username: string | null
           xp: number | null
         }
         Insert: {
+          active_avatar?: string | null
+          active_theme?: string | null
           avatar_url?: string | null
           bio?: string | null
           birth_date?: string | null
@@ -665,11 +713,14 @@ export type Database = {
           level?: number | null
           points?: number | null
           streak_days?: number | null
+          theme?: string | null
           updated_at?: string
           username?: string | null
           xp?: number | null
         }
         Update: {
+          active_avatar?: string | null
+          active_theme?: string | null
           avatar_url?: string | null
           bio?: string | null
           birth_date?: string | null
@@ -684,6 +735,7 @@ export type Database = {
           level?: number | null
           points?: number | null
           streak_days?: number | null
+          theme?: string | null
           updated_at?: string
           username?: string | null
           xp?: number | null
@@ -777,6 +829,48 @@ export type Database = {
         }
         Relationships: []
       }
+      shop_items: {
+        Row: {
+          created_at: string | null
+          description: string
+          icon: string | null
+          id: string
+          is_available: boolean | null
+          item_type: string
+          metadata: Json | null
+          name: string
+          name_fa: string
+          price_coins: number
+          rarity: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description: string
+          icon?: string | null
+          id?: string
+          is_available?: boolean | null
+          item_type: string
+          metadata?: Json | null
+          name: string
+          name_fa: string
+          price_coins: number
+          rarity?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string
+          icon?: string | null
+          id?: string
+          is_available?: boolean | null
+          item_type?: string
+          metadata?: Json | null
+          name?: string
+          name_fa?: string
+          price_coins?: number
+          rarity?: string | null
+        }
+        Relationships: []
+      }
       step_by_step_solutions: {
         Row: {
           created_at: string | null
@@ -843,6 +937,54 @@ export type Database = {
           subject?: string
           title?: string
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      study_events: {
+        Row: {
+          completed: boolean | null
+          created_at: string | null
+          description: string | null
+          duration: number | null
+          event_date: string
+          event_time: string | null
+          id: string
+          reminder_enabled: boolean | null
+          reminder_minutes: number | null
+          subject: string | null
+          title: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          completed?: boolean | null
+          created_at?: string | null
+          description?: string | null
+          duration?: number | null
+          event_date: string
+          event_time?: string | null
+          id?: string
+          reminder_enabled?: boolean | null
+          reminder_minutes?: number | null
+          subject?: string | null
+          title: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          completed?: boolean | null
+          created_at?: string | null
+          description?: string | null
+          duration?: number | null
+          event_date?: string
+          event_time?: string | null
+          id?: string
+          reminder_enabled?: boolean | null
+          reminder_minutes?: number | null
+          subject?: string | null
+          title?: string
+          updated_at?: string | null
+          user_id?: string
         }
         Relationships: []
       }
@@ -941,6 +1083,38 @@ export type Database = {
           },
         ]
       }
+      user_purchases: {
+        Row: {
+          id: string
+          is_active: boolean | null
+          item_id: string
+          purchased_at: string | null
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          is_active?: boolean | null
+          item_id: string
+          purchased_at?: string | null
+          user_id: string
+        }
+        Update: {
+          id?: string
+          is_active?: boolean | null
+          item_id?: string
+          purchased_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_purchases_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "shop_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string | null
@@ -964,7 +1138,22 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      leaderboard: {
+        Row: {
+          achievements_count: number | null
+          avatar_url: string | null
+          exams_taken: number | null
+          full_name: string | null
+          id: string | null
+          level: number | null
+          points: number | null
+          rank: number | null
+          streak_days: number | null
+          username: string | null
+          xp: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       admin_adjust_user_coins: {
@@ -985,6 +1174,17 @@ export type Database = {
       }
       check_achievements: { Args: { _user_id: string }; Returns: Json }
       create_friendship: { Args: { request_id: string }; Returns: undefined }
+      create_notification: {
+        Args: {
+          _action_url?: string
+          _icon?: string
+          _message: string
+          _title: string
+          _type: string
+          _user_id: string
+        }
+        Returns: string
+      }
       deduct_user_coins: {
         Args: { _amount: number; _reason: string }
         Returns: boolean
@@ -1005,6 +1205,7 @@ export type Database = {
         Args: { _group_id: string; _user_id: string }
         Returns: boolean
       }
+      purchase_shop_item: { Args: { _item_id: string }; Returns: Json }
     }
     Enums: {
       app_role: "admin" | "user"
