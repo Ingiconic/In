@@ -7,13 +7,12 @@ import { usePageView } from "@/hooks/usePageView";
 import AppLayout from "@/components/layout/AppLayout";
 import { Button } from "@/components/ui/button";
 import { COIN_COSTS } from "@/lib/coinCosts";
-import { useLanguage } from "@/contexts/LanguageContext";
+
 import { GamificationWidget } from "@/components/gamification/GamificationWidget";
 
 const Dashboard = () => {
   const navigate = useNavigate();
   usePageView();
-  const { t } = useLanguage();
   const [profile, setProfile] = useState<any>(null);
   const [stats, setStats] = useState({
     totalPoints: 0,
@@ -88,7 +87,7 @@ const Dashboard = () => {
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-lg md:text-xl font-bold">
-                {t("dashboard.welcome")} {profile?.full_name || t("common.user")}! 👋
+                خوش آمدید {profile?.full_name || "کاربر"}! 👋
               </h2>
             </div>
             <div className="flex items-center gap-2 md:gap-3">
@@ -114,7 +113,7 @@ const Dashboard = () => {
           <div>
             <div className="flex items-center gap-2 mb-3">
               <Brain className="w-5 h-5 text-primary" />
-              <h3 className="text-lg font-bold">{t("dashboard.aiTools")}</h3>
+              <h3 className="text-lg font-bold">ابزارهای هوش مصنوعی</h3>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
               <Card 
@@ -126,8 +125,8 @@ const Dashboard = () => {
                     <div className="gradient-primary p-3 rounded-xl shadow-lg group-hover:scale-110 transition-transform">
                       <HelpCircle className="w-6 h-6 text-white" />
                     </div>
-                    <CardTitle className="text-sm font-bold">{t("nav.questions")}</CardTitle>
-                    <CardDescription className="text-xs opacity-80">{COIN_COSTS.QUESTION_ANSWER} {t("header.coins")}</CardDescription>
+                    <CardTitle className="text-sm font-bold">پرسش درسی</CardTitle>
+                    <CardDescription className="text-xs opacity-80">{COIN_COSTS.QUESTION_ANSWER} سکه</CardDescription>
                   </div>
                 </CardHeader>
               </Card>
@@ -141,8 +140,8 @@ const Dashboard = () => {
                       <div className="gradient-secondary p-3 rounded-2xl shadow-glow group-hover:scale-110 transition-transform">
                         <FileText className="w-6 h-6 text-white" />
                       </div>
-                      <CardTitle className="text-sm md:text-base font-bold">{t("nav.summarize")}</CardTitle>
-                      <CardDescription className="text-xs">{COIN_COSTS.SUMMARIZE} {t("header.coins")}</CardDescription>
+                      <CardTitle className="text-sm md:text-base font-bold">خلاصه‌ساز</CardTitle>
+                      <CardDescription className="text-xs">{COIN_COSTS.SUMMARIZE} سکه</CardDescription>
                     </div>
                   </CardHeader>
                 </Card>
@@ -156,8 +155,8 @@ const Dashboard = () => {
                       <div className="gradient-accent p-3 rounded-2xl shadow-glow group-hover:scale-110 transition-transform">
                         <CheckSquare className="w-6 h-6 text-white" />
                       </div>
-                      <CardTitle className="text-sm md:text-base font-bold">{t("nav.exam")}</CardTitle>
-                      <CardDescription className="text-xs">{COIN_COSTS.EXAM_GENERATE} {t("header.coins")}</CardDescription>
+                      <CardTitle className="text-sm md:text-base font-bold">آزمون</CardTitle>
+                      <CardDescription className="text-xs">{COIN_COSTS.EXAM_GENERATE} سکه</CardDescription>
                     </div>
                   </CardHeader>
                 </Card>
@@ -200,8 +199,8 @@ const Dashboard = () => {
                       <div className="gradient-secondary p-3 rounded-xl shadow-lg group-hover:scale-110 transition-transform">
                         <PenTool className="w-6 h-6 text-white" />
                       </div>
-                      <CardTitle className="text-sm font-bold">{t("nav.mindMap")}</CardTitle>
-                      <CardDescription className="text-xs">{COIN_COSTS.MINDMAP_GENERATE} {t("header.coins")}</CardDescription>
+                      <CardTitle className="text-sm font-bold">نقشه ذهنی</CardTitle>
+                      <CardDescription className="text-xs">{COIN_COSTS.MINDMAP_GENERATE} سکه</CardDescription>
                     </div>
                   </CardHeader>
                 </Card>
@@ -215,8 +214,8 @@ const Dashboard = () => {
                       <div className="gradient-accent p-3 rounded-xl shadow-lg group-hover:scale-110 transition-transform">
                         <BookOpen className="w-6 h-6 text-white" />
                       </div>
-                      <CardTitle className="text-sm font-bold">{t("nav.flashcards")}</CardTitle>
-                      <CardDescription className="text-xs">{COIN_COSTS.FLASHCARD_GENERATE} {t("header.coins")}</CardDescription>
+                      <CardTitle className="text-sm font-bold">فلش کارت</CardTitle>
+                      <CardDescription className="text-xs">{COIN_COSTS.FLASHCARD_GENERATE} سکه</CardDescription>
                     </div>
                   </CardHeader>
                 </Card>
@@ -326,8 +325,8 @@ const Dashboard = () => {
                       <div className="bg-gradient-to-r from-yellow-500 to-amber-600 p-3 rounded-xl shadow-lg group-hover:scale-110 transition-transform">
                         <Coins className="w-6 h-6 text-white" />
                       </div>
-                      <CardTitle className="text-sm font-bold">{t("nav.coinShop")}</CardTitle>
-                      <CardDescription className="text-xs">{t("dashboard.purchaseCoins")}</CardDescription>
+                      <CardTitle className="text-sm font-bold">فروشگاه سکه</CardTitle>
+                      <CardDescription className="text-xs">خرید سکه</CardDescription>
                     </div>
                   </CardHeader>
                 </Card>

@@ -7,12 +7,11 @@ import { supabase } from "@/lib/supabase";
 import { ArrowRight, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 import logo from "@/assets/logo.png";
-import { useLanguage } from "@/contexts/LanguageContext";
+
 
 const Login = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { t } = useLanguage();
   const [loading, setLoading] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -36,8 +35,8 @@ const Login = () => {
     
     if (!username.trim() || !password.trim()) {
       toast({ 
-        title: t("common.error"), 
-        description: t("auth.fillAllFields"), 
+        title: "خطا", 
+        description: "لطفا تمام فیلدها را پر کنید", 
         variant: "destructive" 
       });
       return;
@@ -52,16 +51,16 @@ const Login = () => {
 
       if (error) {
         if (error.message.includes("Invalid login credentials")) {
-          throw new Error(t("auth.invalidCredentials"));
+          throw new Error("نام کاربری یا رمز عبور اشتباه است");
         }
         throw error;
       }
       
-      toast({ title: t("auth.welcomeSuccess"), description: t("auth.loginSuccess") });
+      toast({ title: "خوش آمدید!", description: "با موفقیت وارد شدید" });
     } catch (error: any) {
       toast({ 
-        title: t("common.error"), 
-        description: error.message || t("auth.problemOccurred"), 
+        title: "خطا", 
+        description: error.message || "مشکلی پیش آمد", 
         variant: "destructive" 
       });
     } finally {
@@ -132,9 +131,9 @@ const Login = () => {
             <div className="w-20 h-20 rounded-3xl gradient-primary flex items-center justify-center mb-4 shadow-glow">
               <img src={logo} alt="Easy Dars" className="w-12 h-12" />
             </div>
-            <h1 className="text-3xl font-bold text-gradient mb-2">{t("auth.login")} {t("app.name")}</h1>
+            <h1 className="text-3xl font-bold text-gradient mb-2">ورود به ایزی‌درس</h1>
             <p className="text-muted-foreground text-center">
-              {t("auth.loginMessage")}
+              به پلتفرم یادگیری خوش آمدید
             </p>
           </motion.div>
 
@@ -147,7 +146,7 @@ const Login = () => {
             >
               <Input
                 type="text"
-                placeholder={t("auth.username")}
+                placeholder="نام کاربری"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 className="text-right h-12 bg-background/50"
@@ -162,7 +161,7 @@ const Login = () => {
             >
               <Input
                 type="password"
-                placeholder={t("auth.password")}
+                placeholder="رمز عبور"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="text-right h-12 bg-background/50"
@@ -183,12 +182,12 @@ const Login = () => {
                 {loading ? (
                   <>
                     <Loader2 className="ml-2 h-5 w-5 animate-spin" />
-                    {t("common.loading")}
+                    در حال بارگذاری...
                   </>
                 ) : (
                   <>
                     <ArrowRight className="ml-2 h-5 w-5" />
-                    {t("auth.loginButton")}
+                    ورود
                   </>
                 )}
               </Button>
@@ -203,12 +202,12 @@ const Login = () => {
             className="mt-6 text-center"
           >
             <p className="text-muted-foreground">
-              {t("auth.noAccount")}{" "}
+              حساب کاربری ندارید؟{" "}
               <Link 
                 to="/signup" 
                 className="text-primary hover:underline font-semibold"
               >
-                {t("auth.goToSignup")}
+                ثبت‌نام کنید
               </Link>
             </p>
           </motion.div>
