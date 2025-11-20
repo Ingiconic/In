@@ -16,7 +16,8 @@ import {
   Trophy,
   Coins,
   BookOpen,
-  Lightbulb
+  Lightbulb,
+  Mic
 } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
@@ -55,6 +56,7 @@ const Sidebar = ({ profile }: SidebarProps) => {
     { icon: LayoutDashboard, label: "داشبورد", path: "/dashboard", coins: 0 },
     { icon: FileText, label: "منابع درسی", path: "/resources", coins: 0 },
     { icon: HelpCircle, label: "پرسش درسی", path: "/questions", coins: 2 },
+    { icon: Mic, label: "دستیار صوتی", path: "/voice-assistant", coins: 10 },
     { icon: FileText, label: "خلاصه‌ساز", path: "/summarize", coins: 2 },
     { icon: CheckSquare, label: "آزمون", path: "/exam-v2", coins: 5 },
     { icon: PenTool, label: "فلش کارت", path: "/flashcards", coins: 3 },

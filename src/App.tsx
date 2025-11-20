@@ -37,6 +37,7 @@ import ForumCategory from "./pages/ForumCategory";
 import ThemeSettings from "./pages/ThemeSettings";
 import BlogPost from "./pages/BlogPost";
 import Referral from "./pages/Referral";
+import VoiceAssistant from "./pages/VoiceAssistant";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -84,6 +85,7 @@ const App = () => (
               <Route path="/theme" element={<ThemeSettings />} />
               <Route path="/blog/:slug" element={<BlogPost />} />
               <Route path="/referral" element={<Referral />} />
+              <Route path="/voice-assistant" element={<VoiceAssistant />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
           </Routes>
