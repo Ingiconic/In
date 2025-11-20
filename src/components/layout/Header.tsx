@@ -59,8 +59,7 @@ const Header = ({ profile }: HeaderProps) => {
 
   const menuItems = [
     { icon: LayoutDashboard, label: "داشبورد", path: "/dashboard" },
-    { icon: MessageSquare, label: "چت", path: "/chat" },
-    { icon: Users, label: "دوستان", path: "/chat-friends" },
+    { icon: MessageSquare, label: "پیام‌رسان", path: "/messenger" },
     { icon: HelpCircle, label: "پرسش درسی", path: "/questions" },
     { icon: FileText, label: "خلاصه‌ساز", path: "/summarize" },
     { icon: CheckSquare, label: "آزمون", path: "/exam" },
