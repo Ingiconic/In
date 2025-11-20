@@ -19,6 +19,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { format } from "date-fns";
+import { AdminRoute } from "@/components/auth/AdminRoute";
 
 interface PageView {
   page_path: string;
@@ -38,8 +39,6 @@ interface UserProfile {
 const Admin = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [loading, setLoading] = useState(true);
-  const [isAdmin, setIsAdmin] = useState(false);
   const [pageViews, setPageViews] = useState<PageView[]>([]);
   const [todayViews, setTodayViews] = useState(0);
   const [users, setUsers] = useState<UserProfile[]>([]);
@@ -49,46 +48,14 @@ const Admin = () => {
   const [adjusting, setAdjusting] = useState(false);
 
   useEffect(() => {
-    checkAdminAccess();
+    loadData();
   }, []);
 
-  const checkAdminAccess = async () => {
-    try {
-      // Check if user is authenticated
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) {
-        navigate("/admin");
-        return;
-      }
-
-      // Verify user has admin role
-      const { data: hasAdmin, error } = await supabase.rpc('has_role', {
-        _user_id: user.id,
-        _role: 'admin'
-      });
-
-      if (error || !hasAdmin) {
-        toast({
-          title: "دسترسی غیرمجاز",
-          description: "شما دسترسی به این بخش ندارید",
-          variant: "destructive"
-        });
-        navigate("/admin");
-        return;
-      }
-
-      setIsAdmin(true);
-      await Promise.all([
-        loadPageViews(),
-        loadUsers()
-      ]);
-    } catch (error) {
-      console.error("Error checking admin access:", error);
-      navigate("/admin");
-    } finally {
-      setLoading(false);
-    }
+  const loadData = async () => {
+    await Promise.all([
+      loadPageViews(),
+      loadUsers()
+    ]);
   };
 
   const loadPageViews = async () => {
@@ -195,25 +162,14 @@ const Admin = () => {
     }
   };
 
-  const filteredUsers = users.filter(user => 
+  const filteredUsers = users.filter(user =>
     user.username?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     user.full_name?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-primary" />
-      </div>
-    );
-  }
-
-  if (!isAdmin) {
-    return null;
-  }
-
   return (
-    <div className="min-h-screen bg-background p-4 md:p-8">
+    <AdminRoute>
+      <div className="min-h-screen bg-background p-4 md:p-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <motion.div
@@ -488,6 +444,7 @@ const Admin = () => {
         </div>
       </div>
     </div>
+    </AdminRoute>
   );
 };
 

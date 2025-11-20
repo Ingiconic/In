@@ -1,16 +1,18 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3';
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-interface MindMapRequest {
-  topic: string;
-  detailLevel?: 'basic' | 'detailed' | 'advanced';
-}
+// Validation schema
+const mindmapSchema = z.object({
+  topic: z.string().min(1, 'Topic cannot be empty').max(500, 'Topic too long'),
+  detailLevel: z.enum(['basic', 'detailed', 'advanced']).optional(),
+});
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -67,14 +69,18 @@ serve(async (req) => {
       });
     }
 
-    const { topic, detailLevel = 'detailed' }: MindMapRequest = await req.json();
-
-    if (!topic || !topic.trim()) {
-      return new Response(
-        JSON.stringify({ error: 'موضوع نمی‌تواند خالی باشد' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+    const body = await req.json();
+    
+    // Validate input
+    const validation = mindmapSchema.safeParse(body);
+    if (!validation.success) {
+      return new Response(JSON.stringify({ error: 'ورودی نامعتبر', details: validation.error.issues }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
+    
+    const { topic, detailLevel = 'detailed' } = validation.data;
 
     const lovableApiKey = Deno.env.get('LOVABLE_API_KEY');
     if (!lovableApiKey) {

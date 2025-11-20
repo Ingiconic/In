@@ -20,6 +20,7 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { blogPostSchema } from "@/lib/blogValidation";
+import { AdminRoute } from "@/components/auth/AdminRoute";
 
 interface BlogPost {
   id: string;
@@ -36,7 +37,6 @@ interface BlogPost {
 const AdminBlog = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [loading, setLoading] = useState(true);
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingPost, setEditingPost] = useState<BlogPost | null>(null);
@@ -51,43 +51,8 @@ const AdminBlog = () => {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   useEffect(() => {
-    checkAdminAccess();
+    loadPosts();
   }, []);
-
-  const checkAdminAccess = async () => {
-    try {
-      // Check if user is authenticated
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) {
-        navigate("/admin");
-        return;
-      }
-
-      // Verify user has admin role
-      const { data: hasAdmin, error } = await supabase.rpc('has_role', {
-        _user_id: user.id,
-        _role: 'admin'
-      });
-
-      if (error || !hasAdmin) {
-        toast({
-          title: "دسترسی غیرمجاز",
-          description: "شما دسترسی به این بخش ندارید",
-          variant: "destructive"
-        });
-        navigate("/admin");
-        return;
-      }
-
-      await loadPosts();
-    } catch (error) {
-      console.error("Error checking admin access:", error);
-      navigate("/admin");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const loadPosts = async () => {
     try {
@@ -284,16 +249,9 @@ const AdminBlog = () => {
     setImagePreview(null);
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-primary" />
-      </div>
-    );
-  }
-
   return (
-    <div className="min-h-screen bg-background p-4 md:p-8">
+    <AdminRoute>
+      <div className="min-h-screen bg-background p-4 md:p-8">
       <div className="max-w-7xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
@@ -507,6 +465,7 @@ const AdminBlog = () => {
         </div>
       </div>
     </div>
+    </AdminRoute>
   );
 };
 
