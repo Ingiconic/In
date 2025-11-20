@@ -48,7 +48,15 @@ const WorksheetSolver = () => {
         }
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Edge function error:", error);
+        throw error;
+      }
+
+      if (!data || !data.analysis) {
+        console.error("Invalid response:", data);
+        throw new Error("پاسخ نامعتبر از سرور دریافت شد");
+      }
 
       setSolution(data.analysis);
       
