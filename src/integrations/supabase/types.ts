@@ -59,6 +59,51 @@ export type Database = {
         }
         Relationships: []
       }
+      ar_models: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          grade: string | null
+          id: string
+          is_premium: boolean | null
+          model_data: Json
+          model_type: string | null
+          price_coins: number | null
+          subject: string
+          thumbnail_url: string | null
+          title: string
+          title_fa: string
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          grade?: string | null
+          id?: string
+          is_premium?: boolean | null
+          model_data: Json
+          model_type?: string | null
+          price_coins?: number | null
+          subject: string
+          thumbnail_url?: string | null
+          title: string
+          title_fa: string
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          grade?: string | null
+          id?: string
+          is_premium?: boolean | null
+          model_data?: Json
+          model_type?: string | null
+          price_coins?: number | null
+          subject?: string
+          thumbnail_url?: string | null
+          title?: string
+          title_fa?: string
+        }
+        Relationships: []
+      }
       blog_posts: {
         Row: {
           content: string
@@ -226,6 +271,51 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      daily_quests: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          difficulty: string | null
+          icon: string | null
+          id: string
+          is_active: boolean | null
+          quest_type: string
+          requirement_value: number | null
+          reward_coins: number | null
+          reward_xp: number | null
+          title: string
+          title_fa: string
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          difficulty?: string | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          quest_type: string
+          requirement_value?: number | null
+          reward_coins?: number | null
+          reward_xp?: number | null
+          title: string
+          title_fa: string
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          difficulty?: string | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          quest_type?: string
+          requirement_value?: number | null
+          reward_coins?: number | null
+          reward_xp?: number | null
+          title?: string
+          title_fa?: string
+        }
+        Relationships: []
       }
       direct_messages: {
         Row: {
@@ -747,6 +837,51 @@ export type Database = {
         }
         Relationships: []
       }
+      notes: {
+        Row: {
+          category: string | null
+          content: string
+          created_at: string | null
+          id: string
+          is_favorite: boolean | null
+          is_pinned: boolean | null
+          pdf_annotations: Json | null
+          pdf_file_url: string | null
+          tags: string[] | null
+          title: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          category?: string | null
+          content: string
+          created_at?: string | null
+          id?: string
+          is_favorite?: boolean | null
+          is_pinned?: boolean | null
+          pdf_annotations?: Json | null
+          pdf_file_url?: string | null
+          tags?: string[] | null
+          title: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          category?: string | null
+          content?: string
+          created_at?: string | null
+          id?: string
+          is_favorite?: boolean | null
+          is_pinned?: boolean | null
+          pdf_annotations?: Json | null
+          pdf_file_url?: string | null
+          tags?: string[] | null
+          title?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       notifications: {
         Row: {
           action_url: string | null
@@ -857,6 +992,7 @@ export type Database = {
         Row: {
           active_avatar: string | null
           active_theme: string | null
+          avatar_customization: Json | null
           avatar_url: string | null
           bio: string | null
           birth_date: string | null
@@ -869,6 +1005,7 @@ export type Database = {
           id: string
           last_activity_date: string | null
           level: number | null
+          pet_active: boolean | null
           points: number | null
           referral_code: string | null
           referred_by: string | null
@@ -881,6 +1018,7 @@ export type Database = {
         Insert: {
           active_avatar?: string | null
           active_theme?: string | null
+          avatar_customization?: Json | null
           avatar_url?: string | null
           bio?: string | null
           birth_date?: string | null
@@ -893,6 +1031,7 @@ export type Database = {
           id: string
           last_activity_date?: string | null
           level?: number | null
+          pet_active?: boolean | null
           points?: number | null
           referral_code?: string | null
           referred_by?: string | null
@@ -905,6 +1044,7 @@ export type Database = {
         Update: {
           active_avatar?: string | null
           active_theme?: string | null
+          avatar_customization?: Json | null
           avatar_url?: string | null
           bio?: string | null
           birth_date?: string | null
@@ -917,6 +1057,7 @@ export type Database = {
           id?: string
           last_activity_date?: string | null
           level?: number | null
+          pet_active?: boolean | null
           points?: number | null
           referral_code?: string | null
           referred_by?: string | null
@@ -1194,6 +1335,51 @@ export type Database = {
         }
         Relationships: []
       }
+      study_companion_data: {
+        Row: {
+          ai_insights: Json | null
+          created_at: string | null
+          difficulty_areas: string[] | null
+          focus_duration_avg: number | null
+          id: string
+          last_analysis_at: string | null
+          learning_style: string | null
+          optimal_study_times: Json | null
+          preferred_subjects: string[] | null
+          study_patterns: Json | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          ai_insights?: Json | null
+          created_at?: string | null
+          difficulty_areas?: string[] | null
+          focus_duration_avg?: number | null
+          id?: string
+          last_analysis_at?: string | null
+          learning_style?: string | null
+          optimal_study_times?: Json | null
+          preferred_subjects?: string[] | null
+          study_patterns?: Json | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          ai_insights?: Json | null
+          created_at?: string | null
+          difficulty_areas?: string[] | null
+          focus_duration_avg?: number | null
+          id?: string
+          last_analysis_at?: string | null
+          learning_style?: string | null
+          optimal_study_times?: Json | null
+          preferred_subjects?: string[] | null
+          study_patterns?: Json | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       study_events: {
         Row: {
           completed: boolean | null
@@ -1336,6 +1522,122 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      user_avatars: {
+        Row: {
+          avatar_parts: Json
+          created_at: string | null
+          customization_unlocks: string[] | null
+          id: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          avatar_parts?: Json
+          created_at?: string | null
+          customization_unlocks?: string[] | null
+          id?: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          avatar_parts?: Json
+          created_at?: string | null
+          customization_unlocks?: string[] | null
+          id?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_daily_quests: {
+        Row: {
+          completed: boolean | null
+          completed_at: string | null
+          created_at: string | null
+          id: string
+          progress: number | null
+          quest_date: string | null
+          quest_id: string
+          user_id: string
+        }
+        Insert: {
+          completed?: boolean | null
+          completed_at?: string | null
+          created_at?: string | null
+          id?: string
+          progress?: number | null
+          quest_date?: string | null
+          quest_id: string
+          user_id: string
+        }
+        Update: {
+          completed?: boolean | null
+          completed_at?: string | null
+          created_at?: string | null
+          id?: string
+          progress?: number | null
+          quest_date?: string | null
+          quest_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_daily_quests_quest_id_fkey"
+            columns: ["quest_id"]
+            isOneToOne: false
+            referencedRelation: "daily_quests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_pets: {
+        Row: {
+          created_at: string | null
+          customization: Json | null
+          id: string
+          last_fed_at: string | null
+          last_played_at: string | null
+          pet_happiness: number | null
+          pet_hunger: number | null
+          pet_level: number | null
+          pet_name: string
+          pet_type: string
+          pet_xp: number | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          customization?: Json | null
+          id?: string
+          last_fed_at?: string | null
+          last_played_at?: string | null
+          pet_happiness?: number | null
+          pet_hunger?: number | null
+          pet_level?: number | null
+          pet_name: string
+          pet_type: string
+          pet_xp?: number | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          customization?: Json | null
+          id?: string
+          last_fed_at?: string | null
+          last_played_at?: string | null
+          pet_happiness?: number | null
+          pet_hunger?: number | null
+          pet_level?: number | null
+          pet_name?: string
+          pet_type?: string
+          pet_xp?: number | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
       }
       user_purchases: {
         Row: {
