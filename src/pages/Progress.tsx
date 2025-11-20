@@ -19,6 +19,7 @@ const Progress = () => {
   const [loading, setLoading] = useState(true);
   const [newAchievement, setNewAchievement] = useState<any>(null);
   const [showToast, setShowToast] = useState(false);
+  const [achievementsChecked, setAchievementsChecked] = useState(false);
   
   const {
     achievements,
@@ -26,12 +27,22 @@ const Progress = () => {
     currentLevel,
     nextLevel,
     loading: gamificationLoading,
+    checkForNewAchievements,
   } = useGamification();
 
   useEffect(() => {
     loadProfile();
   }, []);
 
+  useEffect(() => {
+    if (!achievementsChecked && !gamificationLoading && profile) {
+      checkForNewAchievements().catch((error) =>
+        logger.error("Failed to check achievements", error)
+      );
+      setAchievementsChecked(true);
+    }
+  }, [achievementsChecked, gamificationLoading, profile, checkForNewAchievements]);
+ 
   const handleShowAchievement = (achievement: any) => {
     setNewAchievement(achievement);
     setShowToast(true);
