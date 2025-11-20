@@ -1,10 +1,47 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3';
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
+
+// Validation schema
+const studyPlannerSchema = z.object({
+  subjects: z
+    .array(z.string().trim().min(1).max(100))
+    .min(1, 'حداقل یک درس مورد نیاز است')
+    .max(20, 'حداکثر ۲۰ درس مجاز است'),
+  startDate: z
+    .string()
+    .trim()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, 'فرمت تاریخ باید YYYY-MM-DD باشد'),
+  endDate: z
+    .string()
+    .trim()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, 'فرمت تاریخ باید YYYY-MM-DD باشد'),
+  grade: z
+    .string()
+    .trim()
+    .max(50)
+    .optional(),
+  studentName: z
+    .string()
+    .trim()
+    .max(100)
+    .optional(),
+}).refine(
+  (data) => {
+    const start = new Date(data.startDate);
+    const end = new Date(data.endDate);
+    return start < end;
+  },
+  {
+    message: 'تاریخ پایان باید بعد از تاریخ شروع باشد',
+    path: ['endDate'],
+  }
+);
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -74,11 +111,18 @@ serve(async (req) => {
       });
     }
 
-    const { subjects, startDate, endDate, grade, studentName } = await req.json();
+    const body = await req.json();
     
-    if (!subjects || !startDate || !endDate) {
-      throw new Error('اطلاعات کامل نیست');
+    // Validate input
+    const validation = studyPlannerSchema.safeParse(body);
+    if (!validation.success) {
+      return new Response(JSON.stringify({ error: 'ورودی نامعتبر', details: validation.error.issues }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
+    
+    const { subjects, startDate, endDate, grade, studentName } = validation.data;
 
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     if (!LOVABLE_API_KEY) {
