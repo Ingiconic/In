@@ -195,7 +195,7 @@ const ExamV2 = () => {
                    placeholder="محتوای درسی یا محدوده امتحان را وارد کنید..."
                    className="min-h-[200px]"
                    dir="rtl"
-                   disabled={loading}
+                   
                  />
               </div>
 

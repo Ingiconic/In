@@ -150,7 +150,6 @@ const Consultation = () => {
               onChange={(e) => setMessage(e.target.value)}
               placeholder="مثلاً: چطور می‌تونم برای امتحانات بهتر برنامه‌ریزی کنم؟"
               className="min-h-[100px] resize-none bg-input border-border/50"
-              disabled={loading}
               dir="rtl"
             />
             <Button onClick={handleSend} disabled={loading} size="lg" className="w-full shadow-glow">
