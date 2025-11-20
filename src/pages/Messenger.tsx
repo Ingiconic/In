@@ -30,7 +30,6 @@ import DirectMessages from "@/components/chat/DirectMessages";
 import Groups from "@/components/chat/Groups";
 import Channels from "@/components/chat/Channels";
 import SavedMessages from "@/components/chat/SavedMessages";
-import Friends from "@/components/chat/Friends";
 
 interface ChatListItem {
   id: string;
@@ -273,15 +272,11 @@ const Messenger = () => {
                   یک گروه، کانال بسازید یا با دوستان جدید چت کنید
                 </DialogDescription>
               </DialogHeader>
-              <Tabs defaultValue="friends" className="w-full">
-                <TabsList className="grid w-full grid-cols-3">
-                  <TabsTrigger value="friends">دوستان</TabsTrigger>
+              <Tabs defaultValue="groups" className="w-full">
+                <TabsList className="grid w-full grid-cols-2">
                   <TabsTrigger value="groups">گروه</TabsTrigger>
                   <TabsTrigger value="channels">کانال</TabsTrigger>
                 </TabsList>
-                <TabsContent value="friends" className="mt-4">
-                  <Friends />
-                </TabsContent>
                 <TabsContent value="groups" className="mt-4">
                   <Groups />
                 </TabsContent>

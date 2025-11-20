@@ -18,8 +18,6 @@ import Questions from "./pages/Questions";
 import Consultation from "./pages/Consultation";
 import StudyPlan from "./pages/StudyPlan";
 import ExamV2 from "./pages/ExamV2";
-import Chat from "./pages/Chat";
-import ChatFriends from "./pages/ChatFriends";
 import Profile from "./pages/Profile";
 import Progress from "./pages/Progress";
 import About from "./pages/About";
@@ -84,8 +82,6 @@ const App = () => (
               <Route path="/coin-shop" element={<CoinShop />} />
               <Route path="/install" element={<Install />} />
               <Route path="/messenger" element={<Messenger />} />
-              <Route path="/chat" element={<Chat />} />
-              <Route path="/chat-friends" element={<ChatFriends />} />
               <Route path="/pet" element={<PetPage />} />
               <Route path="/leaderboard" element={<Leaderboard />} />
               <Route path="/calendar" element={<StudyCalendar />} />
