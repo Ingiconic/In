@@ -9,6 +9,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Mic, MicOff, Volume2, VolumeX, ArrowRight, Loader2 } from 'lucide-react';
 import { getUserCoins, checkAndDeductCoins } from '@/lib/coinHelpers';
 import { COIN_COSTS } from '@/lib/coinCosts';
+import MathText from '@/components/MathText';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -233,7 +234,11 @@ const VoiceAssistant = () => {
                     <p className="text-sm font-semibold mb-1">
                       {msg.role === 'user' ? 'شما' : 'دستیار'}
                     </p>
-                    <p className="text-sm leading-relaxed">{msg.content}</p>
+                    {msg.role === 'user' ? (
+                      <p className="text-sm leading-relaxed">{msg.content}</p>
+                    ) : (
+                      <MathText content={msg.content} className="text-sm leading-relaxed" />
+                    )}
                     <p className="text-xs text-muted-foreground mt-2">
                       {msg.timestamp.toLocaleTimeString('fa-IR')}
                     </p>

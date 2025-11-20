@@ -123,7 +123,11 @@ const Consultation = () => {
                       <MessageSquare className="w-4 h-4 text-white" />
                     </div>
                   )}
-                  <p className="flex-1 leading-relaxed whitespace-pre-wrap">{msg.content}</p>
+                  {msg.role === "user" ? (
+                    <p className="flex-1 leading-relaxed whitespace-pre-wrap">{msg.content}</p>
+                  ) : (
+                    <MathText content={msg.content} className="flex-1 leading-relaxed" />
+                  )}
                   {msg.role === "user" && (
                     <div className="gradient-primary p-2 rounded-lg shadow-neon">
                       <User className="w-4 h-4 text-white" />

@@ -6,7 +6,7 @@ import { supabase } from "@/lib/supabase";
 import { Camera, Upload, Loader2, Sparkles, Image as ImageIcon } from "lucide-react";
 import AppLayout from "@/components/layout/AppLayout";
 import { usePageView } from "@/hooks/usePageView";
-import { Textarea } from "@/components/ui/textarea";
+import MathText from "@/components/MathText";
 
 const WorksheetSolver = () => {
   const { toast } = useToast();
@@ -153,11 +153,7 @@ const WorksheetSolver = () => {
               <Sparkles className="w-5 h-5 text-primary" />
               پاسخ‌های کاربرگ
             </h3>
-            <Textarea
-              value={solution}
-              readOnly
-              className="min-h-[400px] font-mono text-sm"
-            />
+            <MathText content={solution} className="min-h-[400px] text-sm" />
           </Card>
         )}
       </div>
