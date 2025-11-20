@@ -3,17 +3,18 @@ import { supabase } from "@/lib/supabase";
 import AppLayout from "@/components/layout/AppLayout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Calendar as CalendarIcon, Plus, Clock, CheckCircle2, Circle } from "lucide-react";
+import { Calendar as CalendarIcon, Plus, Clock, CheckCircle2, Circle, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { format } from "date-fns-jalali";
-import { faIR } from "date-fns-jalali/locale";
+import DatePicker, { DateObject } from "react-multi-date-picker";
+import persian from "react-date-object/calendars/persian";
+import persian_fa from "react-date-object/locales/persian_fa";
+import "react-multi-date-picker/styles/backgrounds/bg-dark.css";
 
 interface StudyEvent {
   id: string;
@@ -28,7 +29,7 @@ interface StudyEvent {
 }
 
 const StudyCalendar = () => {
-  const [date, setDate] = useState<Date | undefined>(new Date());
+  const [date, setDate] = useState<DateObject>(new DateObject({ calendar: persian, locale: persian_fa }));
   const [events, setEvents] = useState<StudyEvent[]>([]);
   const [selectedDateEvents, setSelectedDateEvents] = useState<StudyEvent[]>([]);
   const [loading, setLoading] = useState(true);
@@ -74,8 +75,10 @@ const StudyCalendar = () => {
     }
   };
 
-  const filterEventsByDate = (selectedDate: Date) => {
-    const dateStr = format(selectedDate, "yyyy-MM-dd");
+  const filterEventsByDate = (selectedDate: DateObject) => {
+    // Convert DateObject to gregorian date string for comparison
+    const gregorianDate = selectedDate.toDate();
+    const dateStr = gregorianDate.toISOString().split('T')[0];
     const filtered = events.filter((event) => event.event_date === dateStr);
     setSelectedDateEvents(filtered);
   };
@@ -90,11 +93,15 @@ const StudyCalendar = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
+      // Convert persian date to gregorian for storage
+      const gregorianDate = date.toDate();
+      const dateStr = gregorianDate.toISOString().split('T')[0];
+
       const { error } = await supabase.from("study_events").insert({
         user_id: user.id,
         title: newEvent.title,
         description: newEvent.description,
-        event_date: format(date, "yyyy-MM-dd"),
+        event_date: dateStr,
         event_time: newEvent.event_time,
         duration: newEvent.duration,
         subject: newEvent.subject,
@@ -128,13 +135,30 @@ const StudyCalendar = () => {
 
       if (error) throw error;
       loadEvents();
-    } catch (error) {
-      console.error("Error toggling event:", error);
+      toast({ title: "موفق", description: "وضعیت رویداد به‌روز شد" });
+    } catch (error: any) {
+      toast({ title: "خطا", description: error.message, variant: "destructive" });
     }
   };
 
-  const getDayEvents = (day: Date) => {
-    const dateStr = format(day, "yyyy-MM-dd");
+  const handleDeleteEvent = async (eventId: string) => {
+    try {
+      const { error } = await supabase
+        .from("study_events")
+        .delete()
+        .eq("id", eventId);
+
+      if (error) throw error;
+      loadEvents();
+      toast({ title: "موفق", description: "رویداد حذف شد" });
+    } catch (error: any) {
+      toast({ title: "خطا", description: error.message, variant: "destructive" });
+    }
+  };
+
+  const getDayEvents = (day: DateObject) => {
+    const gregorianDate = day.toDate();
+    const dateStr = gregorianDate.toISOString().split('T')[0];
     return events.filter((event) => event.event_date === dateStr);
   };
 
@@ -226,24 +250,31 @@ const StudyCalendar = () => {
           {/* Calendar */}
           <Card className="lg:col-span-2">
             <CardContent className="p-6">
-              <Calendar
-                mode="single"
-                selected={date}
-                onSelect={setDate}
-                className="rounded-md border"
-                locale={faIR}
-                defaultMonth={new Date()}
-                modifiers={{
-                  hasEvents: (day) => getDayEvents(day).length > 0,
-                }}
-                modifiersStyles={{
-                  hasEvents: {
-                    fontWeight: "bold",
-                    textDecoration: "underline",
-                    color: "hsl(var(--primary))",
-                  },
-                }}
-              />
+              <div className="flex justify-center">
+                <DatePicker
+                  value={date}
+                  onChange={(date) => {
+                    if (date) setDate(date as DateObject);
+                  }}
+                  calendar={persian}
+                  locale={persian_fa}
+                  className="bg-dark"
+                  calendarPosition="bottom-center"
+                  mapDays={({ date: dayDate }) => {
+                    const dayEvents = getDayEvents(dayDate);
+                    const hasEvents = dayEvents.length > 0;
+                    const hasCompleted = dayEvents.some(e => e.completed);
+                    
+                    return {
+                      className: hasEvents ? (hasCompleted ? "bg-green-500/20 text-green-600 font-bold" : "bg-primary/20 text-primary font-bold") : "",
+                    };
+                  }}
+                  style={{
+                    width: "100%",
+                    maxWidth: "600px",
+                  }}
+                />
+              </div>
             </CardContent>
           </Card>
 
@@ -252,7 +283,7 @@ const StudyCalendar = () => {
             <CardContent className="p-6">
               <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
                 <CalendarIcon className="w-5 h-5" />
-                رویدادهای {date && format(date, "d MMMM", { locale: faIR })}
+                رویدادهای {date && date.format("DD MMMM")}
               </h3>
               <div className="space-y-3">
                 {selectedDateEvents.length === 0 ? (
@@ -261,44 +292,59 @@ const StudyCalendar = () => {
                   </p>
                 ) : (
                   selectedDateEvents.map((event) => (
-                    <div
-                      key={event.id}
-                      className={`p-4 rounded-lg border transition-all ${
-                        event.completed
-                          ? "bg-green-500/10 border-green-500/30"
-                          : "bg-secondary/30 border-border/30"
-                      }`}
-                    >
-                      <div className="flex items-start justify-between mb-2">
-                        <div className="flex-1">
-                          <h4 className={`font-bold ${event.completed ? "line-through text-muted-foreground" : ""}`}>
-                            {event.title}
-                          </h4>
-                          {event.description && (
-                            <p className="text-sm text-muted-foreground mt-1">{event.description}</p>
-                          )}
+                    <Card key={event.id} className={event.completed ? "bg-green-500/5 border-green-500/20" : ""}>
+                      <CardContent className="p-4">
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-1">
+                              <button
+                                onClick={() => toggleComplete(event.id, event.completed)}
+                                className="hover:scale-110 transition-transform"
+                              >
+                                {event.completed ? (
+                                  <CheckCircle2 className="w-5 h-5 text-green-500" />
+                                ) : (
+                                  <Circle className="w-5 h-5 text-muted-foreground" />
+                                )}
+                              </button>
+                              <h4 className={`font-bold ${event.completed ? "line-through text-muted-foreground" : ""}`}>
+                                {event.title}
+                              </h4>
+                            </div>
+                            
+                            {event.description && (
+                              <p className="text-sm text-muted-foreground mb-2 mr-7">
+                                {event.description}
+                              </p>
+                            )}
+                            
+                            <div className="flex items-center gap-3 text-xs text-muted-foreground mr-7">
+                              <span className="flex items-center gap-1">
+                                <Clock className="w-3 h-3" />
+                                {event.event_time}
+                              </span>
+                              {event.duration && (
+                                <span>{event.duration} دقیقه</span>
+                              )}
+                              {event.subject && (
+                                <span className="bg-primary/10 px-2 py-0.5 rounded">
+                                  {event.subject}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                          
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleDeleteEvent(event.id)}
+                            className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
                         </div>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => toggleComplete(event.id, event.completed)}
-                        >
-                          {event.completed ? (
-                            <CheckCircle2 className="w-5 h-5 text-green-500" />
-                          ) : (
-                            <Circle className="w-5 h-5" />
-                          )}
-                        </Button>
-                      </div>
-                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                        <span className="flex items-center gap-1">
-                          <Clock className="w-3 h-3" />
-                          {event.event_time}
-                        </span>
-                        <span>{event.duration} دقیقه</span>
-                        {event.subject && <span className="text-primary">#{event.subject}</span>}
-                      </div>
-                    </div>
+                      </CardContent>
+                    </Card>
                   ))
                 )}
               </div>
