@@ -122,8 +122,25 @@ const ForumCategory = () => {
   };
 
   const handleCreateTopic = async () => {
-    if (!newTopicTitle.trim() || !newTopicContent.trim()) {
-      toast.error("لطفا عنوان و محتوا را وارد کنید");
+    // Validate title length (3-200 characters)
+    if (!newTopicTitle.trim() || newTopicTitle.trim().length < 3) {
+      toast.error("عنوان باید حداقل ۳ کاراکتر باشد");
+      return;
+    }
+    
+    if (newTopicTitle.trim().length > 200) {
+      toast.error("عنوان نباید بیشتر از ۲۰۰ کاراکتر باشد");
+      return;
+    }
+
+    // Validate content length (10-10000 characters)
+    if (!newTopicContent.trim() || newTopicContent.trim().length < 10) {
+      toast.error("محتوا باید حداقل ۱۰ کاراکتر باشد");
+      return;
+    }
+    
+    if (newTopicContent.trim().length > 10000) {
+      toast.error("محتوا نباید بیشتر از ۱۰۰۰۰ کاراکتر باشد");
       return;
     }
 
@@ -140,8 +157,8 @@ const ForumCategory = () => {
         .insert({
           category_id: categoryId,
           user_id: user.id,
-          title: newTopicTitle,
-          content: newTopicContent,
+          title: newTopicTitle.trim(),
+          content: newTopicContent.trim(),
         });
 
       if (error) throw error;
