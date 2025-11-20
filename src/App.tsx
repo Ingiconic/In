@@ -32,7 +32,6 @@ import ShopPage from "./pages/ShopPage";
 import FocusMode from "./pages/FocusMode";
 import Forum from "./pages/Forum";
 import ForumCategory from "./pages/ForumCategory";
-import ThemeSettings from "./pages/ThemeSettings";
 import BlogPost from "./pages/BlogPost";
 import Referral from "./pages/Referral";
 import VoiceAssistant from "./pages/VoiceAssistant";
@@ -45,6 +44,14 @@ import ARLearning from "./pages/ARLearning";
 import DailyQuests from "./pages/DailyQuests";
 import AvatarCustomizer from "./pages/AvatarCustomizer";
 import PetPage from "./pages/PetPage";
+import StudyStreak from "./pages/StudyStreak";
+import AIBuddy from "./pages/AIBuddy";
+import StudyBattle from "./pages/StudyBattle";
+import MusicPlayer from "./pages/MusicPlayer";
+import GoalsTracker from "./pages/GoalsTracker";
+import MotivationWall from "./pages/MotivationWall";
+import PomodoroTimer from "./pages/PomodoroTimer";
+import ThemeSettings from "./pages/ThemeSettings";
 
 const queryClient = new QueryClient();
 
@@ -81,6 +88,14 @@ const App = () => (
               <Route path="/coin-shop" element={<CoinShop />} />
               <Route path="/install" element={<Install />} />
               <Route path="/pet" element={<PetPage />} />
+              <Route path="/study-streak" element={<StudyStreak />} />
+              <Route path="/ai-buddy" element={<AIBuddy />} />
+              <Route path="/study-battle" element={<StudyBattle />} />
+              <Route path="/music-player" element={<MusicPlayer />} />
+              <Route path="/goals-tracker" element={<GoalsTracker />} />
+              <Route path="/motivation-wall" element={<MotivationWall />} />
+              <Route path="/pomodoro-timer" element={<PomodoroTimer />} />
+              <Route path="/theme-settings" element={<ThemeSettings />} />
               <Route path="/leaderboard" element={<Leaderboard />} />
               <Route path="/calendar" element={<StudyCalendar />} />
               <Route path="/shop" element={<ShopPage />} />

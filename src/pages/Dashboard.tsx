@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { ShoppingBag, Users, FileText, CheckSquare, HelpCircle, Trophy, PenTool, Brain, BookOpen, Lightbulb, CreditCard, Coins, MessageSquare, Calendar, Award, Flame, Target, ClipboardList, BookCheck, NotebookPen, Sparkles, Box, Gamepad2, User } from "lucide-react";
+import { ShoppingBag, Users, FileText, CheckSquare, HelpCircle, Trophy, PenTool, Brain, BookOpen, Lightbulb, CreditCard, Coins, MessageSquare, Calendar, Award, Flame, Target, ClipboardList, BookCheck, NotebookPen, Sparkles, Box, Gamepad2, User, Music, Palette, Heart, Clock, Swords } from "lucide-react";
 import { usePageView } from "@/hooks/usePageView";
 import AppLayout from "@/components/layout/AppLayout";
 import { Button } from "@/components/ui/button";
@@ -110,6 +110,116 @@ const Dashboard = () => {
         {/* Voice Assistant Widget */}
         <div className="mb-4">
           <VoiceAssistantWidget />
+        </div>
+
+        {/* New Features Grid */}
+        <div className="mb-6">
+          <h2 className="text-2xl font-bold mb-4">ابزارهای جدید 🌟</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <Card
+              onClick={() => navigate("/study-streak")}
+              className="glassmorphism-card border-primary/10 hover:shadow-glow transition-all cursor-pointer group p-4"
+            >
+              <div className="flex items-center gap-3 mb-2">
+                <div className="gradient-primary p-3 rounded-xl">
+                  <Flame className="w-5 h-5 text-white" />
+                </div>
+                <h3 className="font-bold">استریک</h3>
+              </div>
+              <p className="text-xs text-muted-foreground">ردیابی روزهای مطالعه</p>
+            </Card>
+
+            <Card
+              onClick={() => navigate("/ai-buddy")}
+              className="glassmorphism-card border-primary/10 hover:shadow-glow transition-all cursor-pointer group p-4"
+            >
+              <div className="flex items-center gap-3 mb-2">
+                <div className="gradient-primary p-3 rounded-xl">
+                  <Brain className="w-5 h-5 text-white" />
+                </div>
+                <h3 className="font-bold">دوست هوشمند</h3>
+              </div>
+              <p className="text-xs text-muted-foreground">چت با AI</p>
+            </Card>
+
+            <Card
+              onClick={() => navigate("/study-battle")}
+              className="glassmorphism-card border-primary/10 hover:shadow-glow transition-all cursor-pointer group p-4"
+            >
+              <div className="flex items-center gap-3 mb-2">
+                <div className="gradient-primary p-3 rounded-xl">
+                  <Swords className="w-5 h-5 text-white" />
+                </div>
+                <h3 className="font-bold">نبرد مطالعه</h3>
+              </div>
+              <p className="text-xs text-muted-foreground">رقابت با دوستان</p>
+            </Card>
+
+            <Card
+              onClick={() => navigate("/music-player")}
+              className="glassmorphism-card border-primary/10 hover:shadow-glow transition-all cursor-pointer group p-4"
+            >
+              <div className="flex items-center gap-3 mb-2">
+                <div className="gradient-primary p-3 rounded-xl">
+                  <Music className="w-5 h-5 text-white" />
+                </div>
+                <h3 className="font-bold">موزیک مطالعه</h3>
+              </div>
+              <p className="text-xs text-muted-foreground">پلی‌لیست‌های آرامش‌بخش</p>
+            </Card>
+
+            <Card
+              onClick={() => navigate("/goals-tracker")}
+              className="glassmorphism-card border-primary/10 hover:shadow-glow transition-all cursor-pointer group p-4"
+            >
+              <div className="flex items-center gap-3 mb-2">
+                <div className="gradient-primary p-3 rounded-xl">
+                  <Target className="w-5 h-5 text-white" />
+                </div>
+                <h3 className="font-bold">اهداف</h3>
+              </div>
+              <p className="text-xs text-muted-foreground">برنامه‌ریزی اهداف</p>
+            </Card>
+
+            <Card
+              onClick={() => navigate("/pomodoro-timer")}
+              className="glassmorphism-card border-primary/10 hover:shadow-glow transition-all cursor-pointer group p-4"
+            >
+              <div className="flex items-center gap-3 mb-2">
+                <div className="gradient-primary p-3 rounded-xl">
+                  <Clock className="w-5 h-5 text-white" />
+                </div>
+                <h3 className="font-bold">پومودورو</h3>
+              </div>
+              <p className="text-xs text-muted-foreground">تایمر تمرکز</p>
+            </Card>
+
+            <Card
+              onClick={() => navigate("/motivation-wall")}
+              className="glassmorphism-card border-primary/10 hover:shadow-glow transition-all cursor-pointer group p-4"
+            >
+              <div className="flex items-center gap-3 mb-2">
+                <div className="gradient-primary p-3 rounded-xl">
+                  <Heart className="w-5 h-5 text-white" />
+                </div>
+                <h3 className="font-bold">دیوار انگیزشی</h3>
+              </div>
+              <p className="text-xs text-muted-foreground">جملات الهام‌بخش</p>
+            </Card>
+
+            <Card
+              onClick={() => navigate("/theme-settings")}
+              className="glassmorphism-card border-primary/10 hover:shadow-glow transition-all cursor-pointer group p-4"
+            >
+              <div className="flex items-center gap-3 mb-2">
+                <div className="gradient-primary p-3 rounded-xl">
+                  <Palette className="w-5 h-5 text-white" />
+                </div>
+                <h3 className="font-bold">تنظیمات ظاهری</h3>
+              </div>
+              <p className="text-xs text-muted-foreground">شخصی‌سازی تم</p>
+            </Card>
+          </div>
         </div>
 
         {/* Tools */}

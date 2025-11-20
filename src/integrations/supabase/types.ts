@@ -59,6 +59,33 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_chat_history: {
+        Row: {
+          created_at: string | null
+          id: string
+          message: string
+          personality_type: string | null
+          response: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          message: string
+          personality_type?: string | null
+          response: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          message?: string
+          personality_type?: string | null
+          response?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       ar_models: {
         Row: {
           created_at: string | null
@@ -894,6 +921,72 @@ export type Database = {
         }
         Relationships: []
       }
+      motivation_items: {
+        Row: {
+          content: string
+          created_at: string | null
+          id: string
+          image_url: string | null
+          item_type: string
+          position_x: number | null
+          position_y: number | null
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string | null
+          id?: string
+          image_url?: string | null
+          item_type: string
+          position_x?: number | null
+          position_y?: number | null
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string | null
+          id?: string
+          image_url?: string | null
+          item_type?: string
+          position_x?: number | null
+          position_y?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      music_playlists: {
+        Row: {
+          created_at: string | null
+          genre: string
+          id: string
+          is_premium: boolean | null
+          name: string
+          name_fa: string
+          thumbnail_url: string | null
+          tracks: Json
+        }
+        Insert: {
+          created_at?: string | null
+          genre: string
+          id?: string
+          is_premium?: boolean | null
+          name: string
+          name_fa: string
+          thumbnail_url?: string | null
+          tracks?: Json
+        }
+        Update: {
+          created_at?: string | null
+          genre?: string
+          id?: string
+          is_premium?: boolean | null
+          name?: string
+          name_fa?: string
+          thumbnail_url?: string | null
+          tracks?: Json
+        }
+        Relationships: []
+      }
       notes: {
         Row: {
           category: string | null
@@ -1069,10 +1162,47 @@ export type Database = {
           },
         ]
       }
+      pomodoro_sessions: {
+        Row: {
+          break_duration: number | null
+          completed: boolean | null
+          completed_at: string | null
+          duration: number
+          id: string
+          notes: string | null
+          started_at: string | null
+          subject: string | null
+          user_id: string
+        }
+        Insert: {
+          break_duration?: number | null
+          completed?: boolean | null
+          completed_at?: string | null
+          duration: number
+          id?: string
+          notes?: string | null
+          started_at?: string | null
+          subject?: string | null
+          user_id: string
+        }
+        Update: {
+          break_duration?: number | null
+          completed?: boolean | null
+          completed_at?: string | null
+          duration?: number
+          id?: string
+          notes?: string | null
+          started_at?: string | null
+          subject?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           active_avatar: string | null
           active_theme: string | null
+          ai_buddy_personality: string | null
           avatar_customization: Json | null
           avatar_url: string | null
           bio: string | null
@@ -1088,6 +1218,8 @@ export type Database = {
           last_activity_date: string | null
           last_seen: string | null
           level: number | null
+          music_preferences: Json | null
+          notification_settings: Json | null
           pet_active: boolean | null
           points: number | null
           referral_code: string | null
@@ -1101,6 +1233,7 @@ export type Database = {
         Insert: {
           active_avatar?: string | null
           active_theme?: string | null
+          ai_buddy_personality?: string | null
           avatar_customization?: Json | null
           avatar_url?: string | null
           bio?: string | null
@@ -1116,6 +1249,8 @@ export type Database = {
           last_activity_date?: string | null
           last_seen?: string | null
           level?: number | null
+          music_preferences?: Json | null
+          notification_settings?: Json | null
           pet_active?: boolean | null
           points?: number | null
           referral_code?: string | null
@@ -1129,6 +1264,7 @@ export type Database = {
         Update: {
           active_avatar?: string | null
           active_theme?: string | null
+          ai_buddy_personality?: string | null
           avatar_customization?: Json | null
           avatar_url?: string | null
           bio?: string | null
@@ -1144,6 +1280,8 @@ export type Database = {
           last_activity_date?: string | null
           last_seen?: string | null
           level?: number | null
+          music_preferences?: Json | null
+          notification_settings?: Json | null
           pet_active?: boolean | null
           points?: number | null
           referral_code?: string | null
@@ -1386,6 +1524,48 @@ export type Database = {
         }
         Relationships: []
       }
+      study_battles: {
+        Row: {
+          completed_at: string | null
+          created_at: string | null
+          id: string
+          player1_id: string
+          player1_score: number | null
+          player2_id: string
+          player2_score: number | null
+          questions: Json
+          status: string | null
+          subject: string
+          winner_id: string | null
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string | null
+          id?: string
+          player1_id: string
+          player1_score?: number | null
+          player2_id: string
+          player2_score?: number | null
+          questions: Json
+          status?: string | null
+          subject: string
+          winner_id?: string | null
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string | null
+          id?: string
+          player1_id?: string
+          player1_score?: number | null
+          player2_id?: string
+          player2_score?: number | null
+          questions?: Json
+          status?: string | null
+          subject?: string
+          winner_id?: string | null
+        }
+        Relationships: []
+      }
       study_books: {
         Row: {
           book_type: string
@@ -1581,6 +1761,39 @@ export type Database = {
         }
         Relationships: []
       }
+      study_streaks: {
+        Row: {
+          created_at: string | null
+          current_streak: number | null
+          id: string
+          last_study_date: string | null
+          longest_streak: number | null
+          streak_milestones: Json | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          current_streak?: number | null
+          id?: string
+          last_study_date?: string | null
+          longest_streak?: number | null
+          streak_milestones?: Json | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          current_streak?: number | null
+          id?: string
+          last_study_date?: string | null
+          longest_streak?: number | null
+          streak_milestones?: Json | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       unread_messages: {
         Row: {
           chat_id: string
@@ -1704,6 +1917,48 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      user_goals: {
+        Row: {
+          category: string | null
+          completed: boolean | null
+          created_at: string | null
+          description: string | null
+          id: string
+          milestones: Json | null
+          progress: number | null
+          target_date: string | null
+          title: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          category?: string | null
+          completed?: boolean | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          milestones?: Json | null
+          progress?: number | null
+          target_date?: string | null
+          title: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          category?: string | null
+          completed?: boolean | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          milestones?: Json | null
+          progress?: number | null
+          target_date?: string | null
+          title?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
       }
       user_pets: {
         Row: {
