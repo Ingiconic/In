@@ -30,6 +30,8 @@ import DirectMessages from "@/components/chat/DirectMessages";
 import Groups from "@/components/chat/Groups";
 import Channels from "@/components/chat/Channels";
 import SavedMessages from "@/components/chat/SavedMessages";
+import UnreadBadge from "@/components/chat/UnreadBadge";
+import OnlineStatus from "@/components/chat/OnlineStatus";
 
 interface ChatListItem {
   id: string;
@@ -78,6 +80,15 @@ const Messenger = () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
+    // Load pinned chats first
+    const { data: pinnedChats } = await supabase
+      .from("pinned_chats")
+      .select("*")
+      .eq("user_id", user.id)
+      .order("pinned_at", { ascending: false });
+
+    const pinnedIds = new Set(pinnedChats?.map(p => p.chat_id) || []);
+
     // Load direct messages
     const { data: friendships } = await supabase
       .from("friendships")
@@ -94,30 +105,37 @@ const Messenger = () => {
     }
 
     // Load groups
-    const { data: groups } = await supabase
-      .from("groups")
-      .select("id, name")
-      .in("id", 
-        (await supabase
-          .from("group_members")
-          .select("group_id")
-          .eq("user_id", user.id)
-        ).data?.map(m => m.group_id) || []
-      );
+    const { data: groupMemberships } = await supabase
+      .from("group_members")
+      .select("group_id")
+      .eq("user_id", user.id);
+
+    let groups: any[] = [];
+    if (groupMemberships && groupMemberships.length > 0) {
+      const { data } = await supabase
+        .from("groups")
+        .select("id, name")
+        .in("id", groupMemberships.map(m => m.group_id));
+      groups = data || [];
+    }
 
     // Load channels
-    const { data: channels } = await supabase
-      .from("channels")
-      .select("id, name")
-      .in("id", 
-        (await supabase
-          .from("channel_members")
-          .select("channel_id")
-          .eq("user_id", user.id)
-        ).data?.map(m => m.channel_id) || []
-      );
+    const { data: channelMemberships } = await supabase
+      .from("channel_members")
+      .select("channel_id")
+      .eq("user_id", user.id);
 
-    const chats: ChatListItem[] = [
+    let channels: any[] = [];
+    if (channelMemberships && channelMemberships.length > 0) {
+      const { data } = await supabase
+        .from("channels")
+        .select("id, name")
+        .in("id", channelMemberships.map(m => m.channel_id));
+      channels = data || [];
+    }
+
+    // Sort chats: pinned first, then by last message time
+    const allChats: ChatListItem[] = [
       {
         id: 'saved',
         name: 'پیام‌های ذخیره‌شده',
@@ -141,7 +159,16 @@ const Messenger = () => {
       })) || []),
     ];
 
-    setChatList(chats);
+    // Sort: pinned first
+    allChats.sort((a, b) => {
+      const aIsPinned = pinnedIds.has(a.id);
+      const bIsPinned = pinnedIds.has(b.id);
+      if (aIsPinned && !bIsPinned) return -1;
+      if (!aIsPinned && bIsPinned) return 1;
+      return 0;
+    });
+
+    setChatList(allChats);
   };
 
   const handleChatSelect = (chat: ChatListItem) => {
@@ -237,19 +264,23 @@ const Messenger = () => {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between">
                       <p className="font-semibold truncate">{chat.name}</p>
-                      {chat.time && (
-                        <span className="text-xs text-muted-foreground">{chat.time}</span>
-                      )}
+                      <div className="flex items-center gap-2">
+                        {chat.time && (
+                          <span className="text-xs text-muted-foreground">{chat.time}</span>
+                        )}
+                        {chat.type !== 'saved' && (
+                          <UnreadBadge
+                            chatType={chat.type}
+                            chatId={chat.id}
+                          />
+                        )}
+                      </div>
                     </div>
                     {chat.lastMessage && (
                       <p className="text-sm text-muted-foreground truncate">{chat.lastMessage}</p>
                     )}
+                    {chat.type === 'direct' && <OnlineStatus userId={chat.id} showText={false} />}
                   </div>
-                  {chat.unread && chat.unread > 0 && (
-                    <div className="bg-primary text-primary-foreground text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-                      {chat.unread}
-                    </div>
-                  )}
                 </div>
               ))}
             </div>

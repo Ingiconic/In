@@ -177,28 +177,40 @@ export type Database = {
           channel_id: string
           content: string
           created_at: string | null
+          forwarded_from: string | null
           id: string
           is_edited: boolean | null
+          reactions: Json | null
+          scheduled_at: string | null
           updated_at: string | null
           user_id: string
+          views_count: number | null
         }
         Insert: {
           channel_id: string
           content: string
           created_at?: string | null
+          forwarded_from?: string | null
           id?: string
           is_edited?: boolean | null
+          reactions?: Json | null
+          scheduled_at?: string | null
           updated_at?: string | null
           user_id: string
+          views_count?: number | null
         }
         Update: {
           channel_id?: string
           content?: string
           created_at?: string | null
+          forwarded_from?: string | null
           id?: string
           is_edited?: boolean | null
+          reactions?: Json | null
+          scheduled_at?: string | null
           updated_at?: string | null
           user_id?: string
+          views_count?: number | null
         }
         Relationships: [
           {
@@ -321,30 +333,51 @@ export type Database = {
         Row: {
           content: string
           created_at: string | null
+          forwarded_from: string | null
           id: string
           is_edited: boolean | null
           is_read: boolean | null
+          is_silent: boolean | null
+          media_type: string | null
+          media_url: string | null
+          reactions: Json | null
+          read_at: string | null
           receiver_id: string
+          scheduled_at: string | null
           sender_id: string
           updated_at: string | null
         }
         Insert: {
           content: string
           created_at?: string | null
+          forwarded_from?: string | null
           id?: string
           is_edited?: boolean | null
           is_read?: boolean | null
+          is_silent?: boolean | null
+          media_type?: string | null
+          media_url?: string | null
+          reactions?: Json | null
+          read_at?: string | null
           receiver_id: string
+          scheduled_at?: string | null
           sender_id: string
           updated_at?: string | null
         }
         Update: {
           content?: string
           created_at?: string | null
+          forwarded_from?: string | null
           id?: string
           is_edited?: boolean | null
           is_read?: boolean | null
+          is_silent?: boolean | null
+          media_type?: string | null
+          media_url?: string | null
+          reactions?: Json | null
+          read_at?: string | null
           receiver_id?: string
+          scheduled_at?: string | null
           sender_id?: string
           updated_at?: string | null
         }
@@ -716,27 +749,51 @@ export type Database = {
         Row: {
           content: string
           created_at: string | null
+          forwarded_from: string | null
           group_id: string
           id: string
           is_edited: boolean | null
+          is_silent: boolean | null
+          media_type: string | null
+          media_url: string | null
+          reactions: Json | null
+          read_by: Json | null
+          reply_to_id: string | null
+          scheduled_at: string | null
           updated_at: string | null
           user_id: string
         }
         Insert: {
           content: string
           created_at?: string | null
+          forwarded_from?: string | null
           group_id: string
           id?: string
           is_edited?: boolean | null
+          is_silent?: boolean | null
+          media_type?: string | null
+          media_url?: string | null
+          reactions?: Json | null
+          read_by?: Json | null
+          reply_to_id?: string | null
+          scheduled_at?: string | null
           updated_at?: string | null
           user_id: string
         }
         Update: {
           content?: string
           created_at?: string | null
+          forwarded_from?: string | null
           group_id?: string
           id?: string
           is_edited?: boolean | null
+          is_silent?: boolean | null
+          media_type?: string | null
+          media_url?: string | null
+          reactions?: Json | null
+          read_by?: Json | null
+          reply_to_id?: string | null
+          scheduled_at?: string | null
           updated_at?: string | null
           user_id?: string
         }
@@ -939,6 +996,30 @@ export type Database = {
         }
         Relationships: []
       }
+      pinned_chats: {
+        Row: {
+          chat_id: string
+          chat_type: string
+          id: string
+          pinned_at: string | null
+          user_id: string
+        }
+        Insert: {
+          chat_id: string
+          chat_type: string
+          id?: string
+          pinned_at?: string | null
+          user_id: string
+        }
+        Update: {
+          chat_id?: string
+          chat_type?: string
+          id?: string
+          pinned_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       points_history: {
         Row: {
           created_at: string | null
@@ -1003,7 +1084,9 @@ export type Database = {
           full_name: string
           grade: string | null
           id: string
+          is_online: boolean | null
           last_activity_date: string | null
+          last_seen: string | null
           level: number | null
           pet_active: boolean | null
           points: number | null
@@ -1029,7 +1112,9 @@ export type Database = {
           full_name: string
           grade?: string | null
           id: string
+          is_online?: boolean | null
           last_activity_date?: string | null
+          last_seen?: string | null
           level?: number | null
           pet_active?: boolean | null
           points?: number | null
@@ -1055,7 +1140,9 @@ export type Database = {
           full_name?: string
           grade?: string | null
           id?: string
+          is_online?: boolean | null
           last_activity_date?: string | null
+          last_seen?: string | null
           level?: number | null
           pet_active?: boolean | null
           points?: number | null
@@ -1494,6 +1581,33 @@ export type Database = {
         }
         Relationships: []
       }
+      unread_messages: {
+        Row: {
+          chat_id: string
+          chat_type: string
+          id: string
+          last_message_at: string | null
+          unread_count: number | null
+          user_id: string
+        }
+        Insert: {
+          chat_id: string
+          chat_type: string
+          id?: string
+          last_message_at?: string | null
+          unread_count?: number | null
+          user_id: string
+        }
+        Update: {
+          chat_id?: string
+          chat_type?: string
+          id?: string
+          last_message_at?: string | null
+          unread_count?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_achievements: {
         Row: {
           achievement_id: string
@@ -1800,6 +1914,7 @@ export type Database = {
         Returns: boolean
       }
       purchase_shop_item: { Args: { _item_id: string }; Returns: Json }
+      update_last_seen: { Args: never; Returns: undefined }
       vote_forum_reply: {
         Args: { _reply_id: string; _vote_type: string }
         Returns: undefined
