@@ -1,10 +1,43 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3';
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
+
+// Suspicious pattern detection
+const suspiciousPatterns = [
+  /ignore\s+(previous|prior|all)\s+(instructions?|prompts?)/i,
+  /system\s+prompt/i,
+  /دستورات\s+قبلی.*نادیده/i,
+  /نادیده\s+بگیر.*دستور/i,
+  /disregard\s+(previous|prior)/i,
+  /forget\s+(everything|all)/i,
+];
+
+function containsSuspiciousPatterns(text: string): boolean {
+  return suspiciousPatterns.some(pattern => pattern.test(text));
+}
+
+// Validation schema
+const aiAnswerSchema = z.object({
+  question: z
+    .string()
+    .trim()
+    .min(1, 'سوال نمی‌تواند خالی باشد')
+    .max(2000, 'سوال حداکثر ۲۰۰۰ کاراکتر است')
+    .refine(
+      (val) => !containsSuspiciousPatterns(val),
+      'محتوای نامعتبر شناسایی شد'
+    ),
+  context: z
+    .string()
+    .trim()
+    .max(5000, 'متن مرجع حداکثر ۵۰۰۰ کاراکتر است')
+    .optional(),
+});
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -74,11 +107,18 @@ serve(async (req) => {
       });
     }
 
-    const { question, context } = await req.json();
+    const body = await req.json();
     
-    if (!question) {
-      throw new Error('سوال الزامی است');
+    // Validate input
+    const validation = aiAnswerSchema.safeParse(body);
+    if (!validation.success) {
+      return new Response(JSON.stringify({ error: 'ورودی نامعتبر', details: validation.error.issues }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
+    
+    const { question, context } = validation.data;
 
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     if (!LOVABLE_API_KEY) {

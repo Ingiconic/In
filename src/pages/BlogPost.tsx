@@ -7,6 +7,7 @@ import { ArrowRight, Calendar } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { format } from "date-fns";
 import { toast } from "sonner";
+import DOMPurify from "dompurify";
 
 interface BlogPost {
   id: string;
@@ -45,6 +46,20 @@ const BlogPost = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  // Sanitize HTML content to prevent XSS attacks
+  const getSanitizedContent = (content: string) => {
+    return DOMPurify.sanitize(content, {
+      ALLOWED_TAGS: [
+        'p', 'br', 'strong', 'em', 'u', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+        'ul', 'ol', 'li', 'a', 'img', 'blockquote', 'code', 'pre',
+        'table', 'thead', 'tbody', 'tr', 'th', 'td', 'div', 'span'
+      ],
+      ALLOWED_ATTR: ['href', 'src', 'alt', 'title', 'class', 'id', 'target', 'rel'],
+      ALLOW_DATA_ATTR: false,
+      ALLOWED_URI_REGEXP: /^(?:(?:(?:f|ht)tps?|mailto|tel|callto|sms|cid|xmpp):|[^a-z]|[a-z+.\-]+(?:[^a-z+.\-:]|$))/i,
+    });
   };
 
   if (loading) {
@@ -99,10 +114,10 @@ const BlogPost = () => {
           </span>
         </div>
 
-        {/* Content */}
+        {/* Content - Sanitized to prevent XSS */}
         <div 
           className="prose prose-lg dark:prose-invert max-w-none"
-          dangerouslySetInnerHTML={{ __html: post.content }}
+          dangerouslySetInnerHTML={{ __html: getSanitizedContent(post.content) }}
         />
       </div>
     </AppLayout>

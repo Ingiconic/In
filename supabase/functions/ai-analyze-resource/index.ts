@@ -1,11 +1,20 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.7.1';
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
+
+// Validation schema
+const analyzeResourceSchema = z.object({
+  resourceId: z
+    .string()
+    .trim()
+    .uuid('شناسه منبع نامعتبر است'),
+});
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -33,14 +42,18 @@ serve(async (req) => {
       });
     }
 
-    const { resourceId } = await req.json();
-
-    if (!resourceId) {
-      return new Response(JSON.stringify({ error: 'Resource ID is required' }), {
+    const body = await req.json();
+    
+    // Validate input
+    const validation = analyzeResourceSchema.safeParse(body);
+    if (!validation.success) {
+      return new Response(JSON.stringify({ error: 'ورودی نامعتبر', details: validation.error.issues }), {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
+    
+    const { resourceId } = validation.data;
 
     // Get resource
     const { data: resource, error: resourceError } = await supabaseClient
