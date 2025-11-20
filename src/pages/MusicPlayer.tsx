@@ -14,9 +14,8 @@ const defaultPlaylists = [
     genre: "lofi",
     thumbnail_url: "https://images.unsplash.com/photo-1511379938547-c1f69419868d",
     tracks: [
-      { title: "Chill Study", url: "https://cdn.pixabay.com/audio/2022/05/27/audio_1808fbf07a.mp3" },
-      { title: "Peaceful Mind", url: "https://cdn.pixabay.com/audio/2022/03/10/audio_4deabfa9b8.mp3" },
-      { title: "Lofi Hip Hop", url: "https://cdn.pixabay.com/audio/2022/01/18/audio_ce32e6f88e.mp3" },
+      { title: "Chill Study", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" },
+      { title: "Deep Focus", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" },
     ],
   },
   {
@@ -26,9 +25,8 @@ const defaultPlaylists = [
     genre: "classical",
     thumbnail_url: "https://images.unsplash.com/photo-1507838153414-b4b713384a76",
     tracks: [
-      { title: "Classical Piano", url: "https://cdn.pixabay.com/audio/2022/03/15/audio_16f9391ef3.mp3" },
-      { title: "Calm Piano", url: "https://cdn.pixabay.com/audio/2021/08/09/audio_0625c1539c.mp3" },
-      { title: "Peaceful Classical", url: "https://cdn.pixabay.com/audio/2022/11/22/audio_1e5d8d4f8c.mp3" },
+      { title: "Piano Concentration", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3" },
+      { title: "Orchestral Calm", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3" },
     ],
   },
   {
@@ -38,8 +36,7 @@ const defaultPlaylists = [
     genre: "ambient",
     thumbnail_url: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e",
     tracks: [
-      { title: "Forest Sounds", url: "https://cdn.pixabay.com/audio/2022/03/02/audio_0649ab2cd8.mp3" },
-      { title: "Ocean Waves", url: "https://cdn.pixabay.com/audio/2021/11/26/audio_c63f8d6cc0.mp3" },
+      { title: "Soft Ambience", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3" },
     ],
   },
 ];
@@ -62,10 +59,16 @@ export default function MusicPlayer() {
     if (audioRef.current) {
       if (isPlaying) {
         audioRef.current.pause();
+        setIsPlaying(false);
       } else {
-        audioRef.current.play();
+        audioRef.current
+          .play()
+          .then(() => setIsPlaying(true))
+          .catch((err) => {
+            console.error("Audio play error", err);
+            setIsPlaying(false);
+          });
       }
-      setIsPlaying(!isPlaying);
     }
   };
 
