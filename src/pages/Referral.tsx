@@ -17,7 +17,6 @@ interface ReferralStats {
 const Referral = () => {
   const [stats, setStats] = useState<ReferralStats | null>(null);
   const [loading, setLoading] = useState(true);
-  const [referralLink, setReferralLink] = useState("");
 
   useEffect(() => {
     loadReferralData();
@@ -44,8 +43,6 @@ const Referral = () => {
             .update({ referral_code: newCode })
             .eq("id", user.id);
           
-          const link = `${window.location.origin}/signup?ref=${newCode}`;
-          setReferralLink(link);
           setStats({
             referral_code: newCode,
             total_referrals: 0,
@@ -53,9 +50,6 @@ const Referral = () => {
           });
         }
       } else {
-        const link = `${window.location.origin}/signup?ref=${profile.referral_code}`;
-        setReferralLink(link);
-
         const { count } = await supabase
           .from("referrals")
           .select("*", { count: "exact", head: true })
@@ -72,15 +66,6 @@ const Referral = () => {
       toast.error("خطا در بارگذاری اطلاعات دعوت");
     } finally {
       setLoading(false);
-    }
-  };
-
-  const copyToClipboard = async () => {
-    try {
-      await navigator.clipboard.writeText(referralLink);
-      toast.success("لینک دعوت کپی شد!");
-    } catch (error) {
-      toast.error("خطا در کپی کردن لینک");
     }
   };
 
@@ -110,21 +95,32 @@ const Referral = () => {
           <CardHeader className="bg-gradient-to-r from-primary/10 to-secondary/10 pb-8">
             <CardTitle className="flex items-center gap-3 text-2xl">
               <Gift className="w-8 h-8 text-primary" />
-              لینک دعوت شما
+              کد دعوت شما
             </CardTitle>
             <CardDescription className="text-base">
-              این لینک را با دوستان خود به اشتراک بگذارید و به ازای هر نفر 500 سکه دریافت کنید!
+              این کد را به دوستان خود بدهید تا هنگام ثبت‌نام وارد کنند و شما به ازای هر نفر 500 سکه دریافت کنید!
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6 pt-6">
             <div className="flex gap-3">
               <Input 
-                value={referralLink} 
+                value={stats?.referral_code || ''} 
                 readOnly 
-                className="font-mono text-base h-14 text-lg" 
+                className="font-mono text-2xl h-16 text-center font-bold" 
                 dir="ltr"
               />
-              <Button onClick={copyToClipboard} size="lg" className="gap-2">
+              <Button 
+                onClick={async () => {
+                  try {
+                    await navigator.clipboard.writeText(stats?.referral_code || '');
+                    toast.success("کد دعوت کپی شد!");
+                  } catch (error) {
+                    toast.error("خطا در کپی کردن کد");
+                  }
+                }} 
+                size="lg" 
+                className="gap-2"
+              >
                 <Copy className="w-5 h-5" />
                 کپی
               </Button>
@@ -177,7 +173,7 @@ const Referral = () => {
                 <span className="text-primary font-bold">1</span>
               </div>
               <div>
-                <p className="font-medium">لینک دعوت خود را کپی کنید</p>
+                <p className="font-medium">کد دعوت خود را کپی کنید</p>
                 <p className="text-sm text-muted-foreground">از دکمه کپی بالا استفاده کنید</p>
               </div>
             </div>
@@ -186,8 +182,8 @@ const Referral = () => {
                 <span className="text-primary font-bold">2</span>
               </div>
               <div>
-                <p className="font-medium">با دوستان خود به اشتراک بگذارید</p>
-                <p className="text-sm text-muted-foreground">لینک را در شبکه‌های اجتماعی یا مستقیم ارسال کنید</p>
+                <p className="font-medium">کد را به دوستان خود بدهید</p>
+                <p className="text-sm text-muted-foreground">دوستان شما هنگام ثبت‌نام کد را وارد می‌کنند</p>
               </div>
             </div>
             <div className="flex gap-3">
@@ -196,7 +192,7 @@ const Referral = () => {
               </div>
               <div>
                 <p className="font-medium">سکه دریافت کنید</p>
-                <p className="text-sm text-muted-foreground">وقتی دوستتان ثبت‌نام کند، شما 500 سکه دریافت می‌کنید!</p>
+                <p className="text-sm text-muted-foreground">وقتی دوستتان با کد شما ثبت‌نام کند، هر دوی شما 500 سکه دریافت می‌کنید!</p>
               </div>
             </div>
           </CardContent>

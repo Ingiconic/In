@@ -16,7 +16,7 @@ const Signup = () => {
   const [username, setUsername] = useState("");
   const [fullName, setFullName] = useState("");
   const [password, setPassword] = useState("");
-  const [referralCode, setReferralCode] = useState<string | null>(null);
+  const [referralCode, setReferralCode] = useState("");
 
   useEffect(() => {
     // Get referral code from URL
@@ -83,7 +83,7 @@ const Signup = () => {
           data: {
             full_name: fullName,
             username: username.toLowerCase().trim(),
-            ...(referralCode && { referral_code: referralCode }),
+            ...(referralCode.trim() && { referral_code: referralCode.trim() }),
           },
         },
       });
@@ -224,6 +224,27 @@ const Signup = () => {
                 className="text-right h-12 bg-background/50"
                 disabled={loading}
               />
+            </motion.div>
+
+            <motion.div
+              initial={{ x: -20, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              transition={{ delay: 0.55 }}
+            >
+              <Input
+                type="text"
+                placeholder="کد دعوت (اختیاری)"
+                value={referralCode}
+                onChange={(e) => setReferralCode(e.target.value)}
+                className="text-right h-12 bg-background/50"
+                disabled={loading}
+                dir="ltr"
+              />
+              {referralCode && (
+                <p className="text-xs text-muted-foreground mt-1 text-right">
+                  با استفاده از کد دعوت شما و دوست شما هر کدام 500 سکه دریافت می‌کنید
+                </p>
+              )}
             </motion.div>
 
             <motion.div
