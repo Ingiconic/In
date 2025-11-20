@@ -41,6 +41,11 @@ import VoiceAssistant from "./pages/VoiceAssistant";
 import WorksheetSolver from "./pages/WorksheetSolver";
 import HomeworkHelper from "./pages/HomeworkHelper";
 import NotFound from "./pages/NotFound";
+import Notes from "./pages/Notes";
+import StudyCompanion from "./pages/StudyCompanion";
+import ARLearning from "./pages/ARLearning";
+import DailyQuests from "./pages/DailyQuests";
+import AvatarCustomizer from "./pages/AvatarCustomizer";
 
 const queryClient = new QueryClient();
 
@@ -90,6 +95,11 @@ const App = () => (
               <Route path="/voice-assistant" element={<VoiceAssistant />} />
               <Route path="/worksheet-solver" element={<WorksheetSolver />} />
               <Route path="/homework-helper" element={<HomeworkHelper />} />
+              <Route path="/notes" element={<Notes />} />
+              <Route path="/study-companion" element={<StudyCompanion />} />
+              <Route path="/ar-learning" element={<ARLearning />} />
+              <Route path="/daily-quests" element={<DailyQuests />} />
+              <Route path="/avatar-customizer" element={<AvatarCustomizer />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
           </Routes>
