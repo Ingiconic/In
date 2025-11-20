@@ -1,23 +1,23 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-interface ExamQuestion {
-  question: string;
-  options: string[];
-  correct_answer: number;
-  explanation?: string;
-}
-
-interface SubmitExamRequest {
-  examQuestions: ExamQuestion[];
-  userAnswers: number[];
-  examTitle: string;
-}
+// Validation schema
+const submitExamSchema = z.object({
+  examQuestions: z.array(z.object({
+    question: z.string().max(1000),
+    options: z.array(z.string().max(500)).max(10),
+    correct_answer: z.number().int().min(0),
+    explanation: z.string().max(1000).optional(),
+  })).min(1).max(100),
+  userAnswers: z.array(z.number().int()).min(1).max(100),
+  examTitle: z.string().min(1).max(200),
+});
 
 Deno.serve(async (req) => {
   // Handle CORS preflight requests
@@ -55,22 +55,18 @@ Deno.serve(async (req) => {
       );
     }
 
-    const { examQuestions, userAnswers, examTitle }: SubmitExamRequest = await req.json();
-
+    const body = await req.json();
+    
     // Validate input
-    if (!examQuestions || !Array.isArray(examQuestions) || examQuestions.length === 0) {
-      return new Response(
-        JSON.stringify({ error: 'Invalid exam questions' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+    const validation = submitExamSchema.safeParse(body);
+    if (!validation.success) {
+      return new Response(JSON.stringify({ error: 'ورودی نامعتبر', details: validation.error.issues }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
-
-    if (!userAnswers || !Array.isArray(userAnswers) || userAnswers.length !== examQuestions.length) {
-      return new Response(
-        JSON.stringify({ error: 'Invalid user answers' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
+    
+    const { examQuestions, userAnswers, examTitle } = validation.data;
 
     // SERVER-SIDE VALIDATION - cannot be tampered with
     let correctCount = 0;

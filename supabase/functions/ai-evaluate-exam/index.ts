@@ -1,11 +1,24 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3';
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
+
+// Validation schema
+const evaluateSchema = z.object({
+  questions: z.array(z.object({
+    question: z.string().max(1000),
+    type: z.string(),
+    correct_answer: z.any(),
+    options: z.array(z.string()).optional(),
+    evaluation_criteria: z.array(z.string()).optional(),
+  })).min(1).max(100),
+  userAnswers: z.array(z.any()).min(1).max(100),
+});
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -62,7 +75,18 @@ serve(async (req) => {
       });
     }
 
-    const { questions, userAnswers } = await req.json();
+    const body = await req.json();
+    
+    // Validate input
+    const validation = evaluateSchema.safeParse(body);
+    if (!validation.success) {
+      return new Response(JSON.stringify({ error: 'ورودی نامعتبر', details: validation.error.issues }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+    
+    const { questions, userAnswers } = validation.data;
 
     const lovableApiKey = Deno.env.get('LOVABLE_API_KEY');
     if (!lovableApiKey) {

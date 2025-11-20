@@ -1,10 +1,60 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
+
+// Rate limiting map: IP -> { attempts: number, lastAttempt: timestamp }
+const rateLimitMap = new Map<string, { attempts: number, lastAttempt: number }>();
+const MAX_ATTEMPTS = 5;
+const RATE_LIMIT_WINDOW = 15 * 60 * 1000; // 15 minutes
+
+// Validation schema
+const adminAuthSchema = z.object({
+  username: z.string().min(3, 'Username must be at least 3 characters').max(50, 'Username too long'),
+  password: z.string().min(8, 'Password must be at least 8 characters').max(128, 'Password too long'),
+});
+
+function checkRateLimit(ip: string): boolean {
+  const now = Date.now();
+  const record = rateLimitMap.get(ip);
+  
+  if (!record) {
+    rateLimitMap.set(ip, { attempts: 1, lastAttempt: now });
+    return true;
+  }
+  
+  // Reset if window expired
+  if (now - record.lastAttempt > RATE_LIMIT_WINDOW) {
+    rateLimitMap.set(ip, { attempts: 1, lastAttempt: now });
+    return true;
+  }
+  
+  // Check if too many attempts
+  if (record.attempts >= MAX_ATTEMPTS) {
+    return false;
+  }
+  
+  // Increment attempts
+  record.attempts++;
+  record.lastAttempt = now;
+  return true;
+}
+
+function recordFailedAttempt(ip: string) {
+  const now = Date.now();
+  const record = rateLimitMap.get(ip);
+  
+  if (!record) {
+    rateLimitMap.set(ip, { attempts: 1, lastAttempt: now });
+  } else {
+    record.attempts++;
+    record.lastAttempt = now;
+  }
+}
 
 // Load admin credentials from secure environment variables
 const ADMIN_USERNAME = Deno.env.get('ADMIN_USERNAME');
@@ -16,14 +66,31 @@ serve(async (req) => {
   }
 
   try {
-    const { username, password } = await req.json();
-
-    if (!username || !password) {
+    // Get client IP for rate limiting
+    const clientIP = req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown';
+    
+    // Check rate limit
+    if (!checkRateLimit(clientIP)) {
+      console.log(`Rate limit exceeded for IP: ${clientIP}`);
       return new Response(
-        JSON.stringify({ error: 'نام کاربری و رمز عبور الزامی است' }),
+        JSON.stringify({ error: 'تعداد تلاش‌های ناموفق زیاد است. لطفا ۱۵ دقیقه دیگر دوباره تلاش کنید' }),
+        { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const body = await req.json();
+    
+    // Validate input
+    const validation = adminAuthSchema.safeParse(body);
+    if (!validation.success) {
+      recordFailedAttempt(clientIP);
+      return new Response(
+        JSON.stringify({ error: 'ورودی نامعتبر', details: validation.error.issues }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
+    
+    const { username, password } = validation.data;
 
     // Check if credentials are configured
     if (!ADMIN_USERNAME || !ADMIN_PASSWORD) {
@@ -38,11 +105,16 @@ serve(async (req) => {
       // Add a small delay to prevent timing attacks
       await new Promise(resolve => setTimeout(resolve, 1000));
       
+      console.log(`Failed admin login attempt for username: ${username} from IP: ${clientIP}`);
+      recordFailedAttempt(clientIP);
+      
       return new Response(
         JSON.stringify({ error: 'نام کاربری یا رمز عبور اشتباه است' }),
         { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
+    
+    console.log(`Successful admin login for username: ${username}`);
 
     // Create Supabase client with service role to sign in admin
     const supabase = createClient(
@@ -104,11 +176,15 @@ serve(async (req) => {
 
     if (signInError || !signInData.session) {
       console.error('Error signing in admin:', signInError);
+      recordFailedAttempt(clientIP);
       return new Response(
         JSON.stringify({ error: 'خطا در ورود به سیستم' }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
+
+    // Reset rate limit on successful login
+    rateLimitMap.delete(clientIP);
 
     return new Response(
       JSON.stringify({

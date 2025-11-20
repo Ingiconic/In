@@ -1,22 +1,24 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3';
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-interface ExamRequest {
-  content: string;
-  questionCount: number;
-  difficulty: string;
-  questionTypes?: {
-    multipleChoice?: number;
-    fillBlank?: number;
-    essay?: number;
-  };
-}
+// Validation schema
+const examSchema = z.object({
+  content: z.string().min(1, 'Content cannot be empty').max(10000, 'Content too long'),
+  questionCount: z.number().int().min(1).max(50),
+  difficulty: z.enum(['easy', 'medium', 'hard']),
+  questionTypes: z.object({
+    multipleChoice: z.number().int().min(0).max(50).optional(),
+    fillBlank: z.number().int().min(0).max(50).optional(),
+    essay: z.number().int().min(0).max(50).optional(),
+  }).optional(),
+});
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -73,14 +75,18 @@ serve(async (req) => {
       });
     }
 
-    const { content, questionCount, difficulty, questionTypes }: ExamRequest = await req.json();
-
-    if (!content || !content.trim()) {
-      return new Response(
-        JSON.stringify({ error: 'محتوا نباید خالی باشد' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+    const body = await req.json();
+    
+    // Validate input
+    const validation = examSchema.safeParse(body);
+    if (!validation.success) {
+      return new Response(JSON.stringify({ error: 'ورودی نامعتبر', details: validation.error.issues }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
+    
+    const { content, questionCount, difficulty, questionTypes } = validation.data;
 
     const lovableApiKey = Deno.env.get('LOVABLE_API_KEY');
     if (!lovableApiKey) {

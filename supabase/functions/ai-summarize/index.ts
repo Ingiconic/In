@@ -1,10 +1,17 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3';
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
+
+// Validation schema
+const summarizeSchema = z.object({
+  content: z.string().min(1, 'Content cannot be empty').max(10000, 'Content too long'),
+  type: z.enum(['summarize', 'explain']).optional(),
+});
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -98,11 +105,18 @@ serve(async (req) => {
       });
     }
 
-    const { content, type } = await req.json();
+    const body = await req.json();
     
-    if (!content) {
-      throw new Error('محتوا الزامی است');
+    // Validate input
+    const validation = summarizeSchema.safeParse(body);
+    if (!validation.success) {
+      return new Response(JSON.stringify({ error: 'ورودی نامعتبر', details: validation.error.issues }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
+    
+    const { content, type } = validation.data;
 
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     if (!LOVABLE_API_KEY) {

@@ -1,10 +1,18 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3';
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
+
+// Validation schema
+const consultationSchema = z.object({
+  message: z.string().min(1, 'Message cannot be empty').max(2000, 'Message too long'),
+  grade: z.string().max(50).optional(),
+  subjects: z.array(z.string().max(100)).max(20).optional(),
+});
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -80,11 +88,18 @@ serve(async (req) => {
     
     console.log('Coins successfully deducted');
 
-    const { message, grade, subjects } = await req.json();
+    const body = await req.json();
     
-    if (!message) {
-      throw new Error('پیام الزامی است');
+    // Validate input
+    const validation = consultationSchema.safeParse(body);
+    if (!validation.success) {
+      return new Response(JSON.stringify({ error: 'ورودی نامعتبر', details: validation.error.issues }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
+    
+    const { message, grade, subjects } = validation.data;
 
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     if (!LOVABLE_API_KEY) {
