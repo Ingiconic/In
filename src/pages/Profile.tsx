@@ -12,6 +12,7 @@ import { User, Save, Camera, Award, Target, Trophy, Star, Coins } from "lucide-r
 import { usePageView } from "@/hooks/usePageView";
 import { logger } from "@/lib/logger";
 import AppLayout from "@/components/layout/AppLayout";
+import AvatarSelector from "@/components/chat/AvatarSelector";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -308,16 +309,10 @@ const Profile = () => {
               />
             </div>
 
-            <div>
-              <Label htmlFor="avatar_url">لینک آواتار</Label>
-              <Input
-                id="avatar_url"
-                value={formData.avatar_url}
-                onChange={(e) => setFormData({ ...formData, avatar_url: e.target.value })}
-                placeholder="https://example.com/avatar.jpg"
-                dir="ltr"
-              />
-            </div>
+            <AvatarSelector 
+              currentAvatar={formData.avatar_url}
+              onSelect={(avatar) => setFormData({ ...formData, avatar_url: avatar })}
+            />
 
             <Button
               onClick={handleSave}
