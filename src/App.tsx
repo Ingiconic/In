@@ -44,7 +44,6 @@ import StudyCompanion from "./pages/StudyCompanion";
 import ARLearning from "./pages/ARLearning";
 import DailyQuests from "./pages/DailyQuests";
 import AvatarCustomizer from "./pages/AvatarCustomizer";
-import Messenger from "./pages/Messenger";
 import PetPage from "./pages/PetPage";
 
 const queryClient = new QueryClient();
@@ -81,7 +80,6 @@ const App = () => (
               <Route path="/resources" element={<Resources />} />
               <Route path="/coin-shop" element={<CoinShop />} />
               <Route path="/install" element={<Install />} />
-              <Route path="/messenger" element={<Messenger />} />
               <Route path="/pet" element={<PetPage />} />
               <Route path="/leaderboard" element={<Leaderboard />} />
               <Route path="/calendar" element={<StudyCalendar />} />
