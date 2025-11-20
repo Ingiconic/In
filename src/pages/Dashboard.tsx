@@ -107,8 +107,35 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Voice Assistant Widget */}
-        <VoiceAssistantWidget />
+        {/* Voice Assistant & Messenger Widget */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
+          <VoiceAssistantWidget />
+          
+          <Card
+            onClick={() => navigate("/messenger")}
+            className="glassmorphism-card border-primary/10 hover:shadow-glow transition-all cursor-pointer group"
+          >
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="gradient-primary p-3 rounded-xl shadow-glow group-hover:scale-110 transition-transform">
+                    <MessageCircle className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-lg">پیام‌رسان</h3>
+                    <p className="text-xs text-muted-foreground">چت با دوستان</p>
+                  </div>
+                </div>
+                <div className="text-primary opacity-0 group-hover:opacity-100 transition-opacity">
+                  ←
+                </div>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                با دوستان خود چت کنید، گروه و کانال بسازید
+              </p>
+            </div>
+          </Card>
+        </div>
 
         {/* Tools */}
         <div className="space-y-5">
@@ -222,32 +249,6 @@ const Dashboard = () => {
                     <CardTitle className="text-sm font-bold">یادداشت‌ها</CardTitle>
                     <CardDescription className="text-xs opacity-80">LaTeX + PDF</CardDescription>
         </div>
-
-        {/* Messenger Card */}
-        <Card
-          onClick={() => navigate("/messenger")}
-          className="glassmorphism-card border-primary/10 hover:shadow-glow transition-all cursor-pointer group"
-        >
-          <div className="p-6">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-3">
-                <div className="gradient-primary p-3 rounded-xl shadow-glow group-hover:scale-110 transition-transform">
-                  <MessageCircle className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <h3 className="font-bold text-lg">پیام‌رسان</h3>
-                  <p className="text-xs text-muted-foreground">چت با دوستان</p>
-                </div>
-              </div>
-              <div className="text-primary opacity-0 group-hover:opacity-100 transition-opacity">
-                ←
-              </div>
-            </div>
-            <p className="text-sm text-muted-foreground">
-              با دوستان خود چت کنید، گروه و کانال بسازید
-            </p>
-          </div>
-        </Card>
                 </CardHeader>
               </Card>
 
