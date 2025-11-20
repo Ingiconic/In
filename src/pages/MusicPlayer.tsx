@@ -56,19 +56,19 @@ export default function MusicPlayer() {
   };
 
   const togglePlay = () => {
-    if (audioRef.current) {
-      if (isPlaying) {
-        audioRef.current.pause();
-        setIsPlaying(false);
-      } else {
-        audioRef.current
-          .play()
-          .then(() => setIsPlaying(true))
-          .catch((err) => {
-            console.error("Audio play error", err);
-            setIsPlaying(false);
-          });
-      }
+    if (!audioRef.current) return;
+
+    if (isPlaying) {
+      audioRef.current.pause();
+      setIsPlaying(false);
+    } else {
+      setIsPlaying(true);
+      audioRef.current
+        .play()
+        .catch((err) => {
+          console.error("Audio play error", err);
+          setIsPlaying(false);
+        });
     }
   };
 
@@ -166,10 +166,12 @@ export default function MusicPlayer() {
             </div>
 
             <audio
-              ref={audioRef}
-              src={currentPlaylist.tracks[currentTrack]?.url}
-              onEnded={nextTrack}
-            />
+               ref={audioRef}
+               src={currentPlaylist.tracks[currentTrack]?.url}
+               onEnded={nextTrack}
+               controls
+               preload="auto"
+             />
           </Card>
         )}
 
