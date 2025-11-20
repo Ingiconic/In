@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { persianToFinglish } from '@/lib/persianToFinglish';
 
 interface UseWebSpeechReturn {
   isListening: boolean;
@@ -110,13 +111,22 @@ export const useWebSpeech = (): UseWebSpeechReturn => {
   const speak = useCallback((text: string, voice?: SpeechSynthesisVoice) => {
     window.speechSynthesis.cancel();
     
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'fa-IR';
-    utterance.rate = 0.9; // کمی آهسته‌تر برای درک بهتر
+    // Convert Persian to Finglish for better pronunciation
+    const finglishText = persianToFinglish(text);
+    console.log('Original Persian:', text);
+    console.log('Converted Finglish:', finglishText);
+    
+    const utterance = new SpeechSynthesisUtterance(finglishText);
+    utterance.lang = 'en-US'; // Use English voice for Finglish
+    utterance.rate = 0.85; // Slightly slower for clarity
     utterance.pitch = 1.0;
     utterance.volume = 1.0;
     
-    if (voice) {
+    // Try to find a good English voice
+    const englishVoices = voices.filter(v => v.lang.startsWith('en'));
+    if (englishVoices.length > 0 && !voice) {
+      utterance.voice = englishVoices[0];
+    } else if (voice) {
       utterance.voice = voice;
     }
 
@@ -128,7 +138,7 @@ export const useWebSpeech = (): UseWebSpeechReturn => {
     };
 
     window.speechSynthesis.speak(utterance);
-  }, []);
+  }, [voices]);
 
   const stopSpeaking = useCallback(() => {
     window.speechSynthesis.cancel();
