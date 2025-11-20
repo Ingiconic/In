@@ -38,6 +38,8 @@ import ThemeSettings from "./pages/ThemeSettings";
 import BlogPost from "./pages/BlogPost";
 import Referral from "./pages/Referral";
 import VoiceAssistant from "./pages/VoiceAssistant";
+import WorksheetSolver from "./pages/WorksheetSolver";
+import HomeworkHelper from "./pages/HomeworkHelper";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -86,6 +88,8 @@ const App = () => (
               <Route path="/blog/:slug" element={<BlogPost />} />
               <Route path="/referral" element={<Referral />} />
               <Route path="/voice-assistant" element={<VoiceAssistant />} />
+              <Route path="/worksheet-solver" element={<WorksheetSolver />} />
+              <Route path="/homework-helper" element={<HomeworkHelper />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
           </Routes>
