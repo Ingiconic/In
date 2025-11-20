@@ -576,7 +576,6 @@ const MindMapAI = () => {
                     placeholder="مثلا: جنگ جهانی دوم، فتوسنتز، معادلات درجه دوم..."
                     className="min-h-[120px]"
                     dir="rtl"
-                    disabled={loading}
                   />
                 </div>
 
@@ -752,7 +751,7 @@ const MindMapAI = () => {
                   onChange={(e) => setRefinementText(e.target.value)}
                   placeholder="چه تغییری می‌خواهید؟ مثلاً: جزئیات بیشتر درباره ... اضافه کن، یا موضوع ... را حذف کن"
                   className="min-h-[80px] resize-none"
-                  disabled={loading}
+                  
                 />
                 <Button
                   onClick={handleRefine}

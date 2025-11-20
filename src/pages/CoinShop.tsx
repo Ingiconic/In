@@ -26,7 +26,7 @@ export default function CoinShop() {
 
         <div className="mb-8 text-center">
           <Coins className="w-16 h-16 mx-auto mb-4 text-primary" />
-          <h1 className="text-3xl font-bold text-foreground mb-2">فروشگاه سکه</h1>
+          <h1 className="text-3xl font-bold text-foreground mb-2">دعوت دوستان و کسب سکه</h1>
           <p className="text-muted-foreground">
             برای استفاده از ابزارهای هوش مصنوعی به سکه نیاز دارید
           </p>
