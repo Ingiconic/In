@@ -12,8 +12,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Calendar as CalendarIcon, Plus, Clock, CheckCircle2, Circle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { format } from "date-fns";
-import { ar } from "date-fns/locale";
+import { format } from "date-fns-jalali";
+import { faIR } from "date-fns-jalali/locale";
 
 interface StudyEvent {
   id: string;
@@ -231,7 +231,7 @@ const StudyCalendar = () => {
                 selected={date}
                 onSelect={setDate}
                 className="rounded-md border"
-                locale={ar}
+                locale={faIR}
                 modifiers={{
                   hasEvents: (day) => getDayEvents(day).length > 0,
                 }}
@@ -251,7 +251,7 @@ const StudyCalendar = () => {
             <CardContent className="p-6">
               <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
                 <CalendarIcon className="w-5 h-5" />
-                رویدادهای {date && format(date, "d MMMM", { locale: ar })}
+                رویدادهای {date && format(date, "d MMMM", { locale: faIR })}
               </h3>
               <div className="space-y-3">
                 {selectedDateEvents.length === 0 ? (

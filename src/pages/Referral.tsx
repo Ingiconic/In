@@ -25,6 +25,7 @@ const Referral = () => {
 
   const loadReferralData = async () => {
     try {
+      setLoading(true);
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
@@ -34,7 +35,24 @@ const Referral = () => {
         .eq("id", user.id)
         .single();
 
-      if (profile?.referral_code) {
+      // Generate referral code if missing
+      if (!profile?.referral_code) {
+        const { data: newCode } = await supabase.rpc("generate_referral_code");
+        if (newCode) {
+          await supabase
+            .from("profiles")
+            .update({ referral_code: newCode })
+            .eq("id", user.id);
+          
+          const link = `${window.location.origin}/signup?ref=${newCode}`;
+          setReferralLink(link);
+          setStats({
+            referral_code: newCode,
+            total_referrals: 0,
+            total_earned: 0,
+          });
+        }
+      } else {
         const link = `${window.location.origin}/signup?ref=${profile.referral_code}`;
         setReferralLink(link);
 
