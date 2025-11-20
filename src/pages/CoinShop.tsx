@@ -8,6 +8,22 @@ export default function CoinShop() {
   return (
     <AppLayout>
       <div className="container mx-auto p-6 max-w-4xl">
+        <Card className="mb-8 p-6 bg-gradient-to-r from-primary/10 to-secondary/10 border-primary/20">
+          <div className="text-center">
+            <h2 className="text-xl font-bold mb-2">🎁 دعوت دوستان و کسب سکه!</h2>
+            <p className="text-muted-foreground mb-4">
+              با دعوت دوستان خود، به ازای هر نفر 500 سکه رایگان دریافت کنید
+            </p>
+            <Button 
+              size="lg"
+              onClick={() => window.location.href = "/referral"}
+              className="gradient-accent"
+            >
+              دریافت لینک دعوت
+            </Button>
+          </div>
+        </Card>
+
         <div className="mb-8 text-center">
           <Coins className="w-16 h-16 mx-auto mb-4 text-primary" />
           <h1 className="text-3xl font-bold text-foreground mb-2">فروشگاه سکه</h1>

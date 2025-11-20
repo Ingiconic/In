@@ -576,6 +576,7 @@ const MindMapAI = () => {
                     placeholder="مثلا: جنگ جهانی دوم، فتوسنتز، معادلات درجه دوم..."
                     className="min-h-[120px]"
                     dir="rtl"
+                    disabled={loading}
                   />
                 </div>
 

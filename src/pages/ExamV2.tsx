@@ -189,13 +189,14 @@ const ExamV2 = () => {
               <div>
                 <Label htmlFor="content">محتوای درسی</Label>
                 <Textarea
-                  id="content"
-                  value={content}
-                  onChange={(e) => setContent(e.target.value)}
-                  placeholder="محتوای درسی یا محدوده امتحان را وارد کنید..."
-                  className="min-h-[200px]"
-                  dir="rtl"
-                />
+                   id="content"
+                   value={content}
+                   onChange={(e) => setContent(e.target.value)}
+                   placeholder="محتوای درسی یا محدوده امتحان را وارد کنید..."
+                   className="min-h-[200px]"
+                   dir="rtl"
+                   disabled={loading}
+                 />
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

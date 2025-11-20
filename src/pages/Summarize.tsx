@@ -194,6 +194,7 @@ const Summarize = () => {
             placeholder="متن خود را اینجا وارد کنید..."
             className="min-h-[200px]"
             dir="rtl"
+            disabled={loading}
           />
         </Card>
 
