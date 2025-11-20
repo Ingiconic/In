@@ -38,3 +38,6 @@ verify_jwt = false
 
 [functions.admin-auth]
 verify_jwt = false
+
+[functions.text-to-speech]
+verify_jwt = true
