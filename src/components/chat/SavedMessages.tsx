@@ -3,8 +3,11 @@ import { supabase } from "@/lib/supabase";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Trash2, Radio, Users, User } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+import { Send, Trash2, Radio, Users, User } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { messageSchema } from "@/lib/validation";
+import { logger } from "@/lib/logger";
 
 interface SavedMessage {
   id: string;
@@ -16,6 +19,7 @@ interface SavedMessage {
 
 const SavedMessages = () => {
   const [savedMessages, setSavedMessages] = useState<SavedMessage[]>([]);
+  const [newMessage, setNewMessage] = useState("");
   const { toast } = useToast();
 
   useEffect(() => {
@@ -67,6 +71,59 @@ const SavedMessages = () => {
     }
   };
 
+  const sendNoteToSelf = async () => {
+    if (!newMessage.trim()) return;
+
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast({
+          title: "خطا",
+          description: "برای ارسال پیام وارد شوید",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const validated = messageSchema.parse({ content: newMessage });
+
+      const { data: inserted, error } = await supabase
+        .from("direct_messages")
+        .insert({
+          sender_id: user.id,
+          receiver_id: user.id,
+          content: validated.content,
+        })
+        .select("id")
+        .single();
+
+      if (error || !inserted) {
+        throw error || new Error("ارسال پیام ناموفق بود");
+      }
+
+      const { error: saveError } = await supabase
+        .from("saved_messages")
+        .insert({
+          user_id: user.id,
+          message_id: inserted.id,
+          message_type: "direct",
+        });
+
+      if (saveError) throw saveError;
+
+      setNewMessage("");
+      loadSavedMessages();
+    } catch (error) {
+      logger.error("Failed to send saved message note", error);
+      toast({
+        title: "خطا",
+        description:
+          error instanceof Error ? error.message : "خطا در ارسال پیام",
+        variant: "destructive",
+      });
+    }
+  };
+
   const unsaveMessage = async (id: string) => {
     const { error } = await supabase
       .from("saved_messages")
@@ -91,13 +148,20 @@ const SavedMessages = () => {
   };
 
   return (
-    <Card className="p-6 shadow-glow">
-      <h2 className="text-lg font-bold mb-4">پیام‌های ذخیره شده</h2>
-      <ScrollArea className="h-[500px]">
+    <div className="flex flex-col h-full">
+      <div className="border-b border-border/50 bg-card/50 p-4">
+        <h2 className="text-lg font-bold">پیام‌های ذخیره‌شده</h2>
+        <p className="text-xs text-muted-foreground mt-1">
+          اینجا می‌تونی مثل تلگرام برای خودت پیام و یادداشت بفرستی
+        </p>
+      </div>
+
+      <ScrollArea className="flex-1 p-4">
         <div className="space-y-3">
           {savedMessages.length === 0 ? (
-            <p className="text-center text-muted-foreground">
-              هیچ پیام ذخیره شده‌ای وجود ندارد
+            <p className="text-center text-muted-foreground text-sm">
+              هنوز پیامی ذخیره نکردی؛ از چت‌ها روی «ذخیره» بزن یا اینجا برای
+              خودت پیام بفرست.
             </p>
           ) : (
             savedMessages.map((saved) => (
@@ -140,7 +204,25 @@ const SavedMessages = () => {
           )}
         </div>
       </ScrollArea>
-    </Card>
+
+      <div className="border-t border-border/50 bg-card/50 p-4">
+        <div className="flex items-end gap-2">
+          <Textarea
+            placeholder="هر چیزی می‌خواهی برای خودت یادداشت کن..."
+            value={newMessage}
+            onChange={(e) => setNewMessage(e.target.value)}
+            dir="rtl"
+            className="min-h-[56px] max-h-40"
+          />
+          <Button
+            onClick={sendNoteToSelf}
+            className="gradient-primary h-11 w-11 rounded-full flex items-center justify-center"
+          >
+            <Send className="w-5 h-5 text-primary-foreground" />
+          </Button>
+        </div>
+      </div>
+    </div>
   );
 };
 
