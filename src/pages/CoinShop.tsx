@@ -12,14 +12,14 @@ export default function CoinShop() {
           <div className="text-center">
             <h2 className="text-xl font-bold mb-2">🎁 دعوت دوستان و کسب سکه!</h2>
             <p className="text-muted-foreground mb-4">
-              با دعوت دوستان خود، به ازای هر نفر 500 سکه رایگان دریافت کنید
+              کد دعوت خود را به دوستانتان بدهید تا هنگام ثبت‌نام وارد کنند
             </p>
             <Button 
               size="lg"
               onClick={() => window.location.href = "/referral"}
               className="gradient-accent"
             >
-              دریافت لینک دعوت
+              مشاهده کد دعوت
             </Button>
           </div>
         </Card>
