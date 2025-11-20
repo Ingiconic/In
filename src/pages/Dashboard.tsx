@@ -185,14 +185,14 @@ const Dashboard = () => {
                 <h3 className="text-lg font-bold">ابزارهای مطالعاتی</h3>
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-                {/* Gamification Widget - Full Width on Mobile */}
-                <div className="col-span-2 sm:col-span-3 lg:col-span-4">
+                {/* Gamification Widget - Desktop Only for Performance */}
+                <div className="col-span-2 sm:col-span-3 lg:col-span-4 hidden sm:block">
                   <GamificationWidget />
                 </div>
 
                 <Card 
                   className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group"
-                  onClick={() => navigate("/mindmap-ai")}
+                  onClick={() => navigate("/mind-map")}
                 >
                   <CardHeader className="p-4">
                     <div className="flex flex-col items-center gap-2 text-center">
