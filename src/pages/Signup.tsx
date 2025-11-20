@@ -51,10 +51,10 @@ const Signup = () => {
       return;
     }
 
-    if (password.length < 6) {
+    if (password.length < 8) {
       toast({ 
         title: "خطا", 
-        description: "رمز عبور باید حداقل ۶ کاراکتر باشد", 
+        description: "رمز عبور باید حداقل ۸ کاراکتر باشد", 
         variant: "destructive" 
       });
       return;

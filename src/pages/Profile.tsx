@@ -122,8 +122,8 @@ const Profile = () => {
         const fileName = `${user.id}_${Date.now()}.${fileExt}`;
         
         const { error: uploadError } = await supabase.storage
-          .from('blog-images')
-          .upload(`avatars/${fileName}`, avatarFile, {
+          .from('resources')
+          .upload(`avatars/${user.id}/${fileName}`, avatarFile, {
             cacheControl: '3600',
             upsert: true
           });
@@ -131,8 +131,8 @@ const Profile = () => {
         if (uploadError) throw uploadError;
 
         const { data: { publicUrl } } = supabase.storage
-          .from('blog-images')
-          .getPublicUrl(`avatars/${fileName}`);
+          .from('resources')
+          .getPublicUrl(`avatars/${user.id}/${fileName}`);
 
         avatarUrl = publicUrl;
       }
