@@ -707,8 +707,8 @@ const MindMapAI = () => {
             </div>
 
             {/* Result */}
-            <Card className="flex-1 overflow-hidden">
-              <div ref={flowRef} className="h-full w-full">
+            <Card className="flex-1 overflow-hidden min-h-[700px]">
+              <div ref={flowRef} className="h-full w-full min-h-[700px]">
                 <ReactFlow
                   nodes={nodes}
                   edges={edges}

@@ -2,13 +2,13 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { ShoppingBag, Users, FileText, CheckSquare, HelpCircle, Trophy, PenTool, Brain, BookOpen, Lightbulb, CreditCard, Coins, MessageSquare, Calendar, Award, Flame, Target } from "lucide-react";
+import { ShoppingBag, Users, FileText, CheckSquare, HelpCircle, Trophy, PenTool, Brain, BookOpen, Lightbulb, CreditCard, Coins, MessageSquare, Calendar, Award, Flame, Target, ClipboardList, BookCheck } from "lucide-react";
 import { usePageView } from "@/hooks/usePageView";
 import AppLayout from "@/components/layout/AppLayout";
 import { Button } from "@/components/ui/button";
 import { COIN_COSTS } from "@/lib/coinCosts";
-
 import { GamificationWidget } from "@/components/gamification/GamificationWidget";
+import { VoiceAssistantWidget } from "@/components/VoiceAssistantWidget";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -107,6 +107,9 @@ const Dashboard = () => {
           </div>
         </div>
 
+        {/* Voice Assistant Widget */}
+        <VoiceAssistantWidget />
+
         {/* Tools */}
         <div className="space-y-5">
           {/* AI Tools Section */}
@@ -131,51 +134,81 @@ const Dashboard = () => {
                 </CardHeader>
               </Card>
 
-                <Card 
-                  className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group border-primary/10"
-                  onClick={() => navigate("/summarize")}
-                >
-                  <CardHeader className="p-4 md:p-5">
-                    <div className="flex flex-col items-center gap-2.5 text-center">
-                      <div className="gradient-secondary p-3 rounded-2xl shadow-glow group-hover:scale-110 transition-transform">
-                        <FileText className="w-6 h-6 text-white" />
-                      </div>
-                      <CardTitle className="text-sm md:text-base font-bold">خلاصه‌ساز</CardTitle>
-                      <CardDescription className="text-xs">{COIN_COSTS.SUMMARIZE} سکه</CardDescription>
+              <Card 
+                className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group border-primary/10"
+                onClick={() => navigate("/summarize")}
+              >
+                <CardHeader className="p-4 md:p-5">
+                  <div className="flex flex-col items-center gap-2.5 text-center">
+                    <div className="gradient-secondary p-3 rounded-2xl shadow-glow group-hover:scale-110 transition-transform">
+                      <FileText className="w-6 h-6 text-white" />
                     </div>
-                  </CardHeader>
-                </Card>
+                    <CardTitle className="text-sm md:text-base font-bold">خلاصه‌ساز</CardTitle>
+                    <CardDescription className="text-xs">{COIN_COSTS.SUMMARIZE} سکه</CardDescription>
+                  </div>
+                </CardHeader>
+              </Card>
 
-                <Card 
-                  className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group border-primary/10"
-                  onClick={() => navigate("/exam")}
-                >
-                  <CardHeader className="p-4 md:p-5">
-                    <div className="flex flex-col items-center gap-2.5 text-center">
-                      <div className="gradient-accent p-3 rounded-2xl shadow-glow group-hover:scale-110 transition-transform">
-                        <CheckSquare className="w-6 h-6 text-white" />
-                      </div>
-                      <CardTitle className="text-sm md:text-base font-bold">آزمون</CardTitle>
-                      <CardDescription className="text-xs">{COIN_COSTS.EXAM_GENERATE} سکه</CardDescription>
+              <Card 
+                className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group border-primary/10"
+                onClick={() => navigate("/exam")}
+              >
+                <CardHeader className="p-4 md:p-5">
+                  <div className="flex flex-col items-center gap-2.5 text-center">
+                    <div className="gradient-accent p-3 rounded-2xl shadow-glow group-hover:scale-110 transition-transform">
+                      <CheckSquare className="w-6 h-6 text-white" />
                     </div>
-                  </CardHeader>
-                </Card>
+                    <CardTitle className="text-sm md:text-base font-bold">آزمون</CardTitle>
+                    <CardDescription className="text-xs">{COIN_COSTS.EXAM_GENERATE} سکه</CardDescription>
+                  </div>
+                </CardHeader>
+              </Card>
 
-                <Card 
-                  className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group border-primary/10"
-                  onClick={() => navigate("/consultation")}
-                >
-                  <CardHeader className="p-4 md:p-5">
-                    <div className="flex flex-col items-center gap-2.5 text-center">
-                      <div className="gradient-primary p-3 rounded-2xl shadow-glow group-hover:scale-110 transition-transform">
-                        <Brain className="w-6 h-6 text-white" />
-                      </div>
-                      <CardTitle className="text-sm md:text-base font-bold">مشاور هوشمند</CardTitle>
-                      <CardDescription className="text-xs">{COIN_COSTS.CONSULTATION} سکه</CardDescription>
+              <Card 
+                className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group border-primary/10"
+                onClick={() => navigate("/consultation")}
+              >
+                <CardHeader className="p-4 md:p-5">
+                  <div className="flex flex-col items-center gap-2.5 text-center">
+                    <div className="gradient-primary p-3 rounded-2xl shadow-glow group-hover:scale-110 transition-transform">
+                      <Brain className="w-6 h-6 text-white" />
                     </div>
-                  </CardHeader>
-                </Card>
-              </div>
+                    <CardTitle className="text-sm md:text-base font-bold">مشاور هوشمند</CardTitle>
+                    <CardDescription className="text-xs">{COIN_COSTS.CONSULTATION} سکه</CardDescription>
+                  </div>
+                </CardHeader>
+              </Card>
+
+              <Card 
+                className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group border-secondary/20 bg-gradient-to-br from-secondary/5 to-secondary/10"
+                onClick={() => navigate("/worksheet-solver")}
+              >
+                <CardHeader className="p-4">
+                  <div className="flex flex-col items-center gap-2 text-center">
+                    <div className="gradient-secondary p-3 rounded-xl shadow-lg group-hover:scale-110 transition-transform">
+                      <ClipboardList className="w-6 h-6 text-white" />
+                    </div>
+                    <CardTitle className="text-sm font-bold">کاربرگ</CardTitle>
+                    <CardDescription className="text-xs opacity-80">عکس بگیر جواب ببین!</CardDescription>
+                  </div>
+                </CardHeader>
+              </Card>
+
+              <Card 
+                className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group border-accent/20 bg-gradient-to-br from-accent/5 to-accent/10"
+                onClick={() => navigate("/homework-helper")}
+              >
+                <CardHeader className="p-4">
+                  <div className="flex flex-col items-center gap-2 text-center">
+                    <div className="gradient-accent p-3 rounded-xl shadow-lg group-hover:scale-110 transition-transform">
+                      <BookCheck className="w-6 h-6 text-white" />
+                    </div>
+                    <CardTitle className="text-sm font-bold">حل تکالیف</CardTitle>
+                    <CardDescription className="text-xs opacity-80">راهنمای کامل تکالیف</CardDescription>
+                  </div>
+                </CardHeader>
+              </Card>
+            </div>
             </div>
 
             {/* Study Tools */}
