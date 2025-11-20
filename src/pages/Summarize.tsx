@@ -29,6 +29,7 @@ const Summarize = () => {
   const [imagePreview, setImagePreview] = useState<string>("");
   const [selectedResource, setSelectedResource] = useState<any>(null);
   const [userCoins, setUserCoins] = useState<number>(0);
+  const resultRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     loadUserCoins();
@@ -102,6 +103,11 @@ const Summarize = () => {
       
       await loadUserCoins(); // Reload coins after successful operation
       toast({ title: "موفق", description: "خلاصه‌سازی انجام شد" });
+      
+      // Scroll to result
+      setTimeout(() => {
+        resultRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
     } catch (error: any) {
       if (!handleCoinError(error, COIN_COSTS.SUMMARIZE)) {
         toast({ title: "خطا", description: error.message || "خطا در خلاصه‌سازی", variant: "destructive" });
@@ -220,7 +226,7 @@ const Summarize = () => {
 
         {/* Result */}
         {result && (
-          <Card className="p-6 glassmorphism-card border-primary/10">
+          <Card ref={resultRef} className="p-6 glassmorphism-card border-primary/10">
             <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
               <Sparkles className="w-5 h-5 text-primary" />
               نتیجه

@@ -3,6 +3,7 @@ import { supabase } from "@/lib/supabase";
 import AppLayout from "@/components/layout/AppLayout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -11,10 +12,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Calendar as CalendarIcon, Plus, Clock, CheckCircle2, Circle, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import DatePicker, { DateObject } from "react-multi-date-picker";
-import persian from "react-date-object/calendars/persian";
-import persian_fa from "react-date-object/locales/persian_fa";
-import "react-multi-date-picker/styles/backgrounds/bg-dark.css";
+import { format } from "date-fns";
+import { faIR } from "date-fns-jalali/locale";
 
 interface StudyEvent {
   id: string;
@@ -29,7 +28,7 @@ interface StudyEvent {
 }
 
 const StudyCalendar = () => {
-  const [date, setDate] = useState<DateObject>(new DateObject({ calendar: persian, locale: persian_fa }));
+  const [date, setDate] = useState<Date | undefined>(new Date());
   const [events, setEvents] = useState<StudyEvent[]>([]);
   const [selectedDateEvents, setSelectedDateEvents] = useState<StudyEvent[]>([]);
   const [loading, setLoading] = useState(true);
@@ -75,10 +74,8 @@ const StudyCalendar = () => {
     }
   };
 
-  const filterEventsByDate = (selectedDate: DateObject) => {
-    // Convert DateObject to gregorian date string for comparison
-    const gregorianDate = selectedDate.toDate();
-    const dateStr = gregorianDate.toISOString().split('T')[0];
+  const filterEventsByDate = (selectedDate: Date) => {
+    const dateStr = format(selectedDate, "yyyy-MM-dd");
     const filtered = events.filter((event) => event.event_date === dateStr);
     setSelectedDateEvents(filtered);
   };
@@ -93,15 +90,11 @@ const StudyCalendar = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      // Convert persian date to gregorian for storage
-      const gregorianDate = date.toDate();
-      const dateStr = gregorianDate.toISOString().split('T')[0];
-
       const { error } = await supabase.from("study_events").insert({
         user_id: user.id,
         title: newEvent.title,
         description: newEvent.description,
-        event_date: dateStr,
+        event_date: format(date, "yyyy-MM-dd"),
         event_time: newEvent.event_time,
         duration: newEvent.duration,
         subject: newEvent.subject,
@@ -156,9 +149,8 @@ const StudyCalendar = () => {
     }
   };
 
-  const getDayEvents = (day: DateObject) => {
-    const gregorianDate = day.toDate();
-    const dateStr = gregorianDate.toISOString().split('T')[0];
+  const getDayEvents = (day: Date) => {
+    const dateStr = format(day, "yyyy-MM-dd");
     return events.filter((event) => event.event_date === dateStr);
   };
 
@@ -250,31 +242,24 @@ const StudyCalendar = () => {
           {/* Calendar */}
           <Card className="lg:col-span-2">
             <CardContent className="p-6">
-              <div className="flex justify-center">
-                <DatePicker
-                  value={date}
-                  onChange={(date) => {
-                    if (date) setDate(date as DateObject);
-                  }}
-                  calendar={persian}
-                  locale={persian_fa}
-                  className="bg-dark"
-                  calendarPosition="bottom-center"
-                  mapDays={({ date: dayDate }) => {
-                    const dayEvents = getDayEvents(dayDate);
-                    const hasEvents = dayEvents.length > 0;
-                    const hasCompleted = dayEvents.some(e => e.completed);
-                    
-                    return {
-                      className: hasEvents ? (hasCompleted ? "bg-green-500/20 text-green-600 font-bold" : "bg-primary/20 text-primary font-bold") : "",
-                    };
-                  }}
-                  style={{
-                    width: "100%",
-                    maxWidth: "600px",
-                  }}
-                />
-              </div>
+              <Calendar
+                mode="single"
+                selected={date}
+                onSelect={setDate}
+                className="rounded-md border mx-auto"
+                locale={faIR}
+                defaultMonth={new Date()}
+                modifiers={{
+                  hasEvents: (day) => getDayEvents(day).length > 0,
+                }}
+                modifiersStyles={{
+                  hasEvents: {
+                    fontWeight: "bold",
+                    textDecoration: "underline",
+                    color: "hsl(var(--primary))",
+                  },
+                }}
+              />
             </CardContent>
           </Card>
 
@@ -283,7 +268,7 @@ const StudyCalendar = () => {
             <CardContent className="p-6">
               <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
                 <CalendarIcon className="w-5 h-5" />
-                رویدادهای {date && date.format("DD MMMM")}
+                رویدادهای {date && format(date, "d MMMM", { locale: faIR })}
               </h3>
               <div className="space-y-3">
                 {selectedDateEvents.length === 0 ? (

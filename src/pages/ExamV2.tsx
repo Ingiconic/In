@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
@@ -28,6 +28,7 @@ const ExamV2 = () => {
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const [evaluation, setEvaluation] = useState<any>(null);
   const [selectedResource, setSelectedResource] = useState<any>(null);
+  const evaluationRef = useRef<HTMLDivElement>(null);
 
   const generateExam = async () => {
     if (!content.trim() && !selectedResource) {
@@ -140,6 +141,11 @@ const ExamV2 = () => {
         title: "آزمون ارزیابی شد! 🎉",
         description: `نمره: ${evalData.totalScore}/100 - +50 سکه`,
       });
+
+      // Scroll to evaluation
+      setTimeout(() => {
+        evaluationRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
     } catch (error: any) {
       toast({
         title: "خطا",
@@ -352,7 +358,7 @@ const ExamV2 = () => {
             </Button>
           </div>
         ) : (
-          <div className="space-y-6">
+          <div ref={evaluationRef} className="space-y-6">
             {/* Report Card */}
             <Card className="p-6 glassmorphism-card border-primary/10">
               <div className="text-center mb-6">
