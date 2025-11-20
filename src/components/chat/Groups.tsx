@@ -58,9 +58,23 @@ const Groups = () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
+    // Get groups where user is a member
+    const { data: memberGroups } = await supabase
+      .from("group_members")
+      .select("group_id")
+      .eq("user_id", user.id);
+
+    if (!memberGroups || memberGroups.length === 0) {
+      setGroups([]);
+      return;
+    }
+
+    const groupIds = memberGroups.map(m => m.group_id);
+
     const { data, error } = await supabase
       .from("groups")
       .select("*")
+      .in("id", groupIds)
       .order("created_at", { ascending: false });
 
     if (!error && data) {

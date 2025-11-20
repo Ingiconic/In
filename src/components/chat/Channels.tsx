@@ -60,9 +60,23 @@ const Channels = () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
+    // Get channels where user is a member
+    const { data: memberChannels } = await supabase
+      .from("channel_members")
+      .select("channel_id")
+      .eq("user_id", user.id);
+
+    if (!memberChannels || memberChannels.length === 0) {
+      setChannels([]);
+      return;
+    }
+
+    const channelIds = memberChannels.map(m => m.channel_id);
+
     const { data, error } = await supabase
       .from("channels")
       .select("*")
+      .in("id", channelIds)
       .order("created_at", { ascending: false });
 
     if (!error && data) {
