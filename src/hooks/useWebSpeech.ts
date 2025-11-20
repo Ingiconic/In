@@ -112,8 +112,9 @@ export const useWebSpeech = (): UseWebSpeechReturn => {
     
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = 'fa-IR';
-    utterance.rate = 1.0;
+    utterance.rate = 0.9; // کمی آهسته‌تر برای درک بهتر
     utterance.pitch = 1.0;
+    utterance.volume = 1.0;
     
     if (voice) {
       utterance.voice = voice;
