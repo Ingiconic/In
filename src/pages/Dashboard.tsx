@@ -112,115 +112,6 @@ const Dashboard = () => {
           <VoiceAssistantWidget />
         </div>
 
-        {/* New Features Grid */}
-        <div className="mb-6">
-          <h2 className="text-2xl font-bold mb-4">ابزارهای جدید 🌟</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <Card
-              onClick={() => navigate("/study-streak")}
-              className="glassmorphism-card border-primary/10 hover:shadow-glow transition-all cursor-pointer group p-4"
-            >
-              <div className="flex items-center gap-3 mb-2">
-                <div className="gradient-primary p-3 rounded-xl">
-                  <Flame className="w-5 h-5 text-white" />
-                </div>
-                <h3 className="font-bold">استریک</h3>
-              </div>
-              <p className="text-xs text-muted-foreground">ردیابی روزهای مطالعه</p>
-            </Card>
-
-            <Card
-              onClick={() => navigate("/ai-buddy")}
-              className="glassmorphism-card border-primary/10 hover:shadow-glow transition-all cursor-pointer group p-4"
-            >
-              <div className="flex items-center gap-3 mb-2">
-                <div className="gradient-primary p-3 rounded-xl">
-                  <Brain className="w-5 h-5 text-white" />
-                </div>
-                <h3 className="font-bold">دوست هوشمند</h3>
-              </div>
-              <p className="text-xs text-muted-foreground">چت با AI</p>
-            </Card>
-
-            <Card
-              onClick={() => navigate("/study-battle")}
-              className="glassmorphism-card border-primary/10 hover:shadow-glow transition-all cursor-pointer group p-4"
-            >
-              <div className="flex items-center gap-3 mb-2">
-                <div className="gradient-primary p-3 rounded-xl">
-                  <Swords className="w-5 h-5 text-white" />
-                </div>
-                <h3 className="font-bold">نبرد مطالعه</h3>
-              </div>
-              <p className="text-xs text-muted-foreground">رقابت با دوستان</p>
-            </Card>
-
-            <Card
-              onClick={() => navigate("/music-player")}
-              className="glassmorphism-card border-primary/10 hover:shadow-glow transition-all cursor-pointer group p-4"
-            >
-              <div className="flex items-center gap-3 mb-2">
-                <div className="gradient-primary p-3 rounded-xl">
-                  <Music className="w-5 h-5 text-white" />
-                </div>
-                <h3 className="font-bold">موزیک مطالعه</h3>
-              </div>
-              <p className="text-xs text-muted-foreground">پلی‌لیست‌های آرامش‌بخش</p>
-            </Card>
-
-            <Card
-              onClick={() => navigate("/goals-tracker")}
-              className="glassmorphism-card border-primary/10 hover:shadow-glow transition-all cursor-pointer group p-4"
-            >
-              <div className="flex items-center gap-3 mb-2">
-                <div className="gradient-primary p-3 rounded-xl">
-                  <Target className="w-5 h-5 text-white" />
-                </div>
-                <h3 className="font-bold">اهداف</h3>
-              </div>
-              <p className="text-xs text-muted-foreground">برنامه‌ریزی اهداف</p>
-            </Card>
-
-            <Card
-              onClick={() => navigate("/pomodoro-timer")}
-              className="glassmorphism-card border-primary/10 hover:shadow-glow transition-all cursor-pointer group p-4"
-            >
-              <div className="flex items-center gap-3 mb-2">
-                <div className="gradient-primary p-3 rounded-xl">
-                  <Clock className="w-5 h-5 text-white" />
-                </div>
-                <h3 className="font-bold">پومودورو</h3>
-              </div>
-              <p className="text-xs text-muted-foreground">تایمر تمرکز</p>
-            </Card>
-
-            <Card
-              onClick={() => navigate("/motivation-wall")}
-              className="glassmorphism-card border-primary/10 hover:shadow-glow transition-all cursor-pointer group p-4"
-            >
-              <div className="flex items-center gap-3 mb-2">
-                <div className="gradient-primary p-3 rounded-xl">
-                  <Heart className="w-5 h-5 text-white" />
-                </div>
-                <h3 className="font-bold">دیوار انگیزشی</h3>
-              </div>
-              <p className="text-xs text-muted-foreground">جملات الهام‌بخش</p>
-            </Card>
-
-            <Card
-              onClick={() => navigate("/theme-settings")}
-              className="glassmorphism-card border-primary/10 hover:shadow-glow transition-all cursor-pointer group p-4"
-            >
-              <div className="flex items-center gap-3 mb-2">
-                <div className="gradient-primary p-3 rounded-xl">
-                  <Palette className="w-5 h-5 text-white" />
-                </div>
-                <h3 className="font-bold">تنظیمات ظاهری</h3>
-              </div>
-              <p className="text-xs text-muted-foreground">شخصی‌سازی تم</p>
-            </Card>
-          </div>
-        </div>
 
         {/* Tools */}
         <div className="space-y-5">
@@ -321,7 +212,23 @@ const Dashboard = () => {
                 </CardHeader>
               </Card>
 
-              {/* NEW: Notes */}
+              {/* AI Buddy */}
+              <Card 
+                className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group border-purple-500/20 bg-gradient-to-br from-purple-500/5 to-pink-500/10"
+                onClick={() => navigate("/ai-buddy")}
+              >
+                <CardHeader className="p-4">
+                  <div className="flex flex-col items-center gap-2 text-center">
+                    <div className="bg-gradient-to-r from-purple-500 to-pink-500 p-3 rounded-xl shadow-lg group-hover:scale-110 transition-transform">
+                      <Brain className="w-6 h-6 text-white" />
+                    </div>
+                    <CardTitle className="text-sm font-bold">دوست هوشمند</CardTitle>
+                    <CardDescription className="text-xs opacity-80">چت با AI</CardDescription>
+                  </div>
+                </CardHeader>
+              </Card>
+
+              {/* Notes */}
               <Card 
                 className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group border-blue-500/20 bg-gradient-to-br from-blue-500/5 to-green-500/10"
                 onClick={() => navigate("/notes")}
@@ -337,7 +244,7 @@ const Dashboard = () => {
                 </CardHeader>
               </Card>
 
-              {/* NEW: Study Companion */}
+              {/* Study Companion */}
               <Card 
                 className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group border-purple-500/20 bg-gradient-to-br from-purple-500/5 to-pink-500/10"
                 onClick={() => navigate("/study-companion")}
@@ -353,7 +260,7 @@ const Dashboard = () => {
                 </CardHeader>
               </Card>
 
-              {/* NEW: AR Learning */}
+              {/* AR Learning */}
               <Card 
                 className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group border-cyan-500/20 bg-gradient-to-br from-cyan-500/5 to-orange-500/10"
                 onClick={() => navigate("/ar-learning")}
@@ -378,6 +285,54 @@ const Dashboard = () => {
               <h3 className="text-lg font-bold">گیمیفیکیشن</h3>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+              {/* Study Streak */}
+              <Card 
+                className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group border-orange-500/20 bg-gradient-to-br from-orange-500/5 to-red-500/10"
+                onClick={() => navigate("/study-streak")}
+              >
+                <CardHeader className="p-4">
+                  <div className="flex flex-col items-center gap-2 text-center">
+                    <div className="bg-gradient-to-r from-orange-500 to-red-500 p-3 rounded-xl shadow-lg group-hover:scale-110 transition-transform">
+                      <Flame className="w-6 h-6 text-white" />
+                    </div>
+                    <CardTitle className="text-sm font-bold">استریک مطالعه</CardTitle>
+                    <CardDescription className="text-xs opacity-80">ردیابی روزهای مطالعه</CardDescription>
+                  </div>
+                </CardHeader>
+              </Card>
+
+              {/* Study Battle */}
+              <Card 
+                className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group border-red-500/20 bg-gradient-to-br from-red-500/5 to-orange-500/10"
+                onClick={() => navigate("/study-battle")}
+              >
+                <CardHeader className="p-4">
+                  <div className="flex flex-col items-center gap-2 text-center">
+                    <div className="bg-gradient-to-r from-red-500 to-orange-500 p-3 rounded-xl shadow-lg group-hover:scale-110 transition-transform">
+                      <Swords className="w-6 h-6 text-white" />
+                    </div>
+                    <CardTitle className="text-sm font-bold">نبرد مطالعه</CardTitle>
+                    <CardDescription className="text-xs opacity-80">رقابت با دوستان</CardDescription>
+                  </div>
+                </CardHeader>
+              </Card>
+
+              {/* Motivation Wall */}
+              <Card 
+                className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group border-pink-500/20 bg-gradient-to-br from-pink-500/5 to-purple-500/10"
+                onClick={() => navigate("/motivation-wall")}
+              >
+                <CardHeader className="p-4">
+                  <div className="flex flex-col items-center gap-2 text-center">
+                    <div className="bg-gradient-to-r from-pink-500 to-purple-500 p-3 rounded-xl shadow-lg group-hover:scale-110 transition-transform">
+                      <Heart className="w-6 h-6 text-white" />
+                    </div>
+                    <CardTitle className="text-sm font-bold">دیوار انگیزشی</CardTitle>
+                    <CardDescription className="text-xs opacity-80">جملات الهام‌بخش</CardDescription>
+                  </div>
+                </CardHeader>
+              </Card>
+
               {/* Daily Quests */}
               <Card 
                 className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group border-yellow-500/20 bg-gradient-to-br from-yellow-500/5 to-red-500/10"
@@ -423,6 +378,69 @@ const Dashboard = () => {
               <div className="col-span-2 sm:col-span-3 lg:col-span-4 hidden sm:block">
                 <GamificationWidget />
               </div>
+
+              <Card 
+                className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group"
+                onClick={() => navigate("/mind-map")}
+              >
+                <CardHeader className="p-4">
+                  <div className="flex flex-col items-center gap-2 text-center">
+                    <div className="gradient-secondary p-3 rounded-xl shadow-lg group-hover:scale-110 transition-transform">
+                      <PenTool className="w-6 h-6 text-white" />
+                    </div>
+                    <CardTitle className="text-sm font-bold">نقشه ذهنی</CardTitle>
+                    <CardDescription className="text-xs">{COIN_COSTS.MINDMAP_GENERATE} سکه</CardDescription>
+                  </div>
+                </CardHeader>
+              </Card>
+
+              {/* Music Player */}
+              <Card 
+                className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group border-purple-500/20 bg-gradient-to-br from-purple-500/5 to-blue-500/10"
+                onClick={() => navigate("/music-player")}
+              >
+                <CardHeader className="p-4">
+                  <div className="flex flex-col items-center gap-2 text-center">
+                    <div className="bg-gradient-to-r from-purple-500 to-blue-500 p-3 rounded-xl shadow-lg group-hover:scale-110 transition-transform">
+                      <Music className="w-6 h-6 text-white" />
+                    </div>
+                    <CardTitle className="text-sm font-bold">موزیک مطالعه</CardTitle>
+                    <CardDescription className="text-xs opacity-80">پلی‌لیست‌های آرامش‌بخش</CardDescription>
+                  </div>
+                </CardHeader>
+              </Card>
+
+              {/* Goals Tracker */}
+              <Card 
+                className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group border-green-500/20 bg-gradient-to-br from-green-500/5 to-blue-500/10"
+                onClick={() => navigate("/goals-tracker")}
+              >
+                <CardHeader className="p-4">
+                  <div className="flex flex-col items-center gap-2 text-center">
+                    <div className="bg-gradient-to-r from-green-500 to-blue-500 p-3 rounded-xl shadow-lg group-hover:scale-110 transition-transform">
+                      <Target className="w-6 h-6 text-white" />
+                    </div>
+                    <CardTitle className="text-sm font-bold">اهداف من</CardTitle>
+                    <CardDescription className="text-xs opacity-80">برنامه‌ریزی اهداف</CardDescription>
+                  </div>
+                </CardHeader>
+              </Card>
+
+              {/* Pomodoro Timer */}
+              <Card 
+                className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group border-red-500/20 bg-gradient-to-br from-red-500/5 to-orange-500/10"
+                onClick={() => navigate("/pomodoro-timer")}
+              >
+                <CardHeader className="p-4">
+                  <div className="flex flex-col items-center gap-2 text-center">
+                    <div className="bg-gradient-to-r from-red-500 to-orange-500 p-3 rounded-xl shadow-lg group-hover:scale-110 transition-transform">
+                      <Clock className="w-6 h-6 text-white" />
+                    </div>
+                    <CardTitle className="text-sm font-bold">پومودورو</CardTitle>
+                    <CardDescription className="text-xs opacity-80">تایمر تمرکز</CardDescription>
+                  </div>
+                </CardHeader>
+              </Card>
 
               <Card 
                 className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group"
