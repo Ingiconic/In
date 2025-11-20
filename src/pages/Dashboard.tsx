@@ -472,21 +472,6 @@ const Dashboard = () => {
                 </CardHeader>
               </Card>
 
-              {/* Focus Mode */}
-              <Card 
-                className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group border-purple-500/20 bg-gradient-to-br from-purple-500/5 to-purple-500/10"
-                onClick={() => navigate("/focus")}
-              >
-                <CardHeader className="p-4">
-                  <div className="flex flex-col items-center gap-2 text-center">
-                    <div className="bg-gradient-to-r from-purple-500 to-purple-600 p-3 rounded-xl shadow-lg group-hover:scale-110 transition-transform">
-                      <Target className="w-6 h-6 text-white" />
-                    </div>
-                    <CardTitle className="text-sm font-bold">حالت تمرکز</CardTitle>
-                    <CardDescription className="text-xs">پومودورو</CardDescription>
-                  </div>
-                </CardHeader>
-              </Card>
 
               {/* Forum */}
               <Card 
