@@ -104,24 +104,8 @@ const VoiceAssistant = () => {
       };
       setMessages((prev) => [...prev, aiMsg]);
 
-      // Use OpenAI TTS for better Persian voice quality
-      try {
-        const { data: ttsData, error: ttsError } = await supabase.functions.invoke('text-to-speech', {
-          body: { text: aiResponse }
-        });
-
-        if (ttsError) throw ttsError;
-
-        // Play the audio
-        if (ttsData?.audioContent) {
-          const audio = new Audio(`data:audio/mp3;base64,${ttsData.audioContent}`);
-          audio.play().catch(err => console.error('Error playing audio:', err));
-        }
-      } catch (ttsErr) {
-        console.error('TTS Error:', ttsErr);
-        // Fallback to Web Speech API if TTS fails
-        speak(aiResponse);
-      }
+      // Use Web Speech API for text-to-speech
+      speak(aiResponse);
 
       toast({
         title: 'موفق',
