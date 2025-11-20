@@ -45,6 +45,7 @@ interface ChatListItem {
 const Messenger = () => {
   usePageView();
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = useState("");
   const [chatList, setChatList] = useState<ChatListItem[]>([]);
@@ -248,6 +249,7 @@ const Messenger = () => {
         variant: "destructive",
       });
     }
+  };
 
   const handleChatSelect = (chat: ChatListItem) => {
     if (chat.type === 'saved') {
