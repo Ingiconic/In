@@ -29,7 +29,7 @@ import Install from "./pages/Install";
 import Leaderboard from "./pages/Leaderboard";
 import StudyCalendar from "./pages/StudyCalendar";
 import ShopPage from "./pages/ShopPage";
-import FocusMode from "./pages/FocusMode";
+
 import Forum from "./pages/Forum";
 import ForumCategory from "./pages/ForumCategory";
 import BlogPost from "./pages/BlogPost";
@@ -99,7 +99,7 @@ const App = () => (
               <Route path="/leaderboard" element={<Leaderboard />} />
               <Route path="/calendar" element={<StudyCalendar />} />
               <Route path="/shop" element={<ShopPage />} />
-              <Route path="/focus" element={<FocusMode />} />
+              <Route path="/pomodoro" element={<PomodoroTimer />} />
               <Route path="/forum" element={<Forum />} />
               <Route path="/forum/:categoryId" element={<ForumCategory />} />
               <Route path="/theme" element={<ThemeSettings />} />
