@@ -1,9 +1,6 @@
-import { useState, useEffect, useRef } from "react";
-import { supabase } from "@/lib/supabase";
+import { useState, useRef } from "react";
 import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Slider } from "@/components/ui/slider";
-import { Play, Pause, SkipForward, SkipBack, Music, Volume2 } from "lucide-react";
+import { Music } from "lucide-react";
 import AppLayout from "@/components/layout/AppLayout";
 
 const defaultPlaylists = [
@@ -45,31 +42,11 @@ export default function MusicPlayer() {
   const [playlists] = useState(defaultPlaylists);
   const [currentPlaylist, setCurrentPlaylist] = useState<any>(null);
   const [currentTrack, setCurrentTrack] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [volume, setVolume] = useState([70]);
   const audioRef = useRef<HTMLAudioElement>(null);
 
   const selectPlaylist = (playlist: any) => {
     setCurrentPlaylist(playlist);
     setCurrentTrack(0);
-    setIsPlaying(false);
-  };
-
-  const togglePlay = () => {
-    if (!audioRef.current) return;
-
-    if (isPlaying) {
-      audioRef.current.pause();
-      setIsPlaying(false);
-    } else {
-      setIsPlaying(true);
-      audioRef.current
-        .play()
-        .catch((err) => {
-          console.error("Audio play error", err);
-          setIsPlaying(false);
-        });
-    }
   };
 
   const nextTrack = () => {
@@ -77,20 +54,6 @@ export default function MusicPlayer() {
       setCurrentTrack((prev) => (prev + 1) % currentPlaylist.tracks.length);
     }
   };
-
-  const prevTrack = () => {
-    if (currentPlaylist) {
-      setCurrentTrack((prev) => 
-        prev === 0 ? currentPlaylist.tracks.length - 1 : prev - 1
-      );
-    }
-  };
-
-  useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.volume = volume[0] / 100;
-    }
-  }, [volume]);
 
   return (
     <AppLayout>
@@ -135,43 +98,14 @@ export default function MusicPlayer() {
               </div>
             </div>
 
-            {/* Controls */}
-            <div className="flex items-center justify-center gap-4 mb-6">
-              <Button variant="outline" size="icon" onClick={prevTrack}>
-                <SkipBack className="w-5 h-5" />
-              </Button>
-              <Button size="icon" className="w-16 h-16" onClick={togglePlay}>
-                {isPlaying ? (
-                  <Pause className="w-8 h-8" />
-                ) : (
-                  <Play className="w-8 h-8" />
-                )}
-              </Button>
-              <Button variant="outline" size="icon" onClick={nextTrack}>
-                <SkipForward className="w-5 h-5" />
-              </Button>
-            </div>
-
-            {/* Volume */}
-            <div className="flex items-center gap-3">
-              <Volume2 className="w-5 h-5" />
-              <Slider
-                value={volume}
-                onValueChange={setVolume}
-                max={100}
-                step={1}
-                className="flex-1"
-              />
-              <span className="text-sm w-12 text-center">{volume[0]}%</span>
-            </div>
-
             <audio
-               ref={audioRef}
-               src={currentPlaylist.tracks[currentTrack]?.url}
-               onEnded={nextTrack}
-               controls
-               preload="auto"
-             />
+              ref={audioRef}
+              src={currentPlaylist.tracks[currentTrack]?.url}
+              onEnded={nextTrack}
+              controls
+              preload="auto"
+              className="w-full"
+            />
           </Card>
         )}
 
