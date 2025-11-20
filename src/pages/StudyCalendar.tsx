@@ -232,6 +232,7 @@ const StudyCalendar = () => {
                 onSelect={setDate}
                 className="rounded-md border"
                 locale={faIR}
+                defaultMonth={new Date()}
                 modifiers={{
                   hasEvents: (day) => getDayEvents(day).length > 0,
                 }}
