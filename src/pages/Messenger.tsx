@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Avatar } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useToast } from "@/hooks/use-toast";
 import { 
   ArrowRight, 
   Search, 
@@ -13,7 +14,6 @@ import {
   MessageSquare, 
   Users, 
   Radio,
-  Hash,
   Bookmark
 } from "lucide-react";
 import {
@@ -24,7 +24,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { usePageView } from "@/hooks/usePageView";
 import DirectMessages from "@/components/chat/DirectMessages";
 import Groups from "@/components/chat/Groups";
@@ -50,6 +49,7 @@ const Messenger = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [chatList, setChatList] = useState<ChatListItem[]>([]);
   const [showNewChatDialog, setShowNewChatDialog] = useState(false);
+  const [newChatUsername, setNewChatUsername] = useState("");
   const [profile, setProfile] = useState<any>(null);
   
   const activeTab = searchParams.get("tab") || "chats";
@@ -134,7 +134,6 @@ const Messenger = () => {
       channels = data || [];
     }
 
-    // Sort chats: pinned first, then by last message time
     const allChats: ChatListItem[] = [
       {
         id: 'saved',
@@ -147,19 +146,18 @@ const Messenger = () => {
         type: 'direct' as const,
         avatar: f.avatar_url,
       })) || []),
-      ...(groups?.map(g => ({
+      ...(groups?.filter(g => g.name !== 'ایزی درس')?.map(g => ({
         id: g.id,
         name: g.name,
         type: 'group' as const,
       })) || []),
-      ...(channels?.map(c => ({
+      ...(channels?.filter(c => c.name !== 'اعلانات ایزی درس')?.map(c => ({
         id: c.id,
         name: c.name,
         type: 'channel' as const,
       })) || []),
     ];
 
-    // Sort: pinned first
     allChats.sort((a, b) => {
       const aIsPinned = pinnedIds.has(a.id);
       const bIsPinned = pinnedIds.has(b.id);
@@ -170,6 +168,86 @@ const Messenger = () => {
 
     setChatList(allChats);
   };
+
+  const handleNewChat = async () => {
+    if (!newChatUsername.trim()) {
+      toast({
+        title: "خطا",
+        description: "لطفاً نام کاربری را وارد کنید",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const { data: targetUser, error } = await supabase
+        .from("profiles")
+        .select("id, full_name")
+        .eq("username", newChatUsername.trim())
+        .single();
+
+      if (error || !targetUser) {
+        toast({
+          title: "خطا",
+          description: "کاربری با این نام کاربری پیدا نشد",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data: existingFriendship } = await supabase
+        .from("friendships")
+        .select("id")
+        .eq("user_id", user.id)
+        .eq("friend_id", targetUser.id)
+        .single();
+
+      if (existingFriendship) {
+        setShowNewChatDialog(false);
+        setNewChatUsername("");
+        setSearchParams({ user: targetUser.id });
+        toast({
+          title: "موفق",
+          description: `چت با ${targetUser.full_name} باز شد`,
+        });
+      } else {
+        const { error: requestError } = await supabase
+          .from("friend_requests")
+          .insert({
+            sender_id: user.id,
+            receiver_id: targetUser.id,
+            status: "pending",
+          });
+
+        if (requestError) {
+          if (requestError.code === "23505") {
+            toast({
+              title: "اطلاع",
+              description: "قبلاً درخواست دوستی فرستاده‌اید",
+            });
+          } else {
+            throw requestError;
+          }
+        } else {
+          toast({
+            title: "موفق",
+            description: `درخواست دوستی به ${targetUser.full_name} ارسال شد`,
+          });
+        }
+        setShowNewChatDialog(false);
+        setNewChatUsername("");
+      }
+    } catch (error) {
+      console.error("Error starting chat:", error);
+      toast({
+        title: "خطا",
+        description: "خطا در برقراری ارتباط",
+        variant: "destructive",
+      });
+    }
 
   const handleChatSelect = (chat: ChatListItem) => {
     if (chat.type === 'saved') {
@@ -300,21 +378,21 @@ const Messenger = () => {
               <DialogHeader>
                 <DialogTitle>چت جدید</DialogTitle>
                 <DialogDescription>
-                  یک گروه، کانال بسازید یا با دوستان جدید چت کنید
+                  نام کاربری فرد را وارد کنید
                 </DialogDescription>
               </DialogHeader>
-              <Tabs defaultValue="groups" className="w-full">
-                <TabsList className="grid w-full grid-cols-2">
-                  <TabsTrigger value="groups">گروه</TabsTrigger>
-                  <TabsTrigger value="channels">کانال</TabsTrigger>
-                </TabsList>
-                <TabsContent value="groups" className="mt-4">
-                  <Groups />
-                </TabsContent>
-                <TabsContent value="channels" className="mt-4">
-                  <Channels />
-                </TabsContent>
-              </Tabs>
+              <div className="space-y-4">
+                <Input
+                  placeholder="نام کاربری..."
+                  value={newChatUsername}
+                  onChange={(e) => setNewChatUsername(e.target.value)}
+                  onKeyPress={(e) => e.key === "Enter" && handleNewChat()}
+                  dir="rtl"
+                />
+                <Button onClick={handleNewChat} className="w-full gradient-primary">
+                  شروع چت
+                </Button>
+              </div>
             </DialogContent>
           </Dialog>
         </div>

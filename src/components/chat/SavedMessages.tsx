@@ -151,9 +151,6 @@ const SavedMessages = () => {
     <div className="flex flex-col h-full">
       <div className="border-b border-border/50 bg-card/50 p-4">
         <h2 className="text-lg font-bold">پیام‌های ذخیره‌شده</h2>
-        <p className="text-xs text-muted-foreground mt-1">
-          اینجا می‌تونی مثل تلگرام برای خودت پیام و یادداشت بفرستی
-        </p>
       </div>
 
       <ScrollArea className="flex-1 p-4">
