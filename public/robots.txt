@@ -1,14 +1,33 @@
+# ایزی درس - Robots.txt
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /api/
+Disallow: /*.json$
+Disallow: /login
+Disallow: /signup
+
 User-agent: Googlebot
 Allow: /
+Disallow: /admin
+Disallow: /api/
 
 User-agent: Bingbot
 Allow: /
+Disallow: /admin
+Disallow: /api/
 
-User-agent: Twitterbot
+User-agent: Yandex
 Allow: /
+Disallow: /admin
+Disallow: /api/
 
-User-agent: facebookexternalhit
-Allow: /
+# Crawl-delay for specific bots
+User-agent: Baiduspider
+Crawl-delay: 5
 
-User-agent: *
-Allow: /
+User-agent: Yandex
+Crawl-delay: 2
+
+# Sitemap location
+Sitemap: https://easydars.lovable.app/sitemap.xml
