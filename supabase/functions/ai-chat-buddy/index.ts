@@ -23,16 +23,19 @@ serve(async (req) => {
 
     const systemPrompt = personalityPrompts[personality as keyof typeof personalityPrompts] || personalityPrompts.friendly;
 
-    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+    const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+    if (!LOVABLE_API_KEY) {
+      throw new Error('کلید API پیکربندی نشده است');
+    }
+
+    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${Deno.env.get("LOVABLE_API_KEY")}`,
+        "Authorization": `Bearer ${LOVABLE_API_KEY}`,
         "Content-Type": "application/json",
-        "HTTP-Referer": "https://easydars.com",
-        "X-Title": "Easy Dars AI Buddy",
       },
       body: JSON.stringify({
-        model: "google/gemini-2.0-flash-exp:free",
+        model: "google/gemini-2.5-flash",
         messages: [
           {
             role: "system",
@@ -45,6 +48,24 @@ serve(async (req) => {
         ],
       }),
     });
+
+    if (!response.ok) {
+      if (response.status === 429) {
+        return new Response(JSON.stringify({ error: 'محدودیت تعداد درخواست. لطفا کمی صبر کنید.' }), {
+          status: 429,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+      if (response.status === 402) {
+        return new Response(JSON.stringify({ error: 'اعتبار شما تمام شده است.' }), {
+          status: 402,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+      const errorText = await response.text();
+      console.error('AI gateway error:', response.status, errorText);
+      throw new Error('خطا در ارتباط با سرویس هوش مصنوعی');
+    }
 
     const data = await response.json();
     const aiResponse = data.choices[0].message.content;

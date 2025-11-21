@@ -1524,6 +1524,30 @@ export type Database = {
         }
         Relationships: []
       }
+      study_battle_queue: {
+        Row: {
+          created_at: string
+          id: string
+          status: string
+          subject: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          status?: string
+          subject: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          status?: string
+          subject?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       study_battles: {
         Row: {
           completed_at: string | null

@@ -2,17 +2,16 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Swords, Trophy, Users, Clock } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 import AppLayout from "@/components/layout/AppLayout";
 
 export default function StudyBattle() {
   const [battles, setBattles] = useState<any[]>([]);
-  const [username, setUsername] = useState("");
-  const [subject, setSubject] = useState("");
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   useEffect(() => {
     loadBattles();
@@ -35,72 +34,6 @@ export default function StudyBattle() {
     }
   };
 
-  const createBattle = async () => {
-    if (!username.trim() || !subject.trim()) {
-      toast({
-        title: "خطا",
-        description: "لطفاً همه فیلدها را پر کنید!",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      // Find opponent by username
-      const { data: opponent } = await supabase
-        .from("profiles")
-        .select("id")
-        .eq("username", username)
-        .single();
-
-      if (!opponent) {
-        toast({
-          title: "خطا",
-          description: "کاربر یافت نشد!",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      // Generate questions
-      const { data: questions, error: aiError } = await supabase.functions.invoke("ai-battle-questions", {
-        body: { subject, count: 5 },
-      });
-
-      if (aiError) throw aiError;
-
-      // Create battle
-      await supabase.from("study_battles").insert({
-        player1_id: user.id,
-        player2_id: opponent.id,
-        subject,
-        questions: questions.questions,
-        status: "active",
-      });
-
-      toast({
-        title: "نبرد ساخته شد! ⚔️",
-        description: `دعوت به نبرد برای ${username} ارسال شد!`,
-      });
-
-      setUsername("");
-      setSubject("");
-      loadBattles();
-    } catch (error: any) {
-      toast({
-        title: "خطا",
-        description: error.message || "مشکلی پیش آمد!",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
     <AppLayout>
       <div className="container mx-auto p-6 max-w-4xl">
@@ -111,38 +44,21 @@ export default function StudyBattle() {
         <Card className="p-6 mb-6">
           <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
             <Swords className="w-6 h-6 text-red-500" />
-            ساخت نبرد جدید
+            شروع نبرد جدید
           </h2>
           
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium mb-2">نام کاربری حریف</label>
-              <Input
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                placeholder="username"
-                disabled={loading}
-              />
-            </div>
+          <p className="text-muted-foreground mb-4">
+            برای شروع نبرد، وارد صف نبرد شوید و منتظر حریف باشید!
+          </p>
 
-            <div>
-              <label className="block text-sm font-medium mb-2">موضوع</label>
-              <Input
-                value={subject}
-                onChange={(e) => setSubject(e.target.value)}
-                placeholder="ریاضی، فیزیک، ..."
-                disabled={loading}
-              />
-            </div>
-
-            <Button
-              onClick={createBattle}
-              disabled={loading}
-              className="w-full"
-            >
-              {loading ? "در حال ساخت..." : "شروع نبرد! 🔥"}
-            </Button>
-          </div>
+          <Button
+            onClick={() => navigate('/study-battle-queue')}
+            className="w-full"
+            size="lg"
+          >
+            <Swords className="w-5 h-5 ml-2" />
+            ورود به صف نبرد
+          </Button>
         </Card>
 
         <div className="space-y-4">
