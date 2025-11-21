@@ -32,6 +32,7 @@ import ShopPage from "./pages/ShopPage";
 
 import Forum from "./pages/Forum";
 import ForumCategory from "./pages/ForumCategory";
+import ForumTopic from "./pages/ForumTopic";
 import BlogPost from "./pages/BlogPost";
 import Referral from "./pages/Referral";
 import VoiceAssistant from "./pages/VoiceAssistant";
@@ -47,6 +48,7 @@ import PetPage from "./pages/PetPage";
 import StudyStreak from "./pages/StudyStreak";
 import AIBuddy from "./pages/AIBuddy";
 import StudyBattle from "./pages/StudyBattle";
+import StudyBattleQueue from "./pages/StudyBattleQueue";
 import MusicPlayer from "./pages/MusicPlayer";
 import GoalsTracker from "./pages/GoalsTracker";
 import MotivationWall from "./pages/MotivationWall";
@@ -91,6 +93,7 @@ const App = () => (
               <Route path="/study-streak" element={<StudyStreak />} />
               <Route path="/ai-buddy" element={<AIBuddy />} />
               <Route path="/study-battle" element={<StudyBattle />} />
+              <Route path="/study-battle-queue" element={<StudyBattleQueue />} />
               <Route path="/music-player" element={<MusicPlayer />} />
               <Route path="/goals-tracker" element={<GoalsTracker />} />
               <Route path="/motivation-wall" element={<MotivationWall />} />
@@ -102,6 +105,7 @@ const App = () => (
               <Route path="/pomodoro" element={<PomodoroTimer />} />
               <Route path="/forum" element={<Forum />} />
               <Route path="/forum/:categoryId" element={<ForumCategory />} />
+              <Route path="/forum/topic/:topicId" element={<ForumTopic />} />
               <Route path="/theme" element={<ThemeSettings />} />
               <Route path="/blog/:slug" element={<BlogPost />} />
               <Route path="/referral" element={<Referral />} />

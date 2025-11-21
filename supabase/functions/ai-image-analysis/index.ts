@@ -172,9 +172,9 @@ serve(async (req) => {
     }
 
     const data = await response.json();
-    const result = data.choices?.[0]?.message?.content;
+    const analysis = data.choices?.[0]?.message?.content;
 
-    return new Response(JSON.stringify({ result }), {
+    return new Response(JSON.stringify({ analysis }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error) {

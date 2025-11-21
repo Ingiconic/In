@@ -34,11 +34,11 @@ const Leaderboard = () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       
-      // Load leaderboard
+      // Load leaderboard - فقط 10 نفر اول
       const { data: leaderboardData } = await supabase
         .from("leaderboard")
         .select("*")
-        .limit(100);
+        .limit(10);
 
       setLeaders(leaderboardData || []);
 

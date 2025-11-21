@@ -8,11 +8,37 @@ import { Save, User } from "lucide-react";
 import { toast } from "sonner";
 
 const avatarOptions = {
-  hair: ["short", "long", "curly", "straight", "none"],
-  face: ["happy", "neutral", "cool", "serious"],
-  eyes: ["normal", "big", "small", "closed"],
-  clothes: ["casual", "formal", "sporty", "hoodie"],
-  accessories: ["none", "glasses", "hat", "earrings"],
+  hair: [
+    { value: "short", label: "کوتاه" },
+    { value: "long", label: "بلند" },
+    { value: "curly", label: "فر" },
+    { value: "straight", label: "صاف" },
+    { value: "none", label: "بدون مو" }
+  ],
+  face: [
+    { value: "happy", label: "خوشحال" },
+    { value: "neutral", label: "خنثی" },
+    { value: "cool", label: "باحال" },
+    { value: "serious", label: "جدی" }
+  ],
+  eyes: [
+    { value: "normal", label: "عادی" },
+    { value: "big", label: "بزرگ" },
+    { value: "small", label: "کوچک" },
+    { value: "closed", label: "بسته" }
+  ],
+  clothes: [
+    { value: "casual", label: "معمولی" },
+    { value: "formal", label: "رسمی" },
+    { value: "sporty", label: "ورزشی" },
+    { value: "hoodie", label: "هودی" }
+  ],
+  accessories: [
+    { value: "none", label: "هیچ" },
+    { value: "glasses", label: "عینک" },
+    { value: "hat", label: "کلاه" },
+    { value: "earrings", label: "گوشواره" }
+  ],
 };
 
 export default function AvatarCustomizer() {
@@ -111,12 +137,11 @@ export default function AvatarCustomizer() {
                     <div className="grid grid-cols-2 gap-2">
                       {options.map((option) => (
                         <Button
-                          key={option}
-                          variant={selectedParts[category as keyof typeof selectedParts] === option ? "default" : "outline"}
-                          onClick={() => setSelectedParts({ ...selectedParts, [category]: option })}
-                          className="capitalize"
+                          key={option.value}
+                          variant={selectedParts[category as keyof typeof selectedParts] === option.value ? "default" : "outline"}
+                          onClick={() => setSelectedParts({ ...selectedParts, [category]: option.value })}
                         >
-                          {option}
+                          {option.label}
                         </Button>
                       ))}
                     </div>
