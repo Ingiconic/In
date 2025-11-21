@@ -71,9 +71,9 @@ const Sidebar = ({ profile }: SidebarProps) => {
     <div className="hidden lg:flex h-screen w-64 flex-col border-l border-border/30 bg-background/95 backdrop-blur-xl">
       {/* Logo & Brand */}
       <div className="flex items-center gap-3 p-6 border-b border-border/30">
-        <img src="/logo.png" alt="ایزی‌درس" className="w-12 h-12" />
+        <img src="/logo.png" alt="ایزی درس" className="w-12 h-12" />
         <div>
-          <h2 className="text-xl font-bold text-gradient">ایزی‌درس</h2>
+          <h2 className="text-xl font-bold text-gradient">ایزی درس</h2>
           <p className="text-xs text-muted-foreground">دستیار هوشمند مطالعه</p>
         </div>
       </div>
