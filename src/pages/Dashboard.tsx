@@ -1,13 +1,17 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { ShoppingBag, Users, FileText, CheckSquare, HelpCircle, Trophy, PenTool, Brain, BookOpen, Lightbulb, CreditCard, Coins, MessageSquare, Calendar, Award, Flame, Target, ClipboardList, BookCheck, NotebookPen, Sparkles, Box, Gamepad2, User, Music, Palette, Heart, Clock, Swords } from "lucide-react";
+import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { 
+  Brain, BookOpen, HelpCircle, FileText, CheckSquare, ClipboardList, 
+  BookCheck, NotebookPen, Sparkles, Box, Gamepad2, Flame, Swords, 
+  Heart, Trophy, User, Music, Palette, Coins, Calendar, Target, 
+  BarChart3, MessageSquare, Users
+} from "lucide-react";
 import { usePageView } from "@/hooks/usePageView";
 import AppLayout from "@/components/layout/AppLayout";
-import { Button } from "@/components/ui/button";
 import { COIN_COSTS } from "@/lib/coinCosts";
-import { GamificationWidget } from "@/components/gamification/GamificationWidget";
 import { VoiceAssistantWidget } from "@/components/VoiceAssistantWidget";
 
 const Dashboard = () => {
@@ -32,7 +36,6 @@ const Dashboard = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      // Load profile
       const { data: profileData } = await supabase
         .from("profiles")
         .select("*")
@@ -41,25 +44,21 @@ const Dashboard = () => {
 
       setProfile(profileData);
 
-      // Load exams count
       const { count: examsCount } = await supabase
         .from("exams")
         .select("*", { count: "exact", head: true })
         .eq("user_id", user.id);
 
-      // Load messages count
       const { count: messagesCount } = await supabase
         .from("group_messages")
         .select("*", { count: "exact", head: true })
         .eq("user_id", user.id);
 
-      // Load friends count
       const { count: friendsCount } = await supabase
         .from("friendships")
         .select("*", { count: "exact", head: true })
         .eq("user_id", user.id);
 
-      // Load study plans count
       const { count: studyPlansCount } = await supabase
         .from("study_plans")
         .select("*", { count: "exact", head: true })
@@ -79,497 +78,329 @@ const Dashboard = () => {
     }
   };
 
+  // Tool card component
+  const ToolCard = ({ 
+    icon: Icon, 
+    title, 
+    description, 
+    onClick, 
+    gradient 
+  }: any) => (
+    <Card 
+      className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group border-border/20"
+      onClick={onClick}
+    >
+      <CardHeader className="p-5">
+        <div className="flex flex-col items-center gap-3 text-center">
+          <div className={`${gradient} p-3 rounded-xl shadow-lg group-hover:scale-110 transition-transform`}>
+            <Icon className="w-6 h-6 text-white" />
+          </div>
+          <div className="space-y-1">
+            <CardTitle className="text-sm font-bold">{title}</CardTitle>
+            {description && (
+              <CardDescription className="text-xs">{description}</CardDescription>
+            )}
+          </div>
+        </div>
+      </CardHeader>
+    </Card>
+  );
+
   return (
     <AppLayout>
-      <div className="container mx-auto px-4 md:px-6 py-4 md:py-6 max-w-7xl">
-        {/* Welcome Hero - Compact */}
-        <div className="bg-gradient-to-br from-primary/10 via-primary/5 to-secondary/10 rounded-xl p-3 md:p-4 mb-4 border border-primary/20">
-          <div className="flex items-center justify-between">
+      <div className="container mx-auto px-4 md:px-6 py-4 md:py-6 max-w-7xl space-y-6">
+        {/* Welcome Hero */}
+        <div className="bg-gradient-to-br from-primary/10 via-primary/5 to-secondary/10 rounded-2xl p-4 md:p-6 border border-primary/20">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
-              <h2 className="text-lg md:text-xl font-bold">
+              <h2 className="text-xl md:text-2xl font-bold mb-1">
                 خوش آمدید {profile?.full_name || "کاربر"}! 👋
               </h2>
+              <p className="text-sm text-muted-foreground">آماده برای یادگیری امروز؟</p>
             </div>
-            <div className="flex items-center gap-2 md:gap-3">
-              <div className="text-center">
-                <div className="bg-yellow-500/10 p-2 rounded-lg border border-yellow-500/30">
-                  <Coins className="w-4 h-4 text-yellow-500" />
-                </div>
-                <p className="text-sm font-bold text-yellow-500 mt-0.5">{profile?.coins || 0}</p>
+            <div className="flex items-center gap-3">
+              <div className="bg-card/80 backdrop-blur-sm p-3 rounded-xl border border-border/30 min-w-[80px] text-center">
+                <Coins className="w-5 h-5 text-yellow-500 mx-auto mb-1" />
+                <p className="text-lg font-bold text-yellow-500">{profile?.coins || 0}</p>
+                <p className="text-xs text-muted-foreground">سکه</p>
               </div>
-              <div className="text-center hidden sm:block">
-                <div className="gradient-primary p-2 rounded-lg">
-                  <Trophy className="w-4 h-4 text-white" />
-                </div>
-                <p className="text-sm font-bold text-primary mt-0.5">{stats.totalPoints}</p>
+              <div className="bg-card/80 backdrop-blur-sm p-3 rounded-xl border border-border/30 min-w-[80px] text-center">
+                <Trophy className="w-5 h-5 text-primary mx-auto mb-1" />
+                <p className="text-lg font-bold text-primary">{stats.totalPoints}</p>
+                <p className="text-xs text-muted-foreground">امتیاز</p>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Voice Assistant Widget */}
-        <div className="mb-4">
-          <VoiceAssistantWidget />
+        {/* Voice Assistant */}
+        <VoiceAssistantWidget />
+
+        {/* Quick Stats */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div className="bg-card/50 backdrop-blur-sm rounded-xl p-4 border border-border/20 text-center">
+            <CheckSquare className="w-5 h-5 text-accent mx-auto mb-2" />
+            <p className="text-2xl font-bold">{stats.examsCount}</p>
+            <p className="text-xs text-muted-foreground">آزمون</p>
+          </div>
+          <div className="bg-card/50 backdrop-blur-sm rounded-xl p-4 border border-border/20 text-center">
+            <Calendar className="w-5 h-5 text-secondary mx-auto mb-2" />
+            <p className="text-2xl font-bold">{stats.studyPlansCount}</p>
+            <p className="text-xs text-muted-foreground">برنامه</p>
+          </div>
+          <div className="bg-card/50 backdrop-blur-sm rounded-xl p-4 border border-border/20 text-center">
+            <MessageSquare className="w-5 h-5 text-primary mx-auto mb-2" />
+            <p className="text-2xl font-bold">{stats.messagesCount}</p>
+            <p className="text-xs text-muted-foreground">پیام</p>
+          </div>
+          <div className="bg-card/50 backdrop-blur-sm rounded-xl p-4 border border-border/20 text-center">
+            <Users className="w-5 h-5 text-green-500 mx-auto mb-2" />
+            <p className="text-2xl font-bold">{stats.friendsCount}</p>
+            <p className="text-xs text-muted-foreground">دوست</p>
+          </div>
         </div>
 
+        {/* Main Tabs */}
+        <Tabs defaultValue="ai" className="w-full">
+          <TabsList className="grid w-full grid-cols-4 h-auto p-1 bg-card/50 backdrop-blur-sm rounded-xl">
+            <TabsTrigger value="ai" className="gap-2 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-lg">
+              <Brain className="w-4 h-4" />
+              <span className="hidden sm:inline">هوش مصنوعی</span>
+            </TabsTrigger>
+            <TabsTrigger value="study" className="gap-2 py-3 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground rounded-lg">
+              <BookOpen className="w-4 h-4" />
+              <span className="hidden sm:inline">مطالعه</span>
+            </TabsTrigger>
+            <TabsTrigger value="gamification" className="gap-2 py-3 data-[state=active]:bg-accent data-[state=active]:text-accent-foreground rounded-lg">
+              <Gamepad2 className="w-4 h-4" />
+              <span className="hidden sm:inline">گیم</span>
+            </TabsTrigger>
+            <TabsTrigger value="social" className="gap-2 py-3 data-[state=active]:bg-green-600 data-[state=active]:text-white rounded-lg">
+              <Users className="w-4 h-4" />
+              <span className="hidden sm:inline">اجتماعی</span>
+            </TabsTrigger>
+          </TabsList>
 
-        {/* Tools */}
-        <div className="space-y-5">
-          {/* AI Tools Section */}
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              <Brain className="w-5 h-5 text-primary" />
-              <h3 className="text-lg font-bold">ابزارهای هوش مصنوعی</h3>
-            </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-              <Card 
-                className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10"
+          {/* AI Tools Tab */}
+          <TabsContent value="ai" className="mt-6">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+              <ToolCard
+                icon={HelpCircle}
+                title="پرسش درسی"
+                description={`${COIN_COSTS.QUESTION_ANSWER} سکه`}
+                gradient="gradient-primary"
                 onClick={() => navigate("/questions")}
-              >
-                <CardHeader className="p-4">
-                  <div className="flex flex-col items-center gap-2 text-center">
-                    <div className="gradient-primary p-3 rounded-xl shadow-lg group-hover:scale-110 transition-transform">
-                      <HelpCircle className="w-6 h-6 text-white" />
-                    </div>
-                    <CardTitle className="text-sm font-bold">پرسش درسی</CardTitle>
-                    <CardDescription className="text-xs opacity-80">{COIN_COSTS.QUESTION_ANSWER} سکه</CardDescription>
-                  </div>
-                </CardHeader>
-              </Card>
-
-              <Card 
-                className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group border-primary/10"
+              />
+              <ToolCard
+                icon={FileText}
+                title="خلاصه‌ساز"
+                description={`${COIN_COSTS.SUMMARIZE} سکه`}
+                gradient="gradient-secondary"
                 onClick={() => navigate("/summarize")}
-              >
-                <CardHeader className="p-4 md:p-5">
-                  <div className="flex flex-col items-center gap-2.5 text-center">
-                    <div className="gradient-secondary p-3 rounded-2xl shadow-glow group-hover:scale-110 transition-transform">
-                      <FileText className="w-6 h-6 text-white" />
-                    </div>
-                    <CardTitle className="text-sm md:text-base font-bold">خلاصه‌ساز</CardTitle>
-                    <CardDescription className="text-xs">{COIN_COSTS.SUMMARIZE} سکه</CardDescription>
-                  </div>
-                </CardHeader>
-              </Card>
-
-              <Card 
-                className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group border-primary/10"
+              />
+              <ToolCard
+                icon={CheckSquare}
+                title="آزمون‌ساز"
+                description={`${COIN_COSTS.EXAM_GENERATE} سکه`}
+                gradient="gradient-accent"
                 onClick={() => navigate("/exam")}
-              >
-                <CardHeader className="p-4 md:p-5">
-                  <div className="flex flex-col items-center gap-2.5 text-center">
-                    <div className="gradient-accent p-3 rounded-2xl shadow-glow group-hover:scale-110 transition-transform">
-                      <CheckSquare className="w-6 h-6 text-white" />
-                    </div>
-                    <CardTitle className="text-sm md:text-base font-bold">آزمون</CardTitle>
-                    <CardDescription className="text-xs">{COIN_COSTS.EXAM_GENERATE} سکه</CardDescription>
-                  </div>
-                </CardHeader>
-              </Card>
-
-              <Card 
-                className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group border-primary/10"
+              />
+              <ToolCard
+                icon={Brain}
+                title="مشاور هوشمند"
+                description={`${COIN_COSTS.CONSULTATION} سکه`}
+                gradient="gradient-primary"
                 onClick={() => navigate("/consultation")}
-              >
-                <CardHeader className="p-4 md:p-5">
-                  <div className="flex flex-col items-center gap-2.5 text-center">
-                    <div className="gradient-primary p-3 rounded-2xl shadow-glow group-hover:scale-110 transition-transform">
-                      <Brain className="w-6 h-6 text-white" />
-                    </div>
-                    <CardTitle className="text-sm md:text-base font-bold">مشاور هوشمند</CardTitle>
-                    <CardDescription className="text-xs">{COIN_COSTS.CONSULTATION} سکه</CardDescription>
-                  </div>
-                </CardHeader>
-              </Card>
-
-              <Card 
-                className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group border-secondary/20 bg-gradient-to-br from-secondary/5 to-secondary/10"
+              />
+              <ToolCard
+                icon={ClipboardList}
+                title="حل کاربرگ"
+                description="عکس بگیر جواب ببین"
+                gradient="gradient-secondary"
                 onClick={() => navigate("/worksheet-solver")}
-              >
-                <CardHeader className="p-4">
-                  <div className="flex flex-col items-center gap-2 text-center">
-                    <div className="gradient-secondary p-3 rounded-xl shadow-lg group-hover:scale-110 transition-transform">
-                      <ClipboardList className="w-6 h-6 text-white" />
-                    </div>
-                    <CardTitle className="text-sm font-bold">کاربرگ</CardTitle>
-                    <CardDescription className="text-xs opacity-80">عکس بگیر جواب ببین!</CardDescription>
-                  </div>
-                </CardHeader>
-              </Card>
-
-              <Card 
-                className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group border-accent/20 bg-gradient-to-br from-accent/5 to-accent/10"
+              />
+              <ToolCard
+                icon={BookCheck}
+                title="حل تکالیف"
+                description="راهنمای کامل"
+                gradient="gradient-accent"
                 onClick={() => navigate("/homework-helper")}
-              >
-                <CardHeader className="p-4">
-                  <div className="flex flex-col items-center gap-2 text-center">
-                    <div className="gradient-accent p-3 rounded-xl shadow-lg group-hover:scale-110 transition-transform">
-                      <BookCheck className="w-6 h-6 text-white" />
-                    </div>
-                    <CardTitle className="text-sm font-bold">حل تکالیف</CardTitle>
-                    <CardDescription className="text-xs opacity-80">راهنمای کامل تکالیف</CardDescription>
-                  </div>
-                </CardHeader>
-              </Card>
-
-              {/* AI Buddy */}
-              <Card 
-                className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group border-purple-500/20 bg-gradient-to-br from-purple-500/5 to-pink-500/10"
+              />
+              <ToolCard
+                icon={Brain}
+                title="دوست هوشمند"
+                description="چت با AI"
+                gradient="bg-gradient-to-r from-purple-500 to-pink-500"
                 onClick={() => navigate("/ai-buddy")}
-              >
-                <CardHeader className="p-4">
-                  <div className="flex flex-col items-center gap-2 text-center">
-                    <div className="bg-gradient-to-r from-purple-500 to-pink-500 p-3 rounded-xl shadow-lg group-hover:scale-110 transition-transform">
-                      <Brain className="w-6 h-6 text-white" />
-                    </div>
-                    <CardTitle className="text-sm font-bold">دوست هوشمند</CardTitle>
-                    <CardDescription className="text-xs opacity-80">چت با AI</CardDescription>
-                  </div>
-                </CardHeader>
-              </Card>
-
-              {/* Notes */}
-              <Card 
-                className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group border-blue-500/20 bg-gradient-to-br from-blue-500/5 to-green-500/10"
-                onClick={() => navigate("/notes")}
-              >
-                <CardHeader className="p-4">
-                  <div className="flex flex-col items-center gap-2 text-center">
-                    <div className="bg-gradient-to-r from-blue-500 to-green-500 p-3 rounded-xl shadow-lg group-hover:scale-110 transition-transform">
-                      <NotebookPen className="w-6 h-6 text-white" />
-                    </div>
-                    <CardTitle className="text-sm font-bold">یادداشت‌ها</CardTitle>
-                    <CardDescription className="text-xs opacity-80">LaTeX + PDF</CardDescription>
-        </div>
-                </CardHeader>
-              </Card>
-
-              {/* Study Companion */}
-              <Card 
-                className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group border-purple-500/20 bg-gradient-to-br from-purple-500/5 to-pink-500/10"
+              />
+              <ToolCard
+                icon={Sparkles}
+                title="همراه هوشمند"
+                description="تحلیل سبک یادگیری"
+                gradient="bg-gradient-to-r from-purple-500 to-pink-500"
                 onClick={() => navigate("/study-companion")}
-              >
-                <CardHeader className="p-4">
-                  <div className="flex flex-col items-center gap-2 text-center">
-                    <div className="bg-gradient-to-r from-purple-500 to-pink-500 p-3 rounded-xl shadow-lg group-hover:scale-110 transition-transform">
-                      <Sparkles className="w-6 h-6 text-white" />
-                    </div>
-                    <CardTitle className="text-sm font-bold">همراه هوشمند</CardTitle>
-                    <CardDescription className="text-xs opacity-80">تحلیل سبک یادگیری</CardDescription>
-                  </div>
-                </CardHeader>
-              </Card>
+              />
+            </div>
+          </TabsContent>
 
-              {/* AR Learning */}
-              <Card 
-                className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group border-cyan-500/20 bg-gradient-to-br from-cyan-500/5 to-orange-500/10"
+          {/* Study Tools Tab */}
+          <TabsContent value="study" className="mt-6">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+              <ToolCard
+                icon={NotebookPen}
+                title="یادداشت‌ها"
+                description="LaTeX + PDF"
+                gradient="bg-gradient-to-r from-blue-500 to-green-500"
+                onClick={() => navigate("/notes")}
+              />
+              <ToolCard
+                icon={Box}
+                title="یادگیری 3D"
+                description="مدل‌های تعاملی"
+                gradient="bg-gradient-to-r from-cyan-500 to-orange-500"
                 onClick={() => navigate("/ar-learning")}
-              >
-                <CardHeader className="p-4">
-                  <div className="flex flex-col items-center gap-2 text-center">
-                    <div className="bg-gradient-to-r from-cyan-500 to-orange-500 p-3 rounded-xl shadow-lg group-hover:scale-110 transition-transform">
-                      <Box className="w-6 h-6 text-white" />
-                    </div>
-                    <CardTitle className="text-sm font-bold">یادگیری 3D</CardTitle>
-                    <CardDescription className="text-xs opacity-80">مدل‌های تعاملی</CardDescription>
-                  </div>
-                </CardHeader>
-              </Card>
-            </div>
-          </div>
-
-          {/* NEW: Gamification Section */}
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              <Gamepad2 className="w-5 h-5 text-red-500" />
-              <h3 className="text-lg font-bold">گیمیفیکیشن</h3>
-            </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-              {/* Study Streak */}
-              <Card 
-                className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group border-orange-500/20 bg-gradient-to-br from-orange-500/5 to-red-500/10"
-                onClick={() => navigate("/study-streak")}
-              >
-                <CardHeader className="p-4">
-                  <div className="flex flex-col items-center gap-2 text-center">
-                    <div className="bg-gradient-to-r from-orange-500 to-red-500 p-3 rounded-xl shadow-lg group-hover:scale-110 transition-transform">
-                      <Flame className="w-6 h-6 text-white" />
-                    </div>
-                    <CardTitle className="text-sm font-bold">استریک مطالعه</CardTitle>
-                    <CardDescription className="text-xs opacity-80">ردیابی روزهای مطالعه</CardDescription>
-                  </div>
-                </CardHeader>
-              </Card>
-
-              {/* Study Battle */}
-              <Card 
-                className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group border-red-500/20 bg-gradient-to-br from-red-500/5 to-orange-500/10"
-                onClick={() => navigate("/study-battle")}
-              >
-                <CardHeader className="p-4">
-                  <div className="flex flex-col items-center gap-2 text-center">
-                    <div className="bg-gradient-to-r from-red-500 to-orange-500 p-3 rounded-xl shadow-lg group-hover:scale-110 transition-transform">
-                      <Swords className="w-6 h-6 text-white" />
-                    </div>
-                    <CardTitle className="text-sm font-bold">نبرد مطالعه</CardTitle>
-                    <CardDescription className="text-xs opacity-80">رقابت با دوستان</CardDescription>
-                  </div>
-                </CardHeader>
-              </Card>
-
-              {/* Motivation Wall */}
-              <Card 
-                className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group border-pink-500/20 bg-gradient-to-br from-pink-500/5 to-purple-500/10"
-                onClick={() => navigate("/motivation-wall")}
-              >
-                <CardHeader className="p-4">
-                  <div className="flex flex-col items-center gap-2 text-center">
-                    <div className="bg-gradient-to-r from-pink-500 to-purple-500 p-3 rounded-xl shadow-lg group-hover:scale-110 transition-transform">
-                      <Heart className="w-6 h-6 text-white" />
-                    </div>
-                    <CardTitle className="text-sm font-bold">دیوار انگیزشی</CardTitle>
-                    <CardDescription className="text-xs opacity-80">جملات الهام‌بخش</CardDescription>
-                  </div>
-                </CardHeader>
-              </Card>
-
-              {/* Daily Quests */}
-              <Card 
-                className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group border-yellow-500/20 bg-gradient-to-br from-yellow-500/5 to-red-500/10"
-                onClick={() => navigate("/daily-quests")}
-              >
-                <CardHeader className="p-4">
-                  <div className="flex flex-col items-center gap-2 text-center">
-                    <div className="bg-gradient-to-r from-yellow-500 to-red-500 p-3 rounded-xl shadow-lg group-hover:scale-110 transition-transform">
-                      <Trophy className="w-6 h-6 text-white" />
-                    </div>
-                    <CardTitle className="text-sm font-bold">ماموریت‌های روزانه</CardTitle>
-                    <CardDescription className="text-xs opacity-80">جوایز روزانه</CardDescription>
-                  </div>
-                </CardHeader>
-              </Card>
-
-              {/* Avatar Customizer */}
-              <Card 
-                className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group border-purple-500/20 bg-gradient-to-br from-purple-500/5 to-pink-500/10"
-                onClick={() => navigate("/avatar-customizer")}
-              >
-                <CardHeader className="p-4">
-                  <div className="flex flex-col items-center gap-2 text-center">
-                    <div className="bg-gradient-to-r from-purple-500 to-pink-500 p-3 rounded-xl shadow-lg group-hover:scale-110 transition-transform">
-                      <User className="w-6 h-6 text-white" />
-                    </div>
-                    <CardTitle className="text-sm font-bold">سفارشی‌سازی آواتار</CardTitle>
-                    <CardDescription className="text-xs opacity-80">ویرایش آواتار</CardDescription>
-                  </div>
-                </CardHeader>
-              </Card>
-            </div>
-          </div>
-
-          {/* Study Tools */}
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              <Lightbulb className="w-5 h-5 text-amber-500" />
-              <h3 className="text-lg font-bold">ابزارهای مطالعاتی</h3>
-            </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-              {/* Gamification Widget - Desktop Only for Performance */}
-              <div className="col-span-2 sm:col-span-3 lg:col-span-4 hidden sm:block">
-                <GamificationWidget />
-              </div>
-
-              <Card 
-                className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group"
-                onClick={() => navigate("/mind-map")}
-              >
-                <CardHeader className="p-4">
-                  <div className="flex flex-col items-center gap-2 text-center">
-                    <div className="gradient-secondary p-3 rounded-xl shadow-lg group-hover:scale-110 transition-transform">
-                      <PenTool className="w-6 h-6 text-white" />
-                    </div>
-                    <CardTitle className="text-sm font-bold">نقشه ذهنی</CardTitle>
-                    <CardDescription className="text-xs">{COIN_COSTS.MINDMAP_GENERATE} سکه</CardDescription>
-                  </div>
-                </CardHeader>
-              </Card>
-
-              {/* Music Player */}
-              <Card 
-                className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group border-purple-500/20 bg-gradient-to-br from-purple-500/5 to-blue-500/10"
-                onClick={() => navigate("/music-player")}
-              >
-                <CardHeader className="p-4">
-                  <div className="flex flex-col items-center gap-2 text-center">
-                    <div className="bg-gradient-to-r from-purple-500 to-blue-500 p-3 rounded-xl shadow-lg group-hover:scale-110 transition-transform">
-                      <Music className="w-6 h-6 text-white" />
-                    </div>
-                    <CardTitle className="text-sm font-bold">موزیک مطالعه</CardTitle>
-                    <CardDescription className="text-xs opacity-80">پلی‌لیست‌های آرامش‌بخش</CardDescription>
-                  </div>
-                </CardHeader>
-              </Card>
-
-              {/* Goals Tracker */}
-              <Card 
-                className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group border-green-500/20 bg-gradient-to-br from-green-500/5 to-blue-500/10"
+              />
+              <ToolCard
+                icon={Calendar}
+                title="تقویم درسی"
+                description="برنامه‌ریزی هوشمند"
+                gradient="gradient-primary"
+                onClick={() => navigate("/study-calendar")}
+              />
+              <ToolCard
+                icon={Target}
+                title="اهداف"
+                description="پیگیری پیشرفت"
+                gradient="gradient-secondary"
                 onClick={() => navigate("/goals-tracker")}
-              >
-                <CardHeader className="p-4">
-                  <div className="flex flex-col items-center gap-2 text-center">
-                    <div className="bg-gradient-to-r from-green-500 to-blue-500 p-3 rounded-xl shadow-lg group-hover:scale-110 transition-transform">
-                      <Target className="w-6 h-6 text-white" />
-                    </div>
-                    <CardTitle className="text-sm font-bold">اهداف من</CardTitle>
-                    <CardDescription className="text-xs opacity-80">برنامه‌ریزی اهداف</CardDescription>
-                  </div>
-                </CardHeader>
-              </Card>
-
-              {/* Pomodoro Timer */}
-              <Card 
-                className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group border-red-500/20 bg-gradient-to-br from-red-500/5 to-orange-500/10"
-                onClick={() => navigate("/pomodoro-timer")}
-              >
-                <CardHeader className="p-4">
-                  <div className="flex flex-col items-center gap-2 text-center">
-                    <div className="bg-gradient-to-r from-red-500 to-orange-500 p-3 rounded-xl shadow-lg group-hover:scale-110 transition-transform">
-                      <Clock className="w-6 h-6 text-white" />
-                    </div>
-                    <CardTitle className="text-sm font-bold">پومودورو</CardTitle>
-                    <CardDescription className="text-xs opacity-80">تایمر تمرکز</CardDescription>
-                  </div>
-                </CardHeader>
-              </Card>
-
-              <Card 
-                className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group"
-                onClick={() => navigate("/mind-map")}
-              >
-                <CardHeader className="p-4">
-                  <div className="flex flex-col items-center gap-2 text-center">
-                    <div className="gradient-secondary p-3 rounded-xl shadow-lg group-hover:scale-110 transition-transform">
-                      <PenTool className="w-6 h-6 text-white" />
-                    </div>
-                    <CardTitle className="text-sm font-bold">نقشه ذهنی</CardTitle>
-                    <CardDescription className="text-xs">{COIN_COSTS.MINDMAP_GENERATE} سکه</CardDescription>
-                  </div>
-                </CardHeader>
-              </Card>
-
-              <Card 
-                className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group"
-                onClick={() => navigate("/flashcards")}
-              >
-                <CardHeader className="p-4">
-                  <div className="flex flex-col items-center gap-2 text-center">
-                    <div className="gradient-accent p-3 rounded-xl shadow-lg group-hover:scale-110 transition-transform">
-                      <BookOpen className="w-6 h-6 text-white" />
-                    </div>
-                    <CardTitle className="text-sm font-bold">فلش کارت</CardTitle>
-                    <CardDescription className="text-xs">{COIN_COSTS.FLASHCARD_GENERATE} سکه</CardDescription>
-                  </div>
-                </CardHeader>
-              </Card>
-
-
-              {/* Forum */}
-              <Card 
-                className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group border-green-500/20 bg-gradient-to-br from-green-500/5 to-green-500/10"
-                onClick={() => navigate("/forum")}
-              >
-                <CardHeader className="p-4">
-                  <div className="flex flex-col items-center gap-2 text-center">
-                    <div className="bg-gradient-to-r from-green-500 to-green-600 p-3 rounded-xl shadow-lg group-hover:scale-110 transition-transform">
-                      <MessageSquare className="w-6 h-6 text-white" />
-                    </div>
-                    <CardTitle className="text-sm font-bold">انجمن بحث</CardTitle>
-                    <CardDescription className="text-xs">پرسش و پاسخ</CardDescription>
-                  </div>
-                </CardHeader>
-              </Card>
-
-              {/* Leaderboard */}
-              <Card 
-                className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group border-amber-500/20 bg-gradient-to-br from-amber-500/5 to-amber-500/10"
-                onClick={() => navigate("/leaderboard")}
-              >
-                <CardHeader className="p-4">
-                  <div className="flex flex-col items-center gap-2 text-center">
-                    <div className="bg-gradient-to-r from-amber-500 to-amber-600 p-3 rounded-xl shadow-lg group-hover:scale-110 transition-transform">
-                      <Trophy className="w-6 h-6 text-white" />
-                    </div>
-                    <CardTitle className="text-sm font-bold">جدول امتیازات</CardTitle>
-                    <CardDescription className="text-xs">مقایسه با دیگران</CardDescription>
-                  </div>
-                </CardHeader>
-              </Card>
-
-              {/* Study Calendar */}
-              <Card 
-                className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group border-blue-500/20 bg-gradient-to-br from-blue-500/5 to-blue-500/10"
-                onClick={() => navigate("/calendar")}
-              >
-                <CardHeader className="p-4">
-                  <div className="flex flex-col items-center gap-2 text-center">
-                    <div className="bg-gradient-to-r from-blue-500 to-blue-600 p-3 rounded-xl shadow-lg group-hover:scale-110 transition-transform">
-                      <Calendar className="w-6 h-6 text-white" />
-                    </div>
-                    <CardTitle className="text-sm font-bold">تقویم مطالعاتی</CardTitle>
-                    <CardDescription className="text-xs">برنامه‌ریزی</CardDescription>
-                  </div>
-                </CardHeader>
-              </Card>
-
-              {/* Progress */}
-              <Card 
-                className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10"
+              />
+              <ToolCard
+                icon={BarChart3}
+                title="پیشرفت"
+                description="نمودار عملکرد"
+                gradient="gradient-accent"
                 onClick={() => navigate("/progress")}
-              >
-                <CardHeader className="p-4">
-                  <div className="flex flex-col items-center gap-2 text-center">
-                    <div className="bg-gradient-to-r from-primary to-primary/80 p-3 rounded-xl shadow-lg group-hover:scale-110 transition-transform">
-                      <Trophy className="w-6 h-6 text-white" />
-                    </div>
-                    <CardTitle className="text-sm font-bold">پیشرفت</CardTitle>
-                    <CardDescription className="text-xs">دستاوردها و سطح</CardDescription>
-                  </div>
-                </CardHeader>
-              </Card>
-
-              {/* Theme Settings */}
-              <Card 
-                className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group border-pink-500/20 bg-gradient-to-br from-pink-500/5 to-pink-500/10"
-                onClick={() => navigate("/theme")}
-              >
-                <CardHeader className="p-4">
-                  <div className="flex flex-col items-center gap-2 text-center">
-                    <div className="bg-gradient-to-r from-pink-500 to-pink-600 p-3 rounded-xl shadow-lg group-hover:scale-110 transition-transform">
-                      <Award className="w-6 h-6 text-white" />
-                    </div>
-                    <CardTitle className="text-sm font-bold">تنظیمات ظاهری</CardTitle>
-                    <CardDescription className="text-xs">شخصی‌سازی</CardDescription>
-                  </div>
-                </CardHeader>
-              </Card>
-
-              <Card 
-                className="glassmorphism-card hover:shadow-glow hover-lift cursor-pointer group"
-                onClick={() => navigate("/coin-shop")}
-              >
-                <CardHeader className="p-4">
-                  <div className="flex flex-col items-center gap-2 text-center">
-                    <div className="bg-gradient-to-r from-yellow-500 to-amber-600 p-3 rounded-xl shadow-lg group-hover:scale-110 transition-transform">
-                      <Coins className="w-6 h-6 text-white" />
-                    </div>
-                    <CardTitle className="text-sm font-bold">فروشگاه سکه</CardTitle>
-                    <CardDescription className="text-xs">خرید سکه</CardDescription>
-                  </div>
-                </CardHeader>
-              </Card>
+              />
+              <ToolCard
+                icon={BookOpen}
+                title="منابع درسی"
+                description="کتاب‌ها و جزوات"
+                gradient="gradient-primary"
+                onClick={() => navigate("/resources")}
+              />
+              <ToolCard
+                icon={Brain}
+                title="نقشه ذهنی"
+                description="سازماندهی ایده‌ها"
+                gradient="gradient-secondary"
+                onClick={() => navigate("/mindmap-ai")}
+              />
+              <ToolCard
+                icon={CheckSquare}
+                title="فلش‌کارت"
+                description="مرور سریع"
+                gradient="gradient-accent"
+                onClick={() => navigate("/flashcards")}
+              />
             </div>
-          </div>
-        </div>
+          </TabsContent>
+
+          {/* Gamification Tab */}
+          <TabsContent value="gamification" className="mt-6">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+              <ToolCard
+                icon={Flame}
+                title="استریک مطالعه"
+                description="ردیابی روزهای مطالعه"
+                gradient="bg-gradient-to-r from-orange-500 to-red-500"
+                onClick={() => navigate("/study-streak")}
+              />
+              <ToolCard
+                icon={Swords}
+                title="نبرد مطالعه"
+                description="رقابت با دوستان"
+                gradient="bg-gradient-to-r from-red-500 to-orange-500"
+                onClick={() => navigate("/study-battle")}
+              />
+              <ToolCard
+                icon={Heart}
+                title="دیوار انگیزشی"
+                description="جملات الهام‌بخش"
+                gradient="bg-gradient-to-r from-pink-500 to-purple-500"
+                onClick={() => navigate("/motivation-wall")}
+              />
+              <ToolCard
+                icon={Trophy}
+                title="ماموریت‌های روزانه"
+                description="جوایز روزانه"
+                gradient="bg-gradient-to-r from-yellow-500 to-red-500"
+                onClick={() => navigate("/daily-quests")}
+              />
+              <ToolCard
+                icon={User}
+                title="آواتار"
+                description="شخصی‌سازی آواتار"
+                gradient="bg-gradient-to-r from-purple-500 to-pink-500"
+                onClick={() => navigate("/avatar-customizer")}
+              />
+              <ToolCard
+                icon={Trophy}
+                title="جایزه‌ها"
+                description="دستاوردهای من"
+                gradient="gradient-primary"
+                onClick={() => navigate("/leaderboard")}
+              />
+              <ToolCard
+                icon={Palette}
+                title="تم‌ها"
+                description="شخصی‌سازی ظاهر"
+                gradient="gradient-secondary"
+                onClick={() => navigate("/theme-settings")}
+              />
+              <ToolCard
+                icon={Music}
+                title="موسیقی"
+                description="پلی‌لیست مطالعه"
+                gradient="gradient-accent"
+                onClick={() => navigate("/music-player")}
+              />
+            </div>
+          </TabsContent>
+
+          {/* Social Tab */}
+          <TabsContent value="social" className="mt-6">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+              <ToolCard
+                icon={MessageSquare}
+                title="گروه‌های درسی"
+                description="چت گروهی"
+                gradient="gradient-primary"
+                onClick={() => navigate("/forum")}
+              />
+              <ToolCard
+                icon={Users}
+                title="دوستان"
+                description="لیست دوستان"
+                gradient="gradient-secondary"
+                onClick={() => navigate("/profile")}
+              />
+              <ToolCard
+                icon={Trophy}
+                title="تابلوی امتیازات"
+                description="رده‌بندی کاربران"
+                gradient="gradient-accent"
+                onClick={() => navigate("/leaderboard")}
+              />
+              <ToolCard
+                icon={Users}
+                title="معرفی دوستان"
+                description="دعوت از دوستان"
+                gradient="gradient-primary"
+                onClick={() => navigate("/referral")}
+              />
+            </div>
+          </TabsContent>
+        </Tabs>
       </div>
     </AppLayout>
   );

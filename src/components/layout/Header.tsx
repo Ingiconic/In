@@ -74,8 +74,8 @@ const Header = ({ profile }: HeaderProps) => {
       <div className="flex h-16 items-center justify-between px-4 lg:px-6">
         {/* Logo - Hidden on Desktop (shown in sidebar) */}
         <div className="flex items-center gap-3 lg:hidden">
-          <img src="/logo.png" alt="ایزی‌درس" className="w-10 h-10" />
-          <span className="text-lg font-bold text-gradient">ایزی‌درس</span>
+          <img src="/logo.png" alt="ایزی درس" className="w-10 h-10" />
+          <span className="text-lg font-bold text-gradient">ایزی درس</span>
         </div>
 
         {/* Desktop: Stats */}
@@ -109,8 +109,8 @@ const Header = ({ profile }: HeaderProps) => {
                 {/* Mobile Menu Header */}
                 <div className="flex items-center justify-between p-6 border-b border-border/30">
                   <div className="flex items-center gap-3">
-                    <img src="/logo.png" alt="ایزی‌درس" className="w-10 h-10" />
-                    <span className="text-lg font-bold text-gradient">ایزی‌درس</span>
+                    <img src="/logo.png" alt="ایزی درس" className="w-10 h-10" />
+                    <span className="text-lg font-bold text-gradient">ایزی درس</span>
                   </div>
                   <Button
                     variant="ghost"

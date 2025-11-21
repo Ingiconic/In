@@ -87,7 +87,7 @@ const Index = () => {
               <div className="w-9 h-9 md:w-11 md:h-11 rounded-xl md:rounded-2xl gradient-primary flex items-center justify-center shadow-glow">
                 <Brain className="w-5 h-5 md:w-6 md:h-6 text-white" />
               </div>
-              <span className="text-xl md:text-2xl font-bold text-gradient">Easy Dars</span>
+              <span className="text-xl md:text-2xl font-bold text-gradient">ایزی درس</span>
             </div>
             
             <div className="flex items-center gap-2 md:gap-3">
@@ -399,7 +399,7 @@ const Index = () => {
                 viewport={{ once: true }}
               >
                 چرا دانش‌آموزان عاشق
-                <span className="text-gradient block mt-2">Easy Dars هستند؟</span>
+                <span className="text-gradient block mt-2">ایزی درس هستند؟</span>
               </motion.h2>
             </div>
           </AnimatedSection>
@@ -409,12 +409,14 @@ const Index = () => {
               {
                 quote: "واقعاً کمکم کرد تو ریاضی پیشرفت کنم. الان نمراتم خیلی بهتر شده!",
                 name: "سارا احمدی",
-                role: "دانش‌آموز دوازدهم"
+                role: "دانش‌آموز دوازدهم",
+                avatar: "👩‍🎓"
               },
               {
                 quote: "خلاصه‌سازی AI فوق‌العادس! دیگه نمی‌ترسم از درس‌های طولانی",
                 name: "علی محمدی",
-                role: "دانش‌آموز یازدهم"
+                role: "دانش‌آموز یازدهم",
+                avatar: "👨‍🎓"
               },
               {
                 quote: "بهترین برنامه برای یادگیری! هم سرگرم‌کننده‌ست هم مفیده",
