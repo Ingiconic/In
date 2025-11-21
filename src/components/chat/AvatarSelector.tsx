@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
@@ -28,6 +28,10 @@ const AvatarSelector = ({ currentAvatar, onSelect }: AvatarSelectorProps) => {
   const [selectedAvatar, setSelectedAvatar] = useState(currentAvatar || "");
   const [saving, setSaving] = useState(false);
   const { toast } = useToast();
+
+  useEffect(() => {
+    setSelectedAvatar(currentAvatar || "");
+  }, [currentAvatar]);
 
   const handleSelect = (avatar: string) => {
     setSelectedAvatar(avatar);

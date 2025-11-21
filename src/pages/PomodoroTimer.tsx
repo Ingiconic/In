@@ -119,15 +119,18 @@ export default function PomodoroTimer() {
 
         const { data: { user } } = await supabase.auth.getUser();
         
-        // Award coins and XP
+        // Award coins and XP per minute
+        const xpPerMinute = 5;
+        const coinsPerSession = 10;
+        
         await supabase.rpc("deduct_user_coins", {
-          _amount: -10,
+          _amount: -coinsPerSession,
           _reason: "pomodoro_completed",
         });
 
         await supabase.rpc("award_xp", {
           _user_id: user?.id,
-          _xp_amount: duration * 2,
+          _xp_amount: duration * xpPerMinute,
           _reason: "focus_session",
         });
 
@@ -415,7 +418,7 @@ export default function PomodoroTimer() {
               <CardContent className="p-6">
                 <h3 className="font-bold text-lg mb-3">🎁 پاداش</h3>
                 <p className="text-muted-foreground text-sm">
-                  برای هر جلسه تمرکز تکمیل شده: <span className="font-bold text-primary">10 سکه</span> + <span className="font-bold text-primary">{duration * 2} XP</span>
+                  برای هر جلسه تمرکز تکمیل شده: <span className="font-bold text-primary">10 سکه</span> + <span className="font-bold text-primary">{duration * 5} XP</span> (5 XP به ازای هر دقیقه)
                 </p>
               </CardContent>
             </Card>
