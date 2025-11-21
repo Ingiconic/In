@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
@@ -15,6 +15,13 @@ const WorksheetSolver = () => {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [solution, setSolution] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const solutionRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (solution && solutionRef.current) {
+      solutionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [solution]);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -156,7 +163,7 @@ const WorksheetSolver = () => {
         </Card>
 
         {solution && (
-          <Card className="p-6">
+          <Card ref={solutionRef} className="p-6">
             <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
               <Sparkles className="w-5 h-5 text-primary" />
               پاسخ‌های کاربرگ
