@@ -5,7 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/lib/supabase";
 import { 
   Brain, Loader2, CheckCircle, XCircle, AlertCircle, Coins, 
   Clock, ChevronLeft, ChevronRight, BookOpen, Target, Sparkles,
@@ -91,20 +91,17 @@ const ExamV2 = () => {
     const draft = localStorage.getItem(EXAM_DRAFT_KEY);
     if (draft) {
       try {
-        const { content: savedContent, answers: savedAnswers, exam: savedExam, currentIndex } = JSON.parse(draft);
-        if (savedExam && savedAnswers) {
-          setExam(savedExam);
-          setAnswers(savedAnswers);
-          setCurrentQuestionIndex(currentIndex || 0);
-          toast({
-            title: "پیش‌نویس بازیابی شد",
-            description: "آزمون قبلی شما بارگذاری شد",
-          });
-        } else if (savedContent) {
-          setContent(savedContent);
+        const parsed = JSON.parse(draft);
+        if (parsed.exam && parsed.answers) {
+          setExam(parsed.exam);
+          setAnswers(parsed.answers);
+          setCurrentQuestionIndex(parsed.currentIndex || 0);
+        } else if (parsed.content) {
+          setContent(parsed.content);
         }
       } catch (e) {
         console.error('Failed to load draft:', e);
+        localStorage.removeItem(EXAM_DRAFT_KEY);
       }
     }
   }, []);
