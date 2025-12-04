@@ -13,11 +13,14 @@ import { usePageView } from "@/hooks/usePageView";
 import AppLayout from "@/components/layout/AppLayout";
 import { COIN_COSTS } from "@/lib/coinCosts";
 import { VoiceAssistantWidget } from "@/components/VoiceAssistantWidget";
+import { useToast } from "@/hooks/use-toast";
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   usePageView();
   const [profile, setProfile] = useState<any>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [stats, setStats] = useState({
     totalPoints: 0,
     examsCount: 0,
@@ -33,13 +36,20 @@ const Dashboard = () => {
 
   const loadDashboardData = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session?.user) {
+        setIsLoggedIn(false);
+        setLoading(false);
+        return;
+      }
+
+      setIsLoggedIn(true);
 
       const { data: profileData } = await supabase
         .from("profiles")
         .select("*")
-        .eq("id", user.id)
+        .eq("id", session.user.id)
         .single();
 
       setProfile(profileData);
@@ -47,22 +57,22 @@ const Dashboard = () => {
       const { count: examsCount } = await supabase
         .from("exams")
         .select("*", { count: "exact", head: true })
-        .eq("user_id", user.id);
+        .eq("user_id", session.user.id);
 
       const { count: messagesCount } = await supabase
         .from("group_messages")
         .select("*", { count: "exact", head: true })
-        .eq("user_id", user.id);
+        .eq("user_id", session.user.id);
 
       const { count: friendsCount } = await supabase
         .from("friendships")
         .select("*", { count: "exact", head: true })
-        .eq("user_id", user.id);
+        .eq("user_id", session.user.id);
 
       const { count: studyPlansCount } = await supabase
         .from("study_plans")
         .select("*", { count: "exact", head: true })
-        .eq("user_id", user.id);
+        .eq("user_id", session.user.id);
 
       setStats({
         totalPoints: profileData?.points || 0,
@@ -76,6 +86,19 @@ const Dashboard = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleToolClick = (path: string) => {
+    if (!isLoggedIn) {
+      toast({
+        title: "نیاز به ثبت‌نام",
+        description: "برای استفاده از این ابزار باید ثبت‌نام کنید",
+        variant: "destructive",
+      });
+      navigate("/signup");
+      return;
+    }
+    navigate(path);
   };
 
   // Tool card component
@@ -114,51 +137,64 @@ const Dashboard = () => {
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
               <h2 className="text-xl md:text-2xl font-bold mb-1">
-                خوش آمدید {profile?.full_name || "کاربر"}! 👋
+                {isLoggedIn ? `خوش آمدید ${profile?.full_name || profile?.username || "کاربر"}! 👋` : "به ایزی‌درس خوش آمدید! 👋"}
               </h2>
-              <p className="text-sm text-muted-foreground">آماده برای یادگیری امروز؟</p>
+              <p className="text-sm text-muted-foreground">
+                {isLoggedIn ? "آماده برای یادگیری امروز؟" : "برای استفاده از ابزارها ثبت‌نام کنید"}
+              </p>
             </div>
-            <div className="flex items-center gap-3">
-              <div className="bg-card/80 backdrop-blur-sm p-3 rounded-xl border border-border/30 min-w-[80px] text-center">
-                <Coins className="w-5 h-5 text-yellow-500 mx-auto mb-1" />
-                <p className="text-lg font-bold text-yellow-500">{profile?.coins || 0}</p>
-                <p className="text-xs text-muted-foreground">سکه</p>
+            {isLoggedIn ? (
+              <div className="flex items-center gap-3">
+                <div className="bg-card/80 backdrop-blur-sm p-3 rounded-xl border border-border/30 min-w-[80px] text-center">
+                  <Coins className="w-5 h-5 text-yellow-500 mx-auto mb-1" />
+                  <p className="text-lg font-bold text-yellow-500">{profile?.coins || 0}</p>
+                  <p className="text-xs text-muted-foreground">سکه</p>
+                </div>
+                <div className="bg-card/80 backdrop-blur-sm p-3 rounded-xl border border-border/30 min-w-[80px] text-center">
+                  <Trophy className="w-5 h-5 text-primary mx-auto mb-1" />
+                  <p className="text-lg font-bold text-primary">{stats.totalPoints}</p>
+                  <p className="text-xs text-muted-foreground">امتیاز</p>
+                </div>
               </div>
-              <div className="bg-card/80 backdrop-blur-sm p-3 rounded-xl border border-border/30 min-w-[80px] text-center">
-                <Trophy className="w-5 h-5 text-primary mx-auto mb-1" />
-                <p className="text-lg font-bold text-primary">{stats.totalPoints}</p>
-                <p className="text-xs text-muted-foreground">امتیاز</p>
-              </div>
-            </div>
+            ) : (
+              <button
+                onClick={() => navigate("/signup")}
+                className="gradient-primary text-white px-6 py-3 rounded-xl font-bold hover:opacity-90 transition-all"
+              >
+                ثبت‌نام رایگان
+              </button>
+            )}
           </div>
         </div>
 
         {/* Voice Assistant */}
-        <VoiceAssistantWidget />
+        {isLoggedIn && <VoiceAssistantWidget />}
 
-        {/* Quick Stats */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <div className="bg-card/50 backdrop-blur-sm rounded-xl p-4 border border-border/20 text-center">
-            <CheckSquare className="w-5 h-5 text-accent mx-auto mb-2" />
-            <p className="text-2xl font-bold">{stats.examsCount}</p>
-            <p className="text-xs text-muted-foreground">آزمون</p>
+        {/* Quick Stats - Only for logged in users */}
+        {isLoggedIn && (
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div className="bg-card/50 backdrop-blur-sm rounded-xl p-4 border border-border/20 text-center">
+              <CheckSquare className="w-5 h-5 text-accent mx-auto mb-2" />
+              <p className="text-2xl font-bold">{stats.examsCount}</p>
+              <p className="text-xs text-muted-foreground">آزمون</p>
+            </div>
+            <div className="bg-card/50 backdrop-blur-sm rounded-xl p-4 border border-border/20 text-center">
+              <Calendar className="w-5 h-5 text-secondary mx-auto mb-2" />
+              <p className="text-2xl font-bold">{stats.studyPlansCount}</p>
+              <p className="text-xs text-muted-foreground">برنامه</p>
+            </div>
+            <div className="bg-card/50 backdrop-blur-sm rounded-xl p-4 border border-border/20 text-center">
+              <MessageSquare className="w-5 h-5 text-primary mx-auto mb-2" />
+              <p className="text-2xl font-bold">{stats.messagesCount}</p>
+              <p className="text-xs text-muted-foreground">پیام</p>
+            </div>
+            <div className="bg-card/50 backdrop-blur-sm rounded-xl p-4 border border-border/20 text-center">
+              <Users className="w-5 h-5 text-green-500 mx-auto mb-2" />
+              <p className="text-2xl font-bold">{stats.friendsCount}</p>
+              <p className="text-xs text-muted-foreground">دوست</p>
+            </div>
           </div>
-          <div className="bg-card/50 backdrop-blur-sm rounded-xl p-4 border border-border/20 text-center">
-            <Calendar className="w-5 h-5 text-secondary mx-auto mb-2" />
-            <p className="text-2xl font-bold">{stats.studyPlansCount}</p>
-            <p className="text-xs text-muted-foreground">برنامه</p>
-          </div>
-          <div className="bg-card/50 backdrop-blur-sm rounded-xl p-4 border border-border/20 text-center">
-            <MessageSquare className="w-5 h-5 text-primary mx-auto mb-2" />
-            <p className="text-2xl font-bold">{stats.messagesCount}</p>
-            <p className="text-xs text-muted-foreground">پیام</p>
-          </div>
-          <div className="bg-card/50 backdrop-blur-sm rounded-xl p-4 border border-border/20 text-center">
-            <Users className="w-5 h-5 text-green-500 mx-auto mb-2" />
-            <p className="text-2xl font-bold">{stats.friendsCount}</p>
-            <p className="text-xs text-muted-foreground">دوست</p>
-          </div>
-        </div>
+        )}
 
         {/* Main Tabs */}
         <Tabs defaultValue="ai" className="w-full">
@@ -189,56 +225,56 @@ const Dashboard = () => {
                 title="پرسش درسی"
                 description={`${COIN_COSTS.QUESTION_ANSWER} سکه`}
                 gradient="gradient-primary"
-                onClick={() => navigate("/questions")}
+                onClick={() => handleToolClick("/questions")}
               />
               <ToolCard
                 icon={FileText}
                 title="خلاصه‌ساز"
                 description={`${COIN_COSTS.SUMMARIZE} سکه`}
                 gradient="gradient-secondary"
-                onClick={() => navigate("/summarize")}
+                onClick={() => handleToolClick("/summarize")}
               />
               <ToolCard
                 icon={CheckSquare}
                 title="آزمون‌ساز"
                 description={`${COIN_COSTS.EXAM_GENERATE} سکه`}
                 gradient="gradient-accent"
-                onClick={() => navigate("/exam")}
+                onClick={() => handleToolClick("/exam")}
               />
               <ToolCard
                 icon={Brain}
                 title="مشاور هوشمند"
                 description={`${COIN_COSTS.CONSULTATION} سکه`}
                 gradient="gradient-primary"
-                onClick={() => navigate("/consultation")}
+                onClick={() => handleToolClick("/consultation")}
               />
               <ToolCard
                 icon={ClipboardList}
                 title="حل کاربرگ"
                 description="عکس بگیر جواب ببین"
                 gradient="gradient-secondary"
-                onClick={() => navigate("/worksheet-solver")}
+                onClick={() => handleToolClick("/worksheet-solver")}
               />
               <ToolCard
                 icon={BookCheck}
                 title="حل تکالیف"
                 description="راهنمای کامل"
                 gradient="gradient-accent"
-                onClick={() => navigate("/homework-helper")}
+                onClick={() => handleToolClick("/homework-helper")}
               />
               <ToolCard
                 icon={Brain}
                 title="دوست هوشمند"
                 description="چت با AI"
                 gradient="bg-gradient-to-r from-purple-500 to-pink-500"
-                onClick={() => navigate("/ai-buddy")}
+                onClick={() => handleToolClick("/ai-buddy")}
               />
               <ToolCard
                 icon={Sparkles}
                 title="همراه هوشمند"
                 description="تحلیل سبک یادگیری"
                 gradient="bg-gradient-to-r from-purple-500 to-pink-500"
-                onClick={() => navigate("/study-companion")}
+                onClick={() => handleToolClick("/study-companion")}
               />
             </div>
           </TabsContent>
@@ -251,56 +287,56 @@ const Dashboard = () => {
                 title="یادداشت‌ها"
                 description="LaTeX + PDF"
                 gradient="bg-gradient-to-r from-blue-500 to-green-500"
-                onClick={() => navigate("/notes")}
+                onClick={() => handleToolClick("/notes")}
               />
               <ToolCard
                 icon={Box}
                 title="یادگیری 3D"
                 description="مدل‌های تعاملی"
                 gradient="bg-gradient-to-r from-cyan-500 to-orange-500"
-                onClick={() => navigate("/ar-learning")}
+                onClick={() => handleToolClick("/ar-learning")}
               />
               <ToolCard
                 icon={Calendar}
                 title="تقویم درسی"
                 description="برنامه‌ریزی هوشمند"
                 gradient="gradient-primary"
-                onClick={() => navigate("/study-calendar")}
+                onClick={() => handleToolClick("/study-calendar")}
               />
               <ToolCard
                 icon={Target}
                 title="اهداف"
                 description="پیگیری پیشرفت"
                 gradient="gradient-secondary"
-                onClick={() => navigate("/goals-tracker")}
+                onClick={() => handleToolClick("/goals-tracker")}
               />
               <ToolCard
                 icon={BarChart3}
                 title="پیشرفت"
                 description="نمودار عملکرد"
                 gradient="gradient-accent"
-                onClick={() => navigate("/progress")}
+                onClick={() => handleToolClick("/progress")}
               />
               <ToolCard
                 icon={BookOpen}
                 title="منابع درسی"
                 description="کتاب‌ها و جزوات"
                 gradient="gradient-primary"
-                onClick={() => navigate("/resources")}
+                onClick={() => handleToolClick("/resources")}
               />
               <ToolCard
                 icon={Brain}
                 title="نقشه ذهنی"
                 description="سازماندهی ایده‌ها"
                 gradient="gradient-secondary"
-                onClick={() => navigate("/mindmap-ai")}
+                onClick={() => handleToolClick("/mindmap-ai")}
               />
               <ToolCard
                 icon={CheckSquare}
                 title="فلش‌کارت"
                 description="مرور سریع"
                 gradient="gradient-accent"
-                onClick={() => navigate("/flashcards")}
+                onClick={() => handleToolClick("/flashcards")}
               />
             </div>
           </TabsContent>
@@ -313,56 +349,56 @@ const Dashboard = () => {
                 title="استریک مطالعه"
                 description="ردیابی روزهای مطالعه"
                 gradient="bg-gradient-to-r from-orange-500 to-red-500"
-                onClick={() => navigate("/study-streak")}
+                onClick={() => handleToolClick("/study-streak")}
               />
               <ToolCard
                 icon={Swords}
                 title="نبرد مطالعه"
                 description="رقابت با دوستان"
                 gradient="bg-gradient-to-r from-red-500 to-orange-500"
-                onClick={() => navigate("/study-battle")}
+                onClick={() => handleToolClick("/study-battle")}
               />
               <ToolCard
                 icon={Heart}
                 title="دیوار انگیزشی"
                 description="جملات الهام‌بخش"
                 gradient="bg-gradient-to-r from-pink-500 to-purple-500"
-                onClick={() => navigate("/motivation-wall")}
+                onClick={() => handleToolClick("/motivation-wall")}
               />
               <ToolCard
                 icon={Trophy}
                 title="ماموریت‌های روزانه"
                 description="جوایز روزانه"
                 gradient="bg-gradient-to-r from-yellow-500 to-red-500"
-                onClick={() => navigate("/daily-quests")}
+                onClick={() => handleToolClick("/daily-quests")}
               />
               <ToolCard
                 icon={User}
                 title="آواتار"
                 description="شخصی‌سازی آواتار"
                 gradient="bg-gradient-to-r from-purple-500 to-pink-500"
-                onClick={() => navigate("/avatar-customizer")}
+                onClick={() => handleToolClick("/avatar-customizer")}
               />
               <ToolCard
                 icon={Trophy}
                 title="جایزه‌ها"
                 description="دستاوردهای من"
                 gradient="gradient-primary"
-                onClick={() => navigate("/leaderboard")}
+                onClick={() => handleToolClick("/leaderboard")}
               />
               <ToolCard
                 icon={Palette}
                 title="تم‌ها"
                 description="شخصی‌سازی ظاهر"
                 gradient="gradient-secondary"
-                onClick={() => navigate("/theme-settings")}
+                onClick={() => handleToolClick("/theme-settings")}
               />
               <ToolCard
                 icon={Music}
                 title="موسیقی"
                 description="پلی‌لیست مطالعه"
                 gradient="gradient-accent"
-                onClick={() => navigate("/music-player")}
+                onClick={() => handleToolClick("/music-player")}
               />
             </div>
           </TabsContent>
@@ -375,28 +411,28 @@ const Dashboard = () => {
                 title="گروه‌های درسی"
                 description="چت گروهی"
                 gradient="gradient-primary"
-                onClick={() => navigate("/forum")}
+                onClick={() => handleToolClick("/forum")}
               />
               <ToolCard
                 icon={Users}
                 title="دوستان"
                 description="لیست دوستان"
                 gradient="gradient-secondary"
-                onClick={() => navigate("/profile")}
+                onClick={() => handleToolClick("/profile")}
               />
               <ToolCard
                 icon={Trophy}
                 title="تابلوی امتیازات"
                 description="رده‌بندی کاربران"
                 gradient="gradient-accent"
-                onClick={() => navigate("/leaderboard")}
+                onClick={() => handleToolClick("/leaderboard")}
               />
               <ToolCard
                 icon={Users}
                 title="معرفی دوستان"
                 description="دعوت از دوستان"
                 gradient="gradient-primary"
-                onClick={() => navigate("/referral")}
+                onClick={() => handleToolClick("/referral")}
               />
             </div>
           </TabsContent>

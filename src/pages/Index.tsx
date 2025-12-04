@@ -184,7 +184,7 @@ const Index = () => {
                 <Button 
                   size="lg" 
                   className="gradient-primary hover:opacity-90 shadow-glow text-lg px-10 py-7 rounded-2xl font-bold group"
-                  onClick={() => navigate("/signup")}
+                  onClick={() => navigate("/dashboard")}
                 >
                   شروع یادگیری الان
                   <motion.div
