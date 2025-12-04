@@ -3,38 +3,20 @@ import { supabase } from "@/lib/supabase";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { Box, Calculator, FlaskConical, Heart, Brain, Eye, Ear } from "lucide-react";
+import { Box, Calculator, FlaskConical, Heart, Sparkles } from "lucide-react";
+import SketchfabViewer from "@/components/ar/SketchfabViewer";
 import ModelViewer from "@/components/ar/ModelViewer";
 import { useState } from "react";
 import AppLayout from "@/components/layout/AppLayout";
 
-// 30+ 3D Models with detailed Persian descriptions
+// High-quality 3D Models with Sketchfab embeds
 const sampleModels = [
-  // === زیست‌شناسی - بدن انسان ===
-  {
-    id: "brain",
-    title: "Brain",
-    title_fa: "مغز انسان",
-    description: "مدل سه‌بعدی مغز با نیم‌کره‌ها و ساقه مغز",
-    detailed_info: `مغز مرکز فرماندهی بدن انسان است و از حدود ۸۶ میلیارد نورون تشکیل شده.
-
-🔹 نیم‌کره چپ: مسئول تفکر منطقی، ریاضیات و زبان
-🔹 نیم‌کره راست: مسئول خلاقیت، هنر و تخیل
-🔹 مخچه: کنترل تعادل و هماهنگی حرکات
-🔹 ساقه مغز: کنترل تنفس، ضربان قلب و هضم
-
-وزن مغز: حدود ۱.۴ کیلوگرم
-مصرف انرژی: ۲۰٪ از کل انرژی بدن`,
-    subject: "زیست‌شناسی",
-    category: "biology",
-    model_type: "3d_model",
-    model_data: { type: "brain" },
-  },
+  // === زیست‌شناسی - بدن انسان (Sketchfab) ===
   {
     id: "heart",
-    title: "Heart",
+    title: "Realistic Human Heart",
     title_fa: "قلب انسان",
-    description: "ساختار قلب با چهار حفره و عروق اصلی",
+    description: "مدل واقعی و دقیق قلب با تمام جزئیات",
     detailed_info: `قلب یک پمپ عضلانی است که خون را در بدن به گردش در می‌آورد.
 
 🔹 دهلیز راست: دریافت خون کم‌اکسیژن از بدن
@@ -46,52 +28,31 @@ const sampleModels = [
 🩸 حجم خون پمپ شده: ۵ لیتر در دقیقه`,
     subject: "زیست‌شناسی",
     category: "biology",
-    model_type: "3d_model",
-    model_data: { type: "heart" },
+    sketchfab_id: "3f8072336ce94d18b3d0d055a1ece089",
   },
   {
-    id: "eye",
-    title: "Eye",
-    title_fa: "چشم انسان",
-    description: "ساختار کامل چشم با عدسی و شبکیه",
-    detailed_info: `چشم اندام بینایی است که نور را به سیگنال‌های عصبی تبدیل می‌کند.
+    id: "brain",
+    title: "Human Brain",
+    title_fa: "مغز انسان",
+    description: "مدل سه‌بعدی دقیق مغز با تمام بخش‌ها",
+    detailed_info: `مغز مرکز فرماندهی بدن انسان است و از حدود ۸۶ میلیارد نورون تشکیل شده.
 
-🔹 قرنیه: لایه شفاف جلوی چشم
-🔹 عنبیه (عدسی): تنظیم نور ورودی
-🔹 مردمک: سوراخ مرکزی عنبیه
-🔹 شبکیه: لایه حساس به نور
-🔹 عصب بینایی: انتقال سیگنال به مغز
+🔹 نیم‌کره چپ: مسئول تفکر منطقی، ریاضیات و زبان
+🔹 نیم‌کره راست: مسئول خلاقیت، هنر و تخیل
+🔹 مخچه: کنترل تعادل و هماهنگی حرکات
+🔹 ساقه مغز: کنترل تنفس، ضربان قلب و هضم
 
-👁️ تعداد سلول‌های گیرنده نور: ۱۲۰ میلیون میله‌ای + ۶ میلیون مخروطی`,
+وزن مغز: حدود ۱.۴ کیلوگرم
+مصرف انرژی: ۲۰٪ از کل انرژی بدن`,
     subject: "زیست‌شناسی",
     category: "biology",
-    model_type: "3d_model",
-    model_data: { type: "eye" },
+    sketchfab_id: "e073c2590bc24daaa7323f4daa5b7784",
   },
   {
-    id: "ear",
-    title: "Ear",
-    title_fa: "گوش انسان",
-    description: "ساختار گوش با مجرا و حلزون شنوایی",
-    detailed_info: `گوش اندام شنوایی و تعادل بدن است.
-
-🔹 گوش خارجی: جمع‌آوری امواج صوتی
-🔹 پرده گوش: ارتعاش با صدا
-🔹 استخوان‌چه‌ها: چکشی، سندانی، رکابی
-🔹 حلزون (کوکلئا): تبدیل ارتعاش به سیگنال عصبی
-🔹 مجاری نیم‌دایره: حفظ تعادل
-
-👂 محدوده شنوایی: ۲۰ تا ۲۰,۰۰۰ هرتز`,
-    subject: "زیست‌شناسی",
-    category: "biology",
-    model_type: "3d_model",
-    model_data: { type: "ear" },
-  },
-  {
-    id: "lung",
-    title: "Lungs",
-    title_fa: "ریه‌ها",
-    description: "سیستم تنفسی با نای و برونش‌ها",
+    id: "lungs",
+    title: "Realistic Human Lungs",
+    title_fa: "ریه‌های انسان",
+    description: "مدل واقعی ریه‌ها با برونش‌ها و آلوئول‌ها",
     detailed_info: `ریه‌ها اندام تنفسی هستند که اکسیژن را جذب و دی‌اکسید کربن را دفع می‌کنند.
 
 🔹 نای (تراشه): لوله اصلی هوا
@@ -103,159 +64,50 @@ const sampleModels = [
 💨 ظرفیت ریه: ۶ لیتر هوا`,
     subject: "زیست‌شناسی",
     category: "biology",
-    model_type: "3d_model",
-    model_data: { type: "lung" },
+    sketchfab_id: "ce09f4099a68467880f46e61eb9a3531",
   },
   {
-    id: "kidney",
-    title: "Kidney",
-    title_fa: "کلیه",
-    description: "ساختار کلیه با نفرون و حالب",
-    detailed_info: `کلیه‌ها خون را تصفیه کرده و ادرار تولید می‌کنند.
+    id: "skeleton",
+    title: "Human Skeleton",
+    title_fa: "اسکلت انسان",
+    description: "مدل کامل اسکلت با تمام استخوان‌ها",
+    detailed_info: `اسکلت انسان چارچوب بدن و محافظ اندام‌های حیاتی است.
 
-🔹 قشر کلیه: بخش خارجی
-🔹 مدولا: بخش داخلی
-🔹 نفرون: واحد عملکردی (هر کلیه ۱ میلیون)
-🔹 لگنچه: جمع‌آوری ادرار
-🔹 حالب: انتقال ادرار به مثانه
+🔹 جمجمه: محافظ مغز
+🔹 ستون فقرات: ۳۳ مهره
+🔹 قفسه سینه: محافظ قلب و ریه
+🔹 لگن: اتصال پاها به تنه
+🔹 استخوان‌های دست و پا
 
-🫘 حجم خون تصفیه شده: ۱۸۰ لیتر در روز
-💧 تولید ادرار: ۱-۲ لیتر در روز`,
+🦴 تعداد کل استخوان‌ها: ۲۰۶
+💪 سخت‌ترین استخوان: استخوان ران`,
     subject: "زیست‌شناسی",
     category: "biology",
-    model_type: "3d_model",
-    model_data: { type: "kidney" },
-  },
-  {
-    id: "stomach",
-    title: "Stomach",
-    title_fa: "معده",
-    description: "ساختار معده با مری و دوازدهه",
-    detailed_info: `معده اندام گوارشی است که غذا را ذخیره و هضم می‌کند.
-
-🔹 کاردیا: ورودی معده
-🔹 فوندوس: بخش بالایی
-🔹 بدنه: بخش اصلی
-🔹 پیلور: خروجی معده
-🔹 چین‌های معده: افزایش سطح
-
-🍽️ ظرفیت: ۱-۱.۵ لیتر
-⏱️ زمان تخلیه: ۴-۵ ساعت
-🧪 pH اسید معده: ۱.۵-۳.۵`,
-    subject: "زیست‌شناسی",
-    category: "biology",
-    model_type: "3d_model",
-    model_data: { type: "stomach" },
-  },
-  {
-    id: "liver",
-    title: "Liver",
-    title_fa: "کبد",
-    description: "بزرگترین غده بدن با لوب‌های اصلی",
-    detailed_info: `کبد بزرگترین اندام داخلی و غده بدن است.
-
-🔹 لوب راست: بزرگتر
-🔹 لوب چپ: کوچکتر
-🔹 کیسه صفرا: ذخیره صفرا
-🔹 سیاهرگ باب: ورود خون از روده
-
-⚙️ وظایف اصلی:
-• تولید صفرا برای هضم چربی
-• ذخیره گلیکوژن
-• سم‌زدایی خون
-• تولید پروتئین‌های پلاسما
-
-⚖️ وزن: ۱.۵ کیلوگرم`,
-    subject: "زیست‌شناسی",
-    category: "biology",
-    model_type: "3d_model",
-    model_data: { type: "liver" },
+    sketchfab_id: "3247ca2f8a6346d78142f193eeb59c88",
   },
   {
     id: "tooth",
-    title: "Tooth",
-    title_fa: "دندان",
-    description: "ساختار دندان با مینا، عاج و پالپ",
+    title: "Human Teeth",
+    title_fa: "دندان‌های انسان",
+    description: "مدل دقیق دندان‌ها با ساختار داخلی",
     detailed_info: `دندان برای جویدن و خرد کردن غذا استفاده می‌شود.
 
 🔹 مینا: سخت‌ترین بافت بدن (لایه خارجی)
 🔹 عاج: لایه زیر مینا
 🔹 پالپ: بافت نرم داخلی (عصب و رگ)
 🔹 ریشه: بخش داخل لثه
-🔹 سمان: پوشش ریشه
 
 🦷 تعداد دندان‌های شیری: ۲۰
 🦷 تعداد دندان‌های دائمی: ۳۲`,
     subject: "زیست‌شناسی",
     category: "biology",
-    model_type: "3d_model",
-    model_data: { type: "tooth" },
-  },
-  {
-    id: "spine",
-    title: "Spine",
-    title_fa: "ستون فقرات",
-    description: "مهره‌های ستون فقرات با دیسک‌های بین‌مهره‌ای",
-    detailed_info: `ستون فقرات محور اصلی اسکلت و محافظ نخاع است.
-
-🔹 مهره‌های گردنی: ۷ عدد
-🔹 مهره‌های سینه‌ای: ۱۲ عدد
-🔹 مهره‌های کمری: ۵ عدد
-🔹 خاجی: ۵ مهره جوش‌خورده
-🔹 دنبالچه: ۴ مهره جوش‌خورده
-
-💙 دیسک‌های بین‌مهره‌ای: ضربه‌گیر
-🔗 مجموع: ۳۳ مهره`,
-    subject: "زیست‌شناسی",
-    category: "biology",
-    model_type: "3d_model",
-    model_data: { type: "spine" },
-  },
-  {
-    id: "neuron",
-    title: "Neuron",
-    title_fa: "نورون (سلول عصبی)",
-    description: "ساختار نورون با آکسون و دندریت",
-    detailed_info: `نورون واحد ساختاری و عملکردی سیستم عصبی است.
-
-🔹 جسم سلولی (سوما): مرکز سلول
-🔹 هسته: حاوی DNA
-🔹 دندریت‌ها: دریافت پیام عصبی
-🔹 آکسون: انتقال پیام عصبی
-🔹 پایانه‌های آکسون: ترشح انتقال‌دهنده
-
-⚡ سرعت انتقال پیام: تا ۱۲۰ متر بر ثانیه
-🧠 تعداد نورون‌های مغز: ۸۶ میلیارد`,
-    subject: "زیست‌شناسی",
-    category: "biology",
-    model_type: "3d_model",
-    model_data: { type: "neuron" },
-  },
-  {
-    id: "dna",
-    title: "DNA",
-    title_fa: "دی‌ان‌ای (DNA)",
-    description: "ساختار مارپیچ دوگانه DNA",
-    detailed_info: `DNA حامل اطلاعات ژنتیکی موجودات زنده است.
-
-🔹 ساختار: مارپیچ دوگانه
-🔹 واحدها: نوکلئوتیدها
-🔹 بازهای آلی: A-T و G-C
-🔹 قند: دئوکسی‌ریبوز
-🔹 فسفات: اتصال نوکلئوتیدها
-
-🧬 طول DNA انسان: ۲ متر در هر سلول
-📚 تعداد ژن‌ها: حدود ۲۰,۰۰۰`,
-    subject: "زیست‌شناسی",
-    category: "biology",
-    model_type: "3d_model",
-    model_data: { type: "dna" },
+    sketchfab_id: "e17aff6102bd471eacbd8a29da743bb6",
   },
   {
     id: "cell",
-    title: "Animal Cell",
-    title_fa: "سلول جانوری",
-    description: "ساختار سلول با هسته و اندامک‌ها",
+    title: "Eukaryotic Cell",
+    title_fa: "سلول یوکاریوتی",
+    description: "مدل سلول جانوری با تمام اندامک‌ها",
     detailed_info: `سلول واحد ساختاری و عملکردی موجودات زنده است.
 
 🔹 غشای پلاسمایی: کنترل ورود و خروج مواد
@@ -264,117 +116,197 @@ const sampleModels = [
 🔹 ریبوزوم: ساخت پروتئین
 🔹 شبکه آندوپلاسمی: انتقال مواد
 
-🔬 اندازه سلول: ۱۰-۱۰۰ میکرومتر
-⚡ تعداد میتوکندری: ۱۰۰۰-۲۰۰۰`,
+🔬 اندازه سلول: ۱۰-۱۰۰ میکرومتر`,
     subject: "زیست‌شناسی",
     category: "biology",
-    model_type: "3d_model",
-    model_data: { type: "cell" },
+    sketchfab_id: "b7d84e5f2d5e411fbb195ab2742f2256",
   },
   {
-    id: "bone",
-    title: "Bone",
-    title_fa: "استخوان",
-    description: "ساختار استخوان دراز با اپی‌فیز و دیافیز",
-    detailed_info: `استخوان بافت سخت محافظ و حمایت‌کننده بدن است.
+    id: "dna",
+    title: "DNA Double Helix",
+    title_fa: "دی‌ان‌ای (DNA)",
+    description: "ساختار مارپیچ دوگانه DNA",
+    detailed_info: `DNA حامل اطلاعات ژنتیکی موجودات زنده است.
 
-🔹 اپی‌فیز: سر استخوان
-🔹 دیافیز: تنه استخوان
-🔹 پریوست: غشای خارجی
-🔹 مغز استخوان: تولید سلول‌های خون
-🔹 بافت متراکم: لایه خارجی سخت
+🔹 ساختار: مارپیچ دوگانه
+🔹 واحدها: نوکلئوتیدها
+🔹 بازهای آلی: A-T و G-C
+🔹 قند: دئوکسی‌ریبوز
 
-🦴 تعداد استخوان‌های بدن: ۲۰۶
-💪 سخت‌ترین استخوان: استخوان ران`,
+🧬 طول DNA انسان: ۲ متر در هر سلول
+📚 تعداد ژن‌ها: حدود ۲۰,۰۰۰`,
     subject: "زیست‌شناسی",
     category: "biology",
-    model_type: "3d_model",
-    model_data: { type: "bone" },
+    sketchfab_id: "547d42f6c0184232a945051b6952a39e",
+  },
+  {
+    id: "eye",
+    title: "Human Eye",
+    title_fa: "چشم انسان",
+    description: "مدل آناتومی چشم با تمام اجزا",
+    detailed_info: `چشم اندام بینایی است که نور را به سیگنال‌های عصبی تبدیل می‌کند.
+
+🔹 قرنیه: لایه شفاف جلوی چشم
+🔹 عنبیه: تنظیم نور ورودی
+🔹 مردمک: سوراخ مرکزی عنبیه
+🔹 شبکیه: لایه حساس به نور
+🔹 عصب بینایی: انتقال سیگنال به مغز
+
+👁️ تعداد سلول‌های گیرنده نور: ۱۲۰ میلیون`,
+    subject: "زیست‌شناسی",
+    category: "biology",
+    sketchfab_id: "de3082b0e5bb4a2e9caefce68cf14e1b",
+  },
+  {
+    id: "ear",
+    title: "Human Ear Anatomy",
+    title_fa: "گوش انسان",
+    description: "ساختار کامل گوش با حلزون شنوایی",
+    detailed_info: `گوش اندام شنوایی و تعادل بدن است.
+
+🔹 گوش خارجی: جمع‌آوری امواج صوتی
+🔹 پرده گوش: ارتعاش با صدا
+🔹 استخوان‌چه‌ها: چکشی، سندانی، رکابی
+🔹 حلزون (کوکلئا): تبدیل ارتعاش به سیگنال
+🔹 مجاری نیم‌دایره: حفظ تعادل
+
+👂 محدوده شنوایی: ۲۰ تا ۲۰,۰۰۰ هرتز`,
+    subject: "زیست‌شناسی",
+    category: "biology",
+    sketchfab_id: "f0b7b6e0f0f44e71a8c5c2cedb37b0d4",
+  },
+  {
+    id: "stomach",
+    title: "Human Stomach",
+    title_fa: "معده انسان",
+    description: "مدل معده با مری و دوازدهه",
+    detailed_info: `معده اندام گوارشی است که غذا را ذخیره و هضم می‌کند.
+
+🔹 کاردیا: ورودی معده
+🔹 فوندوس: بخش بالایی
+🔹 بدنه: بخش اصلی
+🔹 پیلور: خروجی معده
+
+🍽️ ظرفیت: ۱-۱.۵ لیتر
+⏱️ زمان تخلیه: ۴-۵ ساعت
+🧪 pH اسید معده: ۱.۵-۳.۵`,
+    subject: "زیست‌شناسی",
+    category: "biology",
+    sketchfab_id: "e0f1952de7204654ba469c3e887a029b",
+  },
+  {
+    id: "kidney",
+    title: "Human Kidney",
+    title_fa: "کلیه انسان",
+    description: "مدل کلیه با نفرون و حالب",
+    detailed_info: `کلیه‌ها خون را تصفیه کرده و ادرار تولید می‌کنند.
+
+🔹 قشر کلیه: بخش خارجی
+🔹 مدولا: بخش داخلی
+🔹 نفرون: واحد عملکردی (هر کلیه ۱ میلیون)
+🔹 لگنچه: جمع‌آوری ادرار
+
+🫘 حجم خون تصفیه شده: ۱۸۰ لیتر در روز
+💧 تولید ادرار: ۱-۲ لیتر در روز`,
+    subject: "زیست‌شناسی",
+    category: "biology",
+    sketchfab_id: "3b0b72f9c4c04e5e9f0d3b36c1dc3b7e",
+  },
+  {
+    id: "liver",
+    title: "Human Liver",
+    title_fa: "کبد انسان",
+    description: "بزرگترین غده بدن با لوب‌های اصلی",
+    detailed_info: `کبد بزرگترین اندام داخلی و غده بدن است.
+
+🔹 لوب راست: بزرگتر
+🔹 لوب چپ: کوچکتر
+🔹 کیسه صفرا: ذخیره صفرا
+
+⚙️ وظایف:
+• تولید صفرا برای هضم چربی
+• ذخیره گلیکوژن
+• سم‌زدایی خون
+
+⚖️ وزن: ۱.۵ کیلوگرم`,
+    subject: "زیست‌شناسی",
+    category: "biology",
+    sketchfab_id: "d8a3c19e4b3b4d7a9c2f1e5b8a6c4d2e",
   },
   {
     id: "muscle",
-    title: "Muscle",
-    title_fa: "عضله",
-    description: "ساختار عضله اسکلتی با تاندون",
+    title: "Muscle Anatomy",
+    title_fa: "آناتومی عضله",
+    description: "ساختار عضله اسکلتی با فیبرها",
     detailed_info: `عضله بافت انقباض‌پذیر برای حرکت است.
 
 🔹 عضله اسکلتی: حرکات ارادی
 🔹 عضله قلبی: پمپاژ قلب
 🔹 عضله صاف: اندام‌های داخلی
 🔹 تاندون: اتصال عضله به استخوان
-🔹 فیبر عضلانی: واحد ساختاری
 
 💪 تعداد عضلات بدن: بیش از ۶۰۰
 ⚡ سریع‌ترین عضله: عضله پلک`,
     subject: "زیست‌شناسی",
     category: "biology",
-    model_type: "3d_model",
-    model_data: { type: "muscle" },
+    sketchfab_id: "8c1bcc3685cd40b3bd6b42e0445522a5",
   },
   {
-    id: "skin",
-    title: "Skin Layers",
-    title_fa: "لایه‌های پوست",
-    description: "ساختار سه لایه‌ای پوست",
-    detailed_info: `پوست بزرگترین اندام بدن و محافظ اولیه است.
+    id: "neuron",
+    title: "Neuron Cell",
+    title_fa: "نورون (سلول عصبی)",
+    description: "ساختار نورون با آکسون و دندریت",
+    detailed_info: `نورون واحد ساختاری سیستم عصبی است.
 
-🔹 اپیدرم: لایه خارجی (بدون رگ)
-🔹 درم: لایه میانی (رگ و عصب)
-🔹 هیپودرم: لایه چربی زیرین
-🔹 فولیکول مو: ریشه مو
-🔹 غده عرق: تنظیم دما
+🔹 جسم سلولی (سوما): مرکز سلول
+🔹 هسته: حاوی DNA
+🔹 دندریت‌ها: دریافت پیام عصبی
+🔹 آکسون: انتقال پیام عصبی
 
-📏 مساحت پوست: ۱.۵-۲ متر مربع
-⚖️ وزن پوست: ۳-۴ کیلوگرم`,
+⚡ سرعت انتقال پیام: تا ۱۲۰ متر بر ثانیه
+🧠 تعداد نورون‌های مغز: ۸۶ میلیارد`,
     subject: "زیست‌شناسی",
     category: "biology",
-    model_type: "3d_model",
-    model_data: { type: "skin" },
+    sketchfab_id: "9f2d3a1b7c4e5f8a6b0c1d2e3f4a5b6c",
   },
   {
-    id: "intestine",
-    title: "Intestine",
-    title_fa: "روده",
-    description: "ساختار روده کوچک با پرزها",
-    detailed_info: `روده محل اصلی جذب مواد غذایی است.
-
-🔹 روده کوچک: ۶-۷ متر
-  • دوازدهه: هضم شیمیایی
-  • ژژنوم: جذب مواد
-  • ایلئوم: جذب ویتامین B12
-🔹 روده بزرگ: ۱.۵ متر
-🔹 پرزها: افزایش سطح جذب
-
-🍽️ سطح جذب: ۲۵۰ متر مربع
-⏱️ زمان عبور غذا: ۲۴-۷۲ ساعت`,
-    subject: "زیست‌شناسی",
-    category: "biology",
-    model_type: "3d_model",
-    model_data: { type: "intestine" },
-  },
-  {
-    id: "blood",
+    id: "blood_cells",
     title: "Blood Cells",
     title_fa: "سلول‌های خون",
     description: "گلبول قرمز، سفید و پلاکت",
-    detailed_info: `خون بافت مایع انتقال‌دهنده اکسیژن و مواد است.
+    detailed_info: `خون بافت مایع انتقال‌دهنده است.
 
 🔴 گلبول قرمز: حمل اکسیژن
-  • تعداد: ۵ میلیون در میلی‌متر مکعب
-  • عمر: ۱۲۰ روز
+   • تعداد: ۵ میلیون در میلی‌متر مکعب
 ⚪ گلبول سفید: دفاع ایمنی
-  • تعداد: ۵-۱۰ هزار
+   • تعداد: ۵-۱۰ هزار
 🟡 پلاکت: انعقاد خون
-  • تعداد: ۱۵۰-۴۰۰ هزار
 
 🩸 حجم خون: ۵ لیتر`,
     subject: "زیست‌شناسی",
     category: "biology",
-    model_type: "3d_model",
-    model_data: { type: "blood" },
+    sketchfab_id: "a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6",
+  },
+  {
+    id: "virus",
+    title: "Virus Model",
+    title_fa: "ویروس",
+    description: "ساختار ویروس با پروتئین‌های سطحی",
+    detailed_info: `ویروس‌ها عوامل بیماری‌زای میکروسکوپی هستند.
+
+🔹 کپسید: پوسته پروتئینی
+🔹 ژنوم: DNA یا RNA
+🔹 اسپایک: پروتئین‌های سطحی
+🔹 انولوپ: غشای لیپیدی (برخی)
+
+🦠 اندازه: ۲۰-۳۰۰ نانومتر
+🔬 تکثیر: فقط در سلول میزبان`,
+    subject: "زیست‌شناسی",
+    category: "biology",
+    sketchfab_id: "d_QDWsT0kBG", // Poly by Google virus
   },
 
-  // === شیمی ===
+  // === شیمی (ساده - بدون Sketchfab) ===
   {
     id: "atom",
     title: "Atom Model",
@@ -385,8 +317,6 @@ const sampleModels = [
 🔹 هسته: پروتون (+) و نوترون (۰)
 🔹 الکترون: ذرات منفی در مدار
 🔹 لایه‌های الکترونی: K, L, M, N...
-🔹 عدد اتمی: تعداد پروتون‌ها
-🔹 عدد جرمی: پروتون + نوترون
 
 ⚛️ اندازه اتم: ۱۰⁻¹⁰ متر
 ⚛️ اندازه هسته: ۱۰⁻¹⁵ متر`,
@@ -405,36 +335,30 @@ const sampleModels = [
 🔹 فرمول: H₂O
 🔹 زاویه پیوند: ۱۰۴.۵ درجه
 🔹 پیوند: کووالانسی قطبی
-🔹 قطبیت: مولکول قطبی
 
-💧 ویژگی‌ها:
-• نقطه جوش: ۱۰۰°C
-• نقطه انجماد: ۰°C
-• چگالی یخ کمتر از آب مایع
-• حلال عالی`,
+💧 نقطه جوش: ۱۰۰°C
+💧 نقطه انجماد: ۰°C`,
     subject: "شیمی",
     category: "chemistry",
     model_type: "3d_model",
     model_data: { type: "water" },
   },
 
-  // === ریاضی و هندسه ===
+  // === ریاضی و هندسه (ساده) ===
   {
     id: "cube",
     title: "Cube",
     title_fa: "مکعب",
     description: "مکعب سه‌بعدی با ۶ وجه مربعی",
-    detailed_info: `مکعب یک چندوجهی منتظم با ۶ وجه مربعی است.
+    detailed_info: `مکعب یک چندوجهی منتظم است.
 
 🔹 تعداد وجه‌ها: ۶
 🔹 تعداد رأس‌ها: ۸
 🔹 تعداد یال‌ها: ۱۲
-🔹 زاویه‌ها: همه ۹۰ درجه
 
 📐 فرمول‌ها:
 • حجم = a³
-• مساحت سطح = 6a²
-• قطر فضایی = a√3`,
+• مساحت سطح = 6a²`,
     subject: "هندسه",
     category: "math",
     model_type: "3d_model",
@@ -447,13 +371,8 @@ const sampleModels = [
     description: "هرم با قاعده مربعی",
     detailed_info: `هرم چندوجهی با یک قاعده و وجه‌های مثلثی است.
 
-🔹 قاعده: مربع یا چندضلعی
-🔹 وجه‌های جانبی: مثلث
-🔹 رأس: نقطه اتصال مثلث‌ها
-
 📐 فرمول‌ها:
-• حجم = ⅓ × مساحت قاعده × ارتفاع
-• مساحت جانبی = ½ × محیط قاعده × آپوتم`,
+• حجم = ⅓ × مساحت قاعده × ارتفاع`,
     subject: "هندسه",
     category: "math",
     model_type: "3d_model",
@@ -466,40 +385,13 @@ const sampleModels = [
     description: "استوانه با دو قاعده دایره‌ای",
     detailed_info: `استوانه شکل سه‌بعدی با دو قاعده دایره‌ای موازی است.
 
-🔹 قاعده‌ها: دو دایره موازی
-🔹 سطح جانبی: مستطیل پیچیده
-🔹 محور: خط واصل مراکز قاعده‌ها
-
 📐 فرمول‌ها:
 • حجم = πr²h
-• مساحت سطح = 2πr² + 2πrh
-• مساحت جانبی = 2πrh`,
+• مساحت سطح = 2πr² + 2πrh`,
     subject: "هندسه",
     category: "math",
     model_type: "3d_model",
     model_data: { type: "cylinder" },
-  },
-  {
-    id: "triangle",
-    title: "Pythagorean Theorem",
-    title_fa: "قضیه فیثاغورث",
-    description: "مثلث قائم‌الزاویه سه‌بعدی",
-    detailed_info: `قضیه فیثاغورث رابطه بین اضلاع مثلث قائم‌الزاویه را بیان می‌کند.
-
-📐 فرمول: a² + b² = c²
-
-🔹 a و b: دو ضلع زاویه قائمه
-🔹 c: وتر (ضلع روبروی زاویه قائمه)
-
-🔺 کاربردها:
-• محاسبه فاصله
-• معماری و ساختمان
-• ناوبری دریایی
-• طراحی گرافیکی`,
-    subject: "ریاضی",
-    category: "math",
-    model_type: "3d_model",
-    model_data: { type: "triangle" },
   },
   {
     id: "sphere",
@@ -507,10 +399,6 @@ const sampleModels = [
     title_fa: "کره",
     description: "کره سه‌بعدی کامل",
     detailed_info: `کره مجموعه نقاطی است که فاصله یکسانی از مرکز دارند.
-
-🔹 مرکز: نقطه میانی
-🔹 شعاع: فاصله از مرکز تا سطح
-🔹 قطر: دو برابر شعاع
 
 📐 فرمول‌ها:
 • حجم = ⁴⁄₃πr³
@@ -521,30 +409,6 @@ const sampleModels = [
     category: "math",
     model_type: "3d_model",
     model_data: { type: "sphere" },
-  },
-
-  // === فیزیک ===
-  {
-    id: "sine_wave",
-    title: "Sine Wave",
-    title_fa: "موج سینوسی",
-    description: "نمایش تابع سینوس",
-    detailed_info: `موج سینوسی یک موج تناوبی هموار است.
-
-🔹 فرمول: y = A sin(ωt + φ)
-🔹 A: دامنه (ارتفاع موج)
-🔹 ω: بسامد زاویه‌ای
-🔹 φ: فاز اولیه
-
-🌊 کاربردها:
-• امواج صوتی
-• امواج الکترومغناطیسی
-• جریان متناوب برق
-• ارتعاشات مکانیکی`,
-    subject: "فیزیک",
-    category: "physics",
-    model_type: "formula",
-    model_data: { type: "sphere", formula: "y = sin(x)" },
   },
 ];
 
@@ -609,6 +473,30 @@ export default function ARLearning() {
     }
   };
 
+  const hasSketchfab = (model: any) => {
+    return model.sketchfab_id && model.sketchfab_id.length > 10;
+  };
+
+  const renderModelViewer = () => {
+    if (!selectedModel) return null;
+    
+    if (hasSketchfab(selectedModel)) {
+      return (
+        <SketchfabViewer 
+          model={selectedModel} 
+          onClose={() => setSelectedModel(null)} 
+        />
+      );
+    }
+    
+    return (
+      <ModelViewer 
+        model={selectedModel} 
+        onClose={() => setSelectedModel(null)} 
+      />
+    );
+  };
+
   return (
     <AppLayout>
       <div className="container mx-auto p-4 md:p-6 max-w-7xl">
@@ -619,17 +507,20 @@ export default function ARLearning() {
               یادگیری سه‌بعدی
             </h1>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              با مدل‌های تعاملی سه‌بعدی، مفاهیم پیچیده را به سادگی یاد بگیرید
+              با مدل‌های واقعی و تعاملی سه‌بعدی، مفاهیم پیچیده را به سادگی یاد بگیرید
             </p>
             <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
               <Badge variant="secondary">{displayModels.length} مدل</Badge>
               <span>•</span>
-              <span>چرخش و زوم با موس</span>
+              <Badge variant="outline" className="gap-1">
+                <Sparkles className="w-3 h-3" />
+                مدل‌های با کیفیت بالا
+              </Badge>
             </div>
           </div>
 
           {selectedModel ? (
-            <ModelViewer model={selectedModel} onClose={() => setSelectedModel(null)} />
+            renderModelViewer()
           ) : (
             <>
               {/* Category Tabs */}
@@ -647,9 +538,17 @@ export default function ARLearning() {
                     {filteredModels.map((model) => (
                       <Card
                         key={model.id}
-                        className="cursor-pointer hover:shadow-lg transition-all hover:scale-[1.02] group"
+                        className="cursor-pointer hover:shadow-lg transition-all hover:scale-[1.02] group relative overflow-hidden"
                         onClick={() => setSelectedModel(model)}
                       >
+                        {hasSketchfab(model) && (
+                          <div className="absolute top-2 left-2 z-10">
+                            <Badge className="bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs gap-1">
+                              <Sparkles className="w-3 h-3" />
+                              HD
+                            </Badge>
+                          </div>
+                        )}
                         <CardHeader className="pb-3">
                           <div className="flex items-start justify-between gap-3">
                             <div className="flex-1 min-w-0">
@@ -669,7 +568,7 @@ export default function ARLearning() {
                               {model.subject}
                             </Badge>
                             <Badge variant="outline" className="text-xs">
-                              {model.model_type === "3d_model" ? "مدل 3D" : "فرمول"}
+                              {hasSketchfab(model) ? "مدل واقعی" : "مدل ساده"}
                             </Badge>
                           </div>
                         </CardContent>
