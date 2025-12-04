@@ -4,13 +4,10 @@ import { Card } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/lib/supabase";
-import { Brain, Sparkles, Loader2, Coins, Download, Save, FolderOpen } from "lucide-react";
+import { Brain, Sparkles, Loader2, Download, Save, FolderOpen } from "lucide-react";
 import AppLayout from "@/components/layout/AppLayout";
 import { usePageView } from "@/hooks/usePageView";
 import ResourceSelector from "@/components/ResourceSelector";
-import { COIN_COSTS } from "@/lib/coinCosts";
-import { useCoinError } from "@/hooks/useCoinError";
-import { getUserCoins } from "@/lib/coinHelpers";
 import ReactFlow, {
   Node,
   Edge,

@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/lib/supabase";
 import { 
-  Brain, Loader2, CheckCircle, XCircle, AlertCircle, Coins, 
+  Brain, Loader2, CheckCircle, XCircle, AlertCircle, 
   Clock, ChevronLeft, ChevronRight, BookOpen, Target, Sparkles,
   Trophy, TrendingUp, Zap, Play, Pause, RotateCcw, Eye, Send,
   FileText, CheckCheck, ArrowRight, Star, Award
@@ -17,8 +17,6 @@ import AppLayout from "@/components/layout/AppLayout";
 import { Badge } from "@/components/ui/badge";
 import ResourceSelector from "@/components/ResourceSelector";
 import MathText from "@/components/MathText";
-import { COIN_COSTS } from "@/lib/coinCosts";
-import { useCoinError } from "@/hooks/useCoinError";
 import { motion, AnimatePresence } from "framer-motion";
 import { Progress } from "@/components/ui/progress";
 
@@ -60,7 +58,6 @@ interface Evaluation {
 
 const ExamV2 = () => {
   const { toast } = useToast();
-  const { handleCoinError } = useCoinError();
   usePageView();
   
   // Form state

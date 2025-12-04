@@ -6,12 +6,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   Brain, BookOpen, HelpCircle, FileText, CheckSquare, ClipboardList, 
   BookCheck, NotebookPen, Sparkles, Box, Gamepad2, Flame, Swords, 
-  Heart, Trophy, User, Music, Palette, Coins, Calendar, Target, 
+  Heart, Trophy, User, Music, Palette, Calendar, Target, 
   BarChart3, MessageSquare, Users
 } from "lucide-react";
 import { usePageView } from "@/hooks/usePageView";
 import AppLayout from "@/components/layout/AppLayout";
-import { COIN_COSTS } from "@/lib/coinCosts";
 import { VoiceAssistantWidget } from "@/components/VoiceAssistantWidget";
 import { useToast } from "@/hooks/use-toast";
 
@@ -146,11 +145,6 @@ const Dashboard = () => {
             {isLoggedIn ? (
               <div className="flex items-center gap-3">
                 <div className="bg-card/80 backdrop-blur-sm p-3 rounded-xl border border-border/30 min-w-[80px] text-center">
-                  <Coins className="w-5 h-5 text-yellow-500 mx-auto mb-1" />
-                  <p className="text-lg font-bold text-yellow-500">{profile?.coins || 0}</p>
-                  <p className="text-xs text-muted-foreground">سکه</p>
-                </div>
-                <div className="bg-card/80 backdrop-blur-sm p-3 rounded-xl border border-border/30 min-w-[80px] text-center">
                   <Trophy className="w-5 h-5 text-primary mx-auto mb-1" />
                   <p className="text-lg font-bold text-primary">{stats.totalPoints}</p>
                   <p className="text-xs text-muted-foreground">امتیاز</p>
@@ -223,28 +217,24 @@ const Dashboard = () => {
               <ToolCard
                 icon={HelpCircle}
                 title="پرسش درسی"
-                description={`${COIN_COSTS.QUESTION_ANSWER} سکه`}
                 gradient="gradient-primary"
                 onClick={() => handleToolClick("/questions")}
               />
               <ToolCard
                 icon={FileText}
                 title="خلاصه‌ساز"
-                description={`${COIN_COSTS.SUMMARIZE} سکه`}
                 gradient="gradient-secondary"
                 onClick={() => handleToolClick("/summarize")}
               />
               <ToolCard
                 icon={CheckSquare}
                 title="آزمون‌ساز"
-                description={`${COIN_COSTS.EXAM_GENERATE} سکه`}
                 gradient="gradient-accent"
                 onClick={() => handleToolClick("/exam")}
               />
               <ToolCard
                 icon={Brain}
                 title="مشاور هوشمند"
-                description={`${COIN_COSTS.CONSULTATION} سکه`}
                 gradient="gradient-primary"
                 onClick={() => handleToolClick("/consultation")}
               />

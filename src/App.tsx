@@ -24,11 +24,9 @@ import About from "./pages/About";
 import MindMapAI from "./pages/MindMapAI";
 import Flashcards from "./pages/Flashcards";
 import Resources from "./pages/Resources";
-import CoinShop from "./pages/CoinShop";
 import Install from "./pages/Install";
 import Leaderboard from "./pages/Leaderboard";
 import StudyCalendar from "./pages/StudyCalendar";
-import ShopPage from "./pages/ShopPage";
 
 import Forum from "./pages/Forum";
 import ForumCategory from "./pages/ForumCategory";
@@ -87,7 +85,6 @@ const App = () => (
               <Route path="/mind-map" element={<MindMapAI />} />
               <Route path="/flashcards" element={<Flashcards />} />
               <Route path="/resources" element={<Resources />} />
-              <Route path="/coin-shop" element={<CoinShop />} />
               <Route path="/install" element={<Install />} />
               <Route path="/pet" element={<PetPage />} />
               <Route path="/study-streak" element={<StudyStreak />} />
@@ -101,7 +98,7 @@ const App = () => (
               <Route path="/theme-settings" element={<ThemeSettings />} />
               <Route path="/leaderboard" element={<Leaderboard />} />
               <Route path="/calendar" element={<StudyCalendar />} />
-              <Route path="/shop" element={<ShopPage />} />
+              <Route path="/study-calendar" element={<StudyCalendar />} />
               <Route path="/pomodoro" element={<PomodoroTimer />} />
               <Route path="/forum" element={<Forum />} />
               <Route path="/forum/:categoryId" element={<ForumCategory />} />
@@ -117,6 +114,7 @@ const App = () => (
               <Route path="/ar-learning" element={<ARLearning />} />
               <Route path="/daily-quests" element={<DailyQuests />} />
               <Route path="/avatar-customizer" element={<AvatarCustomizer />} />
+              <Route path="/mindmap-ai" element={<MindMapAI />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
           </Routes>

@@ -1,41 +1,22 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/lib/supabase";
-import { Send, Brain, Loader2, Image, Coins, ShoppingCart } from "lucide-react";
+import { Send, Brain, Loader2, Image } from "lucide-react";
 import ResourceSelector from "@/components/ResourceSelector";
-import { logger } from "@/lib/logger";
 import AppLayout from "@/components/layout/AppLayout";
 import MathText from "@/components/MathText";
-import { Badge } from "@/components/ui/badge";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { COIN_COSTS } from "@/lib/coinCosts";
-import { useCoinError } from "@/hooks/useCoinError";
-import { getUserCoins } from "@/lib/coinHelpers";
-import { useNavigate } from "react-router-dom";
 
 const Questions = () => {
   const { toast } = useToast();
-  const navigate = useNavigate();
-  const { handleCoinError } = useCoinError();
   const [question, setQuestion] = useState("");
   const [messages, setMessages] = useState<Array<{ role: string; content: string }>>([]);
   const [loading, setLoading] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>("");
   const [selectedResource, setSelectedResource] = useState<any>(null);
-  const [userCoins, setUserCoins] = useState<number>(0);
-
-  useEffect(() => {
-    loadUserCoins();
-  }, []);
-
-  const loadUserCoins = async () => {
-    const coins = await getUserCoins();
-    setUserCoins(coins);
-  };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -53,26 +34,6 @@ const Questions = () => {
         title: "خطا",
         description: "لطفا سوال خود را بنویسید، تصویر آپلود کنید یا منبعی انتخاب کنید",
         variant: "destructive",
-      });
-      return;
-    }
-
-    if (userCoins < COIN_COSTS.QUESTION_ANSWER) {
-      toast({
-        title: "سکه کافی نیست",
-        description: `برای این عملیات به ${COIN_COSTS.QUESTION_ANSWER} سکه نیاز دارید.`,
-        variant: "destructive",
-        action: (
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => navigate("/coin-shop")}
-            className="gap-2"
-          >
-            <ShoppingCart className="w-4 h-4" />
-            خرید سکه
-          </Button>
-        ),
       });
       return;
     }
@@ -105,22 +66,16 @@ const Questions = () => {
         const aiMessage = { role: "assistant", content: data.answer };
         setMessages((prev) => [...prev, aiMessage]);
       }
-      // Refresh coins after successful operation
-      await loadUserCoins();
     } catch (error: any) {
-      if (!handleCoinError(error, COIN_COSTS.QUESTION_ANSWER)) {
-        toast({
-          title: "خطا",
-          description: error.message || "مشکلی پیش آمد",
-          variant: "destructive",
-        });
-      }
+      toast({
+        title: "خطا",
+        description: error.message || "مشکلی پیش آمد",
+        variant: "destructive",
+      });
     } finally {
       setLoading(false);
     }
   };
-
-  const hasInsufficientCoins = userCoins < COIN_COSTS.QUESTION_ANSWER;
 
   return (
     <AppLayout>
@@ -133,38 +88,12 @@ const Questions = () => {
                 <Brain className="w-6 h-6 text-white" />
               </div>
               <div className="flex-1">
-                <h1 className="text-2xl font-bold flex items-center gap-2">
-                  پرسش درسی با AI
-                  <span className="text-sm font-normal text-primary flex items-center gap-1">
-                    <Coins className="w-4 h-4" />
-                    {COIN_COSTS.QUESTION_ANSWER} سکه
-                  </span>
-                </h1>
+                <h1 className="text-2xl font-bold">پرسش درسی با AI</h1>
               </div>
-              <Badge variant={hasInsufficientCoins ? "destructive" : "secondary"} className="gap-1">
-                <Coins className="w-4 h-4" />
-                {userCoins} سکه
-              </Badge>
             </div>
             <p className="text-sm text-muted-foreground">
               سوال بپرسید، تصویر آپلود کنید یا از منابع استفاده کنید
             </p>
-            {hasInsufficientCoins && (
-              <Alert variant="destructive" className="mt-3">
-                <AlertDescription className="flex items-center justify-between">
-                  <span>سکه کافی نیست! برای استفاده از این ابزار به {COIN_COSTS.QUESTION_ANSWER} سکه نیاز دارید.</span>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => navigate("/coin-shop")}
-                    className="gap-2 mr-2"
-                  >
-                    <ShoppingCart className="w-4 h-4" />
-                    خرید سکه
-                  </Button>
-                </AlertDescription>
-              </Alert>
-            )}
             {selectedResource && (
               <Card className="mt-3 p-2 bg-primary/5 border-primary/20">
                 <p className="text-xs"><span className="font-bold">منبع:</span> {selectedResource.title}</p>
@@ -253,7 +182,7 @@ const Questions = () => {
             />
             <Button
               onClick={handleAsk}
-              disabled={loading || (!question.trim() && !imageFile && !selectedResource) || hasInsufficientCoins}
+              disabled={loading || (!question.trim() && !imageFile && !selectedResource)}
               className="gradient-primary shadow-glow"
             >
               {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}

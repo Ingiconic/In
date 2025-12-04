@@ -1,6 +1,6 @@
 import { 
   LayoutDashboard,
-  ShoppingBag, 
+  Trophy, 
   HelpCircle, 
   BookText, 
   User,
@@ -15,7 +15,7 @@ const BottomNav = () => {
     { icon: LayoutDashboard, label: "داشبورد", path: "/dashboard" },
     { icon: HelpCircle, label: "پرسش درسی", path: "/questions" },
     { icon: BookText, label: "بلاگ", path: "/blog" },
-    { icon: ShoppingBag, label: "فروشگاه", path: "/coin-shop" },
+    { icon: Trophy, label: "رتبه‌بندی", path: "/leaderboard" },
     { icon: User, label: "پروفایل", path: "/profile" },
   ];
 

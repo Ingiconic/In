@@ -1,25 +1,17 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/lib/supabase";
-import { Sparkles, FileText, Loader2, Image, Coins, ShoppingCart } from "lucide-react";
+import { Sparkles, FileText, Loader2, Image } from "lucide-react";
 import ResourceSelector from "@/components/ResourceSelector";
 import { usePageView } from "@/hooks/usePageView";
-import { logger } from "@/lib/logger";
 import AppLayout from "@/components/layout/AppLayout";
 import MathText from "@/components/MathText";
-import { Badge } from "@/components/ui/badge";
-import { COIN_COSTS } from "@/lib/coinCosts";
-import { useCoinError } from "@/hooks/useCoinError";
-import { getUserCoins } from "@/lib/coinHelpers";
-import { useNavigate } from "react-router-dom";
 
 const Summarize = () => {
   const { toast } = useToast();
-  const navigate = useNavigate();
-  const { handleCoinError } = useCoinError();
   usePageView();
   const [content, setContent] = useState("");
   const [result, setResult] = useState("");
@@ -28,17 +20,7 @@ const Summarize = () => {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>("");
   const [selectedResource, setSelectedResource] = useState<any>(null);
-  const [userCoins, setUserCoins] = useState<number>(0);
   const resultRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    loadUserCoins();
-  }, []);
-
-  const loadUserCoins = async () => {
-    const coins = await getUserCoins();
-    setUserCoins(coins);
-  };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -50,30 +32,9 @@ const Summarize = () => {
     }
   };
 
-
   const handleSummarize = async () => {
     if (!content.trim() && !imageFile && !selectedResource) {
       toast({ title: "خطا", description: "لطفا محتوا را وارد کنید یا منبعی انتخاب کنید", variant: "destructive" });
-      return;
-    }
-
-    if (userCoins < COIN_COSTS.SUMMARIZE) {
-      toast({
-        title: "سکه کافی نیست",
-        description: `برای این عملیات به ${COIN_COSTS.SUMMARIZE} سکه نیاز دارید.`,
-        variant: "destructive",
-        action: (
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => navigate("/coin-shop")}
-            className="gap-2"
-          >
-            <ShoppingCart className="w-4 h-4" />
-            خرید سکه
-          </Button>
-        ),
-      });
       return;
     }
 
@@ -101,17 +62,13 @@ const Summarize = () => {
         setResult(data.result);
       }
       
-      await loadUserCoins(); // Reload coins after successful operation
       toast({ title: "موفق", description: "خلاصه‌سازی انجام شد" });
       
-      // Scroll to result
       setTimeout(() => {
         resultRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }, 100);
     } catch (error: any) {
-      if (!handleCoinError(error, COIN_COSTS.SUMMARIZE)) {
-        toast({ title: "خطا", description: error.message || "خطا در خلاصه‌سازی", variant: "destructive" });
-      }
+      toast({ title: "خطا", description: error.message || "خطا در خلاصه‌سازی", variant: "destructive" });
     } finally {
       setLoading(false);
     }
@@ -127,13 +84,7 @@ const Summarize = () => {
               <div className="gradient-primary p-2.5 rounded-xl shadow-glow">
                 <FileText className="w-6 h-6 text-white" />
               </div>
-              <h1 className="text-2xl font-bold flex items-center gap-2">
-                خلاصه‌سازی با AI
-                <span className="text-sm font-normal text-primary flex items-center gap-1">
-                  <Coins className="w-4 h-4" />
-                  {COIN_COSTS.SUMMARIZE} سکه
-                </span>
-              </h1>
+              <h1 className="text-2xl font-bold">خلاصه‌سازی با AI</h1>
             </div>
             <p className="text-sm text-muted-foreground">
               متن، تصویر یا منبع خود را انتخاب کنید
@@ -200,7 +151,6 @@ const Summarize = () => {
             placeholder="متن خود را اینجا وارد کنید..."
             className="min-h-[200px]"
             dir="rtl"
-            
           />
         </Card>
 
