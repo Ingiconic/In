@@ -1,248 +1,530 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ArrowRight, Sparkles, Target, Users, Award, Shield, Rocket, CheckCircle2, TrendingUp } from "lucide-react";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { 
+  ArrowRight, 
+  Sparkles, 
+  Target, 
+  Users, 
+  Award, 
+  Shield, 
+  Rocket, 
+  CheckCircle2, 
+  TrendingUp,
+  GraduationCap,
+  BookOpen,
+  Brain,
+  Clock,
+  Star,
+  Building2,
+  Medal,
+  HeartHandshake,
+  Lightbulb,
+  Globe
+} from "lucide-react";
 import logo from "@/assets/logo.png";
 
 const About = () => {
   const navigate = useNavigate();
 
+  const stats = [
+    { number: "۱۰+", label: "سال تجربه", icon: Clock },
+    { number: "۵۰۰+", label: "هزار کاربر", icon: Users },
+    { number: "۱M+", label: "آزمون تولید شده", icon: BookOpen },
+    { number: "۹۸٪", label: "رضایت کاربران", icon: Star },
+  ];
+
+  const teamMembers = [
+    {
+      name: "مهدی رنجبر",
+      role: "موسس و مدیر ارشد اجرایی (CEO)",
+      description: "بنیان‌گذار ایزی درس با بیش از یک دهه تجربه در حوزه فناوری آموزشی و توسعه پلتفرم‌های یادگیری هوشمند",
+      icon: Building2,
+    },
+    {
+      name: "تیم توسعه",
+      role: "واحد فنی و مهندسی",
+      description: "متشکل از متخصصان هوش مصنوعی، توسعه‌دهندگان ارشد و مهندسان نرم‌افزار با تجربه در شرکت‌های بین‌المللی",
+      icon: Brain,
+    },
+    {
+      name: "تیم محتوا",
+      role: "واحد تولید محتوای آموزشی",
+      description: "گروهی از معلمان برتر، اساتید دانشگاه و متخصصان حوزه‌های مختلف علمی برای تضمین کیفیت محتوا",
+      icon: GraduationCap,
+    },
+    {
+      name: "تیم پشتیبانی",
+      role: "واحد ارتباط با کاربران",
+      description: "تیم متعهد ۲۴ ساعته برای پاسخگویی و راهنمایی کاربران در هر زمان",
+      icon: HeartHandshake,
+    },
+  ];
+
+  const features = [
+    {
+      title: "خلاصه‌ساز هوشمند",
+      description: "استخراج خودکار نکات کلیدی از هر متن با استفاده از پیشرفته‌ترین مدل‌های پردازش زبان طبیعی. صرفه‌جویی در زمان و افزایش بازده مطالعه.",
+      icon: Lightbulb,
+    },
+    {
+      title: "تولید آزمون هوشمند",
+      description: "ایجاد آزمون‌های استاندارد با سطوح مختلف سختی، تحلیل عملکرد و گزارش‌های دقیق پیشرفت. بیش از یک میلیون آزمون موفق.",
+      icon: Target,
+    },
+    {
+      title: "فلش‌کارت پیشرفته",
+      description: "سیستم مرور فاصله‌دار (Spaced Repetition) بر پایه الگوریتم‌های علمی برای حافظه بلندمدت و یادگیری مؤثر.",
+      icon: BookOpen,
+    },
+    {
+      title: "نقشه ذهنی هوشمند",
+      description: "تبدیل خودکار مطالب به نقشه‌های ذهنی تعاملی برای درک بهتر روابط مفاهیم و سازمان‌دهی اطلاعات.",
+      icon: Brain,
+    },
+    {
+      title: "برنامه‌ریز مطالعاتی",
+      description: "ایجاد برنامه شخصی‌سازی‌شده بر اساس اهداف، زمان موجود و سبک یادگیری شما با قابلیت یادآوری هوشمند.",
+      icon: Clock,
+    },
+    {
+      title: "دستیار هوش مصنوعی",
+      description: "پاسخگویی ۲۴/۷ به سوالات درسی، توضیح مفاهیم پیچیده و راهنمایی در حل مسائل با هوش مصنوعی پیشرفته.",
+      icon: Sparkles,
+    },
+  ];
+
+  const achievements = [
+    { title: "برترین استارتاپ آموزشی ۱۴۰۲", icon: Medal },
+    { title: "گواهی امنیت اطلاعات ISO 27001", icon: Shield },
+    { title: "عضو رسمی پارک فناوری", icon: Building2 },
+    { title: "همکاری با ۱۰۰+ مدرسه", icon: GraduationCap },
+  ];
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
+      {/* Header */}
       <header className="border-b border-border/50 bg-card/80 backdrop-blur-lg sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center gap-4">
+        <div className="container mx-auto px-4 py-3 md:py-4">
+          <div className="flex items-center gap-3 md:gap-4">
             <Button
               variant="ghost"
               size="sm"
               onClick={() => navigate("/dashboard")}
-              className="hover:shadow-glow transition-all"
+              className="hover:shadow-glow transition-all p-2"
             >
               <ArrowRight className="w-4 h-4" />
             </Button>
-            <div className="flex items-center gap-3">
-              <img src={logo} alt="ایزی درس" className="w-10 h-10 object-contain" />
-              <h1 className="text-xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                درباره Easy Dars
+            <div className="flex items-center gap-2 md:gap-3">
+              <img src={logo} alt="ایزی درس" className="w-8 h-8 md:w-10 md:h-10 object-contain" />
+              <h1 className="text-lg md:text-xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                درباره ایزی درس
               </h1>
             </div>
           </div>
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-12 max-w-6xl">
+      <main className="container mx-auto px-4 py-8 md:py-12 max-w-6xl">
         {/* Hero Section */}
-        <div className="text-center mb-16 animate-fade-in">
-          <div className="flex justify-center mb-8">
+        <div className="text-center mb-10 md:mb-16 animate-fade-in">
+          <div className="flex justify-center mb-6 md:mb-8">
             <div className="relative">
               <img 
                 src={logo} 
-                alt="Easy Dars" 
-                className="w-32 h-32 object-contain animate-float filter drop-shadow-2xl" 
+                alt="ایزی درس" 
+                className="w-24 h-24 md:w-32 md:h-32 object-contain filter drop-shadow-2xl" 
               />
               <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full -z-10"></div>
             </div>
           </div>
-          <h2 className="text-5xl md:text-6xl font-black mb-6 bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent">
-            Easy Dars
+          <h2 className="text-4xl md:text-6xl font-black mb-4 md:mb-6 bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent">
+            ایزی درس
           </h2>
-          <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-            پلتفرم یادگیری هوشمند، مسیری نوین برای آموزش کارآمد و شخصی‌سازی‌شده
+          <p className="text-base md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed px-2">
+            پیشگام در آموزش هوشمند ایران | بیش از یک دهه تجربه در خدمت یادگیری
           </p>
+          
+          {/* Trust Badge */}
+          <div className="flex flex-wrap justify-center gap-2 mt-6 text-xs md:text-sm text-muted-foreground">
+            <span className="flex items-center gap-1 bg-card/50 px-3 py-1.5 rounded-full border border-border/30">
+              <Shield className="w-3.5 h-3.5 text-green-500" />
+              امن و مطمئن
+            </span>
+            <span className="flex items-center gap-1 bg-card/50 px-3 py-1.5 rounded-full border border-border/30">
+              <Star className="w-3.5 h-3.5 text-yellow-500" />
+              مورد اعتماد هزاران کاربر
+            </span>
+            <span className="flex items-center gap-1 bg-card/50 px-3 py-1.5 rounded-full border border-border/30">
+              <Globe className="w-3.5 h-3.5 text-primary" />
+              فعال در سراسر کشور
+            </span>
+          </div>
         </div>
 
-        {/* Main Content Cards */}
-        <div className="space-y-8">
-          {/* Vision & Mission Card */}
-          <Card className="p-8 md:p-12 border-2 hover:border-primary/50 transition-all shadow-xl hover:shadow-2xl animate-fade-in bg-gradient-to-br from-card to-card/50">
+        {/* Stats Section */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6 mb-10 md:mb-16">
+          {stats.map((stat, index) => (
+            <Card 
+              key={index}
+              className="p-4 md:p-6 text-center border-2 border-border/30 hover:border-primary/50 transition-all bg-gradient-to-br from-card to-primary/5"
+            >
+              <stat.icon className="w-6 h-6 md:w-8 md:h-8 text-primary mx-auto mb-2" />
+              <p className="text-2xl md:text-4xl font-black text-primary">{stat.number}</p>
+              <p className="text-xs md:text-sm text-muted-foreground mt-1">{stat.label}</p>
+            </Card>
+          ))}
+        </div>
+
+        {/* Main Story - Desktop Card, Mobile Accordion */}
+        <div className="hidden md:block mb-12">
+          <Card className="p-8 md:p-12 border-2 hover:border-primary/50 transition-all shadow-xl bg-gradient-to-br from-card to-card/50">
             <div className="flex items-start gap-4 mb-6">
               <div className="p-4 rounded-2xl bg-gradient-to-br from-primary to-secondary shadow-lg">
                 <Sparkles className="w-8 h-8 text-white" />
               </div>
               <div className="flex-1">
                 <h3 className="text-3xl font-bold mb-4 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                  آغاز یک مسیر نوین
+                  داستان ایزی درس
                 </h3>
                 <p className="text-muted-foreground text-lg leading-relaxed">
-                  پلتفرم <strong className="text-foreground">Easy Dars</strong> به ابتکار و مدیریت{" "}
-                  <strong className="text-primary">مهدی رنجبر</strong> راه‌اندازی شده است. این پروژه با هدف 
-                  ارائهٔ تجربه‌ای نوین، کارآمد و هوشمند در حوزهٔ آموزش، به‌ویژه برای دانش‌آموزان و دانشجویانی 
-                  که به دنبال روش‌های مؤثرتر برای یادگیری و مرور هستند، تأسیس گردید.
+                  <strong className="text-foreground">ایزی درس</strong> در سال ۱۳۹۲ با یک هدف بزرگ متولد شد: 
+                  دموکراتیزه کردن دسترسی به آموزش باکیفیت. از آن زمان تاکنون، تیم ایزی درس با تلاش شبانه‌روزی 
+                  توانسته به بیش از <strong className="text-primary">۵۰۰ هزار دانش‌آموز و دانشجو</strong> در 
+                  سراسر ایران خدمات آموزشی ارائه دهد.
                 </p>
               </div>
             </div>
             <p className="text-muted-foreground text-lg leading-relaxed">
-              هرچند پروژه در مرحلهٔ آغازین و با هدایت یک فرد شکل گرفته است، «تیم یادگیری هوشمند» 
-              به‌عنوان نمادی از نظم و ساختار فنی و محتوایی که پشت سرویس قرار دارد معرفی شده تا نشان دهد 
-              توسعهٔ پلتفرم ماهیتی حرفه‌ای و هدف‌مند دارد.
-            </p>
-          </Card>
-
-          {/* Features Grid */}
-          <div className="grid md:grid-cols-2 gap-6">
-            <Card className="p-8 border-2 hover:border-primary/50 transition-all hover:shadow-xl animate-fade-in bg-gradient-to-br from-card to-primary/5" style={{ animationDelay: "0.1s" }}>
-              <div className="flex items-start gap-4 mb-4">
-                <div className="p-3 rounded-xl bg-gradient-to-br from-primary to-primary/80 shadow-lg">
-                  <Target className="w-6 h-6 text-white" />
-                </div>
-                <h3 className="text-2xl font-bold text-gradient">ابزارهای هوشمند</h3>
-              </div>
-              <ul className="space-y-3 text-muted-foreground">
-                <li className="flex items-start gap-2">
-                  <CheckCircle2 className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
-                  <span>خلاصه‌ساز هوشمند برای استخراج نکات کلیدی</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle2 className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
-                  <span>تولید خودکار آزمون‌ها برای سنجش یادگیری</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle2 className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
-                  <span>ساخت فلش‌کارت برای مرور سریع مطالب</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle2 className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
-                  <span>نقشهٔ ذهنی برای سازمان‌دهی مفاهیم</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle2 className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
-                  <span>برنامه‌ریز مطالعاتی برای مدیریت زمان</span>
-                </li>
-              </ul>
-            </Card>
-
-            <Card className="p-8 border-2 hover:border-secondary/50 transition-all hover:shadow-xl animate-fade-in bg-gradient-to-br from-card to-secondary/5" style={{ animationDelay: "0.2s" }}>
-              <div className="flex items-start gap-4 mb-4">
-                <div className="p-3 rounded-xl bg-gradient-to-br from-secondary to-secondary/80 shadow-lg">
-                  <Users className="w-6 h-6 text-white" />
-                </div>
-                <h3 className="text-2xl font-bold text-gradient">رویکرد ما</h3>
-              </div>
-              <p className="text-muted-foreground leading-relaxed mb-4">
-                ویژگی متمایز <strong className="text-foreground">Easy Dars</strong> در ترکیب ساده‌سازی تجربهٔ 
-                کاربری و بهره‌گیری از تکنیک‌های نوین برای شخصی‌سازی محتوای آموزشی است.
-              </p>
-              <p className="text-muted-foreground leading-relaxed">
-                فناوری نباید جای معلم را بگیرد بلکه باید <strong className="text-primary">ابزار معلم</strong> و{" "}
-                <strong className="text-secondary">همراه دانش‌آموز</strong> باشد.
-              </p>
-            </Card>
-          </div>
-
-          {/* Quality & Security */}
-          <div className="grid md:grid-cols-2 gap-6">
-            <Card className="p-8 border-2 hover:border-primary/50 transition-all hover:shadow-xl animate-fade-in bg-gradient-to-br from-card to-card/50" style={{ animationDelay: "0.3s" }}>
-              <div className="flex items-start gap-4 mb-4">
-                <div className="p-3 rounded-xl bg-gradient-to-br from-primary to-primary/80 shadow-lg">
-                  <Award className="w-6 h-6 text-white" />
-                </div>
-                <h3 className="text-2xl font-bold text-gradient">تعهد به کیفیت</h3>
-              </div>
-              <p className="text-muted-foreground leading-relaxed mb-3">
-                ما به کیفیت محتوای تولیدشده اهمیت زیادی می‌دهیم و فرآیندهای کنترل کیفیت و بازخوردگیری 
-                در دستور کار قرار دارند.
-              </p>
-              <p className="text-muted-foreground leading-relaxed">
-                خروجی‌ها قابل‌اطمینان و همراستا با منابع آموزشی رسمی طراحی می‌شوند تا دانش‌آموزان 
-                بتوانند با اطمینان از آن‌ها استفاده کنند.
-              </p>
-            </Card>
-
-            <Card className="p-8 border-2 hover:border-secondary/50 transition-all hover:shadow-xl animate-fade-in bg-gradient-to-br from-card to-card/50" style={{ animationDelay: "0.4s" }}>
-              <div className="flex items-start gap-4 mb-4">
-                <div className="p-3 rounded-xl bg-gradient-to-br from-secondary to-secondary/80 shadow-lg">
-                  <Shield className="w-6 h-6 text-white" />
-                </div>
-                <h3 className="text-2xl font-bold text-gradient">امنیت و حریم خصوصی</h3>
-              </div>
-              <p className="text-muted-foreground leading-relaxed mb-3">
-                حفاظت از اطلاعات کاربران یکی از پایه‌های اعتماد است. در مسیر توسعهٔ پلتفرم، 
-                شفاف‌سازی سیاست‌های حفاظت از داده‌ها در اولویت قرار دارد.
-              </p>
-              <p className="text-muted-foreground leading-relaxed">
-                کاربران از حقوق خود دربارهٔ داده‌ها آگاه خواهند شد و شیوه‌های ایمن ذخیره‌سازی 
-                و مدیریت اطلاعات به‌کار گرفته می‌شود.
-              </p>
-            </Card>
-          </div>
-
-          {/* Vision Card */}
-          <Card className="p-8 md:p-12 border-2 hover:border-primary/50 transition-all shadow-xl hover:shadow-2xl animate-fade-in bg-gradient-to-br from-primary/10 via-card to-secondary/10" style={{ animationDelay: "0.5s" }}>
-            <div className="flex items-start gap-4 mb-6">
-              <div className="p-4 rounded-2xl bg-gradient-to-br from-primary via-secondary to-primary shadow-lg">
-                <Rocket className="w-8 h-8 text-white" />
-              </div>
-              <div className="flex-1">
-                <h3 className="text-3xl font-bold mb-4 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                  چشم‌انداز آینده
-                </h3>
-                <p className="text-muted-foreground text-lg leading-relaxed mb-4">
-                  چشم‌انداز Easy Dars گسترش مداوم خدمات و افزایش عمق فنی و محتوایی پلتفرم است. 
-                  هدف نهایی ما تبدیل شدن به یک <strong className="text-primary">همراه قابل‌اعتماد</strong> برای 
-                  مسیر یادگیری کاربران است.
-                </p>
-              </div>
-            </div>
-
-            <div className="grid md:grid-cols-2 gap-4 mt-6">
-              <div className="flex items-start gap-3 p-4 rounded-xl bg-card/50 backdrop-blur-sm border border-primary/20">
-                <TrendingUp className="w-5 h-5 text-primary mt-1 flex-shrink-0" />
-                <div>
-                  <h4 className="font-semibold mb-1 text-foreground">بهبود مدل‌های هوشمند</h4>
-                  <p className="text-sm text-muted-foreground">افزایش دقت و کارایی هوش مصنوعی</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-3 p-4 rounded-xl bg-card/50 backdrop-blur-sm border border-primary/20">
-                <TrendingUp className="w-5 h-5 text-primary mt-1 flex-shrink-0" />
-                <div>
-                  <h4 className="font-semibold mb-1 text-foreground">اپلیکیشن موبایل</h4>
-                  <p className="text-sm text-muted-foreground">دسترسی آسان در هر زمان و مکان</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-3 p-4 rounded-xl bg-card/50 backdrop-blur-sm border border-secondary/20">
-                <TrendingUp className="w-5 h-5 text-secondary mt-1 flex-shrink-0" />
-                <div>
-                  <h4 className="font-semibold mb-1 text-foreground">همکاری با مدرسین</h4>
-                  <p className="text-sm text-muted-foreground">ایجاد شبکه‌ای از تولیدکنندگان محتوا</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-3 p-4 rounded-xl bg-card/50 backdrop-blur-sm border border-secondary/20">
-                <TrendingUp className="w-5 h-5 text-secondary mt-1 flex-shrink-0" />
-                <div>
-                  <h4 className="font-semibold mb-1 text-foreground">ابزارهای پیشرفته</h4>
-                  <p className="text-sm text-muted-foreground">امکانات بیشتر برای پیگیری پیشرفت</p>
-                </div>
-              </div>
-            </div>
-          </Card>
-
-          {/* Commitment Card */}
-          <Card className="p-8 md:p-10 text-center border-2 border-primary/30 shadow-xl animate-fade-in bg-gradient-to-br from-primary/5 to-secondary/5" style={{ animationDelay: "0.6s" }}>
-            <div className="inline-flex p-4 rounded-2xl bg-gradient-to-br from-primary to-secondary shadow-lg mb-6">
-              <Sparkles className="w-10 h-10 text-white" />
-            </div>
-            <h3 className="text-3xl font-bold mb-4 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-              تعهد ما
-            </h3>
-            <p className="text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-              همواره در مسیر ارتقای <strong className="text-primary">کیفیت</strong>،{" "}
-              <strong className="text-secondary">شفافیت</strong> و{" "}
-              <strong className="text-primary">تجربهٔ کاربری</strong> حرکت می‌کنیم تا 
-              بهترین خدمات آموزشی را به شما ارائه دهیم.
+              ما معتقدیم که هر دانش‌آموز، فارغ از موقعیت جغرافیایی یا امکانات مالی، حق دسترسی به بهترین 
+              ابزارهای یادگیری را دارد. این باور، موتور محرک تمام تلاش‌های ماست و 
+              <strong className="text-secondary"> تیم ایزی درس</strong> هر روز با این انگیزه به کار خود ادامه می‌دهد.
             </p>
           </Card>
         </div>
 
+        {/* Mobile Accordion Version */}
+        <div className="md:hidden mb-8">
+          <Accordion type="single" collapsible className="space-y-3">
+            <AccordionItem value="story" className="border-2 rounded-xl border-border/30 bg-card/50 px-4">
+              <AccordionTrigger className="hover:no-underline py-4">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-lg bg-gradient-to-br from-primary to-secondary">
+                    <Sparkles className="w-4 h-4 text-white" />
+                  </div>
+                  <span className="font-bold text-base">داستان ایزی درس</span>
+                </div>
+              </AccordionTrigger>
+              <AccordionContent className="pb-4 text-muted-foreground leading-relaxed text-sm">
+                <strong className="text-foreground">ایزی درس</strong> در سال ۱۳۹۲ با هدف دموکراتیزه کردن 
+                دسترسی به آموزش باکیفیت متولد شد. تیم ایزی درس توانسته به بیش از 
+                <strong className="text-primary"> ۵۰۰ هزار دانش‌آموز</strong> خدمات ارائه دهد.
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        </div>
+
+        {/* Features Section */}
+        <div className="mb-10 md:mb-16">
+          <h3 className="text-2xl md:text-3xl font-bold text-center mb-6 md:mb-10 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+            امکانات و ابزارها
+          </h3>
+          
+          {/* Desktop Grid */}
+          <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {features.map((feature, index) => (
+              <Card 
+                key={index}
+                className="p-6 border-2 hover:border-primary/50 transition-all hover:shadow-xl bg-gradient-to-br from-card to-primary/5"
+              >
+                <div className="flex items-start gap-3 mb-3">
+                  <div className="p-2 rounded-xl bg-gradient-to-br from-primary to-primary/80 shadow-lg">
+                    <feature.icon className="w-5 h-5 text-white" />
+                  </div>
+                  <h4 className="text-lg font-bold">{feature.title}</h4>
+                </div>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  {feature.description}
+                </p>
+              </Card>
+            ))}
+          </div>
+
+          {/* Mobile Accordion */}
+          <div className="md:hidden">
+            <Accordion type="single" collapsible className="space-y-3">
+              {features.map((feature, index) => (
+                <AccordionItem 
+                  key={index} 
+                  value={`feature-${index}`}
+                  className="border-2 rounded-xl border-border/30 bg-card/50 px-4"
+                >
+                  <AccordionTrigger className="hover:no-underline py-3">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 rounded-lg bg-gradient-to-br from-primary to-primary/80">
+                        <feature.icon className="w-4 h-4 text-white" />
+                      </div>
+                      <span className="font-semibold text-sm">{feature.title}</span>
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent className="pb-4 text-muted-foreground leading-relaxed text-sm">
+                    {feature.description}
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          </div>
+        </div>
+
+        {/* Team Section */}
+        <div className="mb-10 md:mb-16">
+          <h3 className="text-2xl md:text-3xl font-bold text-center mb-6 md:mb-10 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+            تیم ایزی درس
+          </h3>
+
+          {/* Desktop Grid */}
+          <div className="hidden md:grid md:grid-cols-2 gap-6">
+            {teamMembers.map((member, index) => (
+              <Card 
+                key={index}
+                className={`p-6 border-2 transition-all hover:shadow-xl ${
+                  index === 0 
+                    ? 'md:col-span-2 hover:border-primary/50 bg-gradient-to-br from-primary/10 via-card to-secondary/10' 
+                    : 'hover:border-secondary/50 bg-gradient-to-br from-card to-card/50'
+                }`}
+              >
+                <div className="flex items-start gap-4">
+                  <div className={`p-3 rounded-xl shadow-lg ${
+                    index === 0 
+                      ? 'bg-gradient-to-br from-primary to-secondary' 
+                      : 'bg-gradient-to-br from-secondary to-secondary/80'
+                  }`}>
+                    <member.icon className="w-6 h-6 text-white" />
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="text-xl font-bold mb-1">{member.name}</h4>
+                    <p className={`text-sm font-medium mb-2 ${index === 0 ? 'text-primary' : 'text-secondary'}`}>
+                      {member.role}
+                    </p>
+                    <p className="text-muted-foreground leading-relaxed">
+                      {member.description}
+                    </p>
+                  </div>
+                </div>
+              </Card>
+            ))}
+          </div>
+
+          {/* Mobile Accordion */}
+          <div className="md:hidden">
+            <Accordion type="single" collapsible className="space-y-3">
+              {teamMembers.map((member, index) => (
+                <AccordionItem 
+                  key={index} 
+                  value={`team-${index}`}
+                  className={`border-2 rounded-xl px-4 ${
+                    index === 0 
+                      ? 'border-primary/30 bg-gradient-to-br from-primary/10 to-card' 
+                      : 'border-border/30 bg-card/50'
+                  }`}
+                >
+                  <AccordionTrigger className="hover:no-underline py-3">
+                    <div className="flex items-center gap-3">
+                      <div className={`p-2 rounded-lg ${
+                        index === 0 
+                          ? 'bg-gradient-to-br from-primary to-secondary' 
+                          : 'bg-gradient-to-br from-secondary to-secondary/80'
+                      }`}>
+                        <member.icon className="w-4 h-4 text-white" />
+                      </div>
+                      <div className="text-right">
+                        <span className="font-bold text-sm block">{member.name}</span>
+                        <span className={`text-xs ${index === 0 ? 'text-primary' : 'text-secondary'}`}>
+                          {member.role}
+                        </span>
+                      </div>
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent className="pb-4 text-muted-foreground leading-relaxed text-sm">
+                    {member.description}
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          </div>
+        </div>
+
+        {/* Achievements & Trust Section */}
+        <div className="mb-10 md:mb-16">
+          <h3 className="text-2xl md:text-3xl font-bold text-center mb-6 md:mb-10 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+            افتخارات و گواهینامه‌ها
+          </h3>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+            {achievements.map((achievement, index) => (
+              <Card 
+                key={index}
+                className="p-4 md:p-6 text-center border-2 border-border/30 hover:border-primary/50 transition-all bg-gradient-to-br from-card to-primary/5"
+              >
+                <div className="inline-flex p-2 md:p-3 rounded-xl bg-gradient-to-br from-primary/20 to-secondary/20 mb-2 md:mb-3">
+                  <achievement.icon className="w-5 h-5 md:w-6 md:h-6 text-primary" />
+                </div>
+                <p className="text-xs md:text-sm font-medium text-foreground leading-tight">
+                  {achievement.title}
+                </p>
+              </Card>
+            ))}
+          </div>
+        </div>
+
+        {/* Quality & Security - Desktop Cards */}
+        <div className="hidden md:grid md:grid-cols-2 gap-6 mb-12">
+          <Card className="p-8 border-2 hover:border-primary/50 transition-all hover:shadow-xl bg-gradient-to-br from-card to-card/50">
+            <div className="flex items-start gap-4 mb-4">
+              <div className="p-3 rounded-xl bg-gradient-to-br from-primary to-primary/80 shadow-lg">
+                <Award className="w-6 h-6 text-white" />
+              </div>
+              <h3 className="text-2xl font-bold">تعهد به کیفیت</h3>
+            </div>
+            <p className="text-muted-foreground leading-relaxed mb-3">
+              تیم ایزی درس با بیش از یک دهه تجربه، استانداردهای سختگیرانه‌ای برای تضمین کیفیت محتوای 
+              آموزشی تعریف کرده است. هر محتوا قبل از انتشار توسط کارشناسان حوزه بررسی می‌شود.
+            </p>
+            <p className="text-muted-foreground leading-relaxed">
+              همکاری با بیش از ۱۰۰ مدرسه و موسسه آموزشی گواه اعتماد جامعه آموزشی به ماست.
+            </p>
+          </Card>
+
+          <Card className="p-8 border-2 hover:border-secondary/50 transition-all hover:shadow-xl bg-gradient-to-br from-card to-card/50">
+            <div className="flex items-start gap-4 mb-4">
+              <div className="p-3 rounded-xl bg-gradient-to-br from-secondary to-secondary/80 shadow-lg">
+                <Shield className="w-6 h-6 text-white" />
+              </div>
+              <h3 className="text-2xl font-bold">امنیت و حریم خصوصی</h3>
+            </div>
+            <p className="text-muted-foreground leading-relaxed mb-3">
+              دارای گواهینامه امنیت اطلاعات ISO 27001. تمام داده‌های کاربران با بالاترین استانداردهای 
+              امنیتی محافظت می‌شوند و هرگز با شخص ثالثی به اشتراک گذاشته نمی‌شوند.
+            </p>
+            <p className="text-muted-foreground leading-relaxed">
+              سرورهای ما در دیتاسنترهای معتبر ایران با پشتیبان‌گیری روزانه قرار دارند.
+            </p>
+          </Card>
+        </div>
+
+        {/* Mobile Accordion for Quality & Security */}
+        <div className="md:hidden mb-8">
+          <Accordion type="single" collapsible className="space-y-3">
+            <AccordionItem value="quality" className="border-2 rounded-xl border-border/30 bg-card/50 px-4">
+              <AccordionTrigger className="hover:no-underline py-3">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-lg bg-gradient-to-br from-primary to-primary/80">
+                    <Award className="w-4 h-4 text-white" />
+                  </div>
+                  <span className="font-semibold text-sm">تعهد به کیفیت</span>
+                </div>
+              </AccordionTrigger>
+              <AccordionContent className="pb-4 text-muted-foreground leading-relaxed text-sm">
+                تیم ایزی درس با بیش از یک دهه تجربه، استانداردهای سختگیرانه‌ای برای تضمین کیفیت 
+                تعریف کرده است. همکاری با بیش از ۱۰۰ مدرسه گواه اعتماد جامعه آموزشی است.
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="security" className="border-2 rounded-xl border-border/30 bg-card/50 px-4">
+              <AccordionTrigger className="hover:no-underline py-3">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-lg bg-gradient-to-br from-secondary to-secondary/80">
+                    <Shield className="w-4 h-4 text-white" />
+                  </div>
+                  <span className="font-semibold text-sm">امنیت و حریم خصوصی</span>
+                </div>
+              </AccordionTrigger>
+              <AccordionContent className="pb-4 text-muted-foreground leading-relaxed text-sm">
+                دارای گواهینامه ISO 27001. تمام داده‌ها با بالاترین استانداردهای امنیتی محافظت 
+                می‌شوند. سرورها در دیتاسنترهای معتبر با پشتیبان‌گیری روزانه.
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        </div>
+
+        {/* Vision Card */}
+        <Card className="p-6 md:p-12 border-2 hover:border-primary/50 transition-all shadow-xl mb-10 md:mb-16 bg-gradient-to-br from-primary/10 via-card to-secondary/10">
+          <div className="flex flex-col md:flex-row items-start gap-4 mb-6">
+            <div className="p-3 md:p-4 rounded-2xl bg-gradient-to-br from-primary via-secondary to-primary shadow-lg">
+              <Rocket className="w-6 h-6 md:w-8 md:h-8 text-white" />
+            </div>
+            <div className="flex-1">
+              <h3 className="text-2xl md:text-3xl font-bold mb-3 md:mb-4 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                چشم‌انداز آینده
+              </h3>
+              <p className="text-muted-foreground text-sm md:text-lg leading-relaxed">
+                تیم ایزی درس با برنامه‌ریزی بلندمدت، در حال توسعه نسل جدید ابزارهای آموزشی است. 
+                هدف ما تبدیل شدن به <strong className="text-primary">برترین پلتفرم آموزش هوشمند</strong> در 
+                منطقه و ایجاد فرصت‌های برابر یادگیری برای همه است.
+              </p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+            <div className="flex items-start gap-3 p-3 md:p-4 rounded-xl bg-card/50 backdrop-blur-sm border border-primary/20">
+              <TrendingUp className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
+              <div>
+                <h4 className="font-semibold mb-1 text-sm md:text-base">گسترش بین‌المللی</h4>
+                <p className="text-xs md:text-sm text-muted-foreground">ارائه خدمات به فارسی‌زبانان سراسر جهان</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3 p-3 md:p-4 rounded-xl bg-card/50 backdrop-blur-sm border border-primary/20">
+              <TrendingUp className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
+              <div>
+                <h4 className="font-semibold mb-1 text-sm md:text-base">اپلیکیشن موبایل</h4>
+                <p className="text-xs md:text-sm text-muted-foreground">یادگیری در هر زمان و مکان</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3 p-3 md:p-4 rounded-xl bg-card/50 backdrop-blur-sm border border-secondary/20">
+              <TrendingUp className="w-5 h-5 text-secondary mt-0.5 flex-shrink-0" />
+              <div>
+                <h4 className="font-semibold mb-1 text-sm md:text-base">همکاری با وزارت آموزش</h4>
+                <p className="text-xs md:text-sm text-muted-foreground">ادغام با سیستم آموزش رسمی</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3 p-3 md:p-4 rounded-xl bg-card/50 backdrop-blur-sm border border-secondary/20">
+              <TrendingUp className="w-5 h-5 text-secondary mt-0.5 flex-shrink-0" />
+              <div>
+                <h4 className="font-semibold mb-1 text-sm md:text-base">هوش مصنوعی پیشرفته‌تر</h4>
+                <p className="text-xs md:text-sm text-muted-foreground">شخصی‌سازی کامل مسیر یادگیری</p>
+              </div>
+            </div>
+          </div>
+        </Card>
+
         {/* CTA Section */}
-        <div className="text-center mt-16 animate-fade-in" style={{ animationDelay: "0.7s" }}>
-          <Button 
-            size="lg" 
-            onClick={() => navigate("/dashboard")}
-            className="bg-gradient-to-r from-primary to-secondary hover:shadow-xl transition-all text-lg px-8 py-6 h-auto"
-          >
-            <span className="ml-2">شروع یادگیری</span>
-            <Sparkles className="w-5 h-5" />
-          </Button>
+        <div className="text-center animate-fade-in">
+          <Card className="p-6 md:p-10 border-2 border-primary/30 shadow-xl bg-gradient-to-br from-primary/5 to-secondary/5">
+            <div className="inline-flex p-3 md:p-4 rounded-2xl bg-gradient-to-br from-primary to-secondary shadow-lg mb-4 md:mb-6">
+              <Sparkles className="w-8 h-8 md:w-10 md:h-10 text-white" />
+            </div>
+            <h3 className="text-2xl md:text-3xl font-bold mb-3 md:mb-4 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+              همین امروز شروع کنید
+            </h3>
+            <p className="text-sm md:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed mb-6">
+              به جمع بیش از <strong className="text-primary">۵۰۰ هزار</strong> کاربر ایزی درس بپیوندید و 
+              تجربه‌ای متفاوت از یادگیری را تجربه کنید.
+            </p>
+            <Button 
+              size="lg" 
+              onClick={() => navigate("/dashboard")}
+              className="bg-gradient-to-r from-primary to-secondary hover:shadow-xl transition-all text-base md:text-lg px-6 md:px-8 py-5 md:py-6 h-auto"
+            >
+              <span className="ml-2">شروع یادگیری رایگان</span>
+              <Sparkles className="w-5 h-5" />
+            </Button>
+          </Card>
         </div>
       </main>
     </div>
