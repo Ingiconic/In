@@ -32,7 +32,6 @@ interface Flashcard {
 
 const Flashcards = () => {
   const { toast } = useToast();
-  const { handleCoinError } = useCoinError();
   usePageView();
   const [decks, setDecks] = useState<Deck[]>([]);
   const [selectedDeck, setSelectedDeck] = useState<Deck | null>(null);
@@ -47,7 +46,6 @@ const Flashcards = () => {
   const [generatingCards, setGeneratingCards] = useState(false);
   const [aiTopic, setAiTopic] = useState("");
   const [aiCount, setAiCount] = useState("10");
-  const [userCoins, setUserCoins] = useState<number>(0);
 
   const [newDeck, setNewDeck] = useState({ title: "", description: "" });
   const [newCard, setNewCard] = useState({
@@ -139,17 +137,6 @@ const Flashcards = () => {
       return;
     }
 
-    // Check if user has enough coins
-    const coins = await getUserCoins();
-    if (coins < COIN_COSTS.FLASHCARD_GENERATE) {
-      toast({
-        title: "سکه کافی نیست",
-        description: `برای این عملیات به ${COIN_COSTS.FLASHCARD_GENERATE} سکه نیاز دارید.`,
-        variant: "destructive",
-      });
-      return;
-    }
-
     setGeneratingCards(true);
     try {
       const { data, error } = await supabase.functions.invoke('ai-flashcard-generator', {
@@ -189,15 +176,11 @@ const Flashcards = () => {
       }
     } catch (error: any) {
       console.error('Error generating flashcards:', error);
-      
-      // Handle insufficient coins error with navigation to shop
-      if (!handleCoinError(error, COIN_COSTS.FLASHCARD_GENERATE)) {
-        toast({ 
-          title: "خطا", 
-          description: error.message || "خطا در تولید فلش کارت", 
-          variant: "destructive" 
-        });
-      }
+      toast({ 
+        title: "خطا", 
+        description: error.message || "خطا در تولید فلش کارت", 
+        variant: "destructive" 
+      });
     } finally {
       setGeneratingCards(false);
     }

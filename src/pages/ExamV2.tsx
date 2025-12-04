@@ -203,13 +203,11 @@ const ExamV2 = () => {
       });
     } catch (error: any) {
       console.error('Exam generation error:', error);
-      if (!handleCoinError(error, COIN_COSTS.EXAM_GENERATE)) {
-        toast({
-          title: "خطا",
-          description: error.message || "مشکلی در ایجاد آزمون پیش آمد",
-          variant: "destructive",
-        });
-      }
+      toast({
+        title: "خطا",
+        description: error.message || "مشکلی در ایجاد آزمون پیش آمد",
+        variant: "destructive",
+      });
     } finally {
       setLoading(false);
     }
@@ -249,13 +247,11 @@ const ExamV2 = () => {
       }, 100);
     } catch (error: any) {
       console.error('Exam evaluation error:', error);
-      if (!handleCoinError(error, COIN_COSTS.EXAM_EVALUATE || 5)) {
-        toast({
-          title: "خطا",
-          description: error.message || "مشکلی در ارزیابی پیش آمد",
-          variant: "destructive",
-        });
-      }
+      toast({
+        title: "خطا",
+        description: error.message || "مشکلی در ارزیابی پیش آمد",
+        variant: "destructive",
+      });
     } finally {
       setEvaluating(false);
     }
@@ -334,16 +330,10 @@ const ExamV2 = () => {
                 </div>
               </div>
 
-              <div className="flex items-center gap-3">
-                <Badge variant="secondary" className="gap-1.5 py-1.5 px-3 bg-primary/10 border-primary/20">
-                  <Coins className="w-4 h-4 text-primary" />
-                  <span>{COIN_COSTS.EXAM_GENERATE} سکه</span>
-                </Badge>
-                <Badge variant="secondary" className="gap-1.5 py-1.5 px-3 bg-green-500/10 border-green-500/20 text-green-400">
-                  <Trophy className="w-4 h-4" />
-                  <span>+XP</span>
-                </Badge>
-              </div>
+              <Badge variant="secondary" className="gap-1.5 py-1.5 px-3 bg-green-500/10 border-green-500/20 text-green-400">
+                <Trophy className="w-4 h-4" />
+                <span>+XP</span>
+              </Badge>
             </motion.div>
           </div>
         </div>

@@ -36,7 +36,6 @@ interface Resource {
 
 const MindMapAI = () => {
   const { toast } = useToast();
-  const { handleCoinError } = useCoinError();
   usePageView();
   const [topic, setTopic] = useState("");
   const [selectedResource, setSelectedResource] = useState<Resource | null>(null);
@@ -49,32 +48,13 @@ const MindMapAI = () => {
   const [savedMaps, setSavedMaps] = useState<any[]>([]);
   const [showSaveDialog, setShowSaveDialog] = useState(false);
   const [showLoadDialog, setShowLoadDialog] = useState(false);
-  const [userCoins, setUserCoins] = useState<number>(0);
   const flowRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    loadUserCoins();
-  }, []);
-
-  const loadUserCoins = async () => {
-    const coins = await getUserCoins();
-    setUserCoins(coins);
-  };
 
   const handleGenerate = async () => {
     if (!topic.trim() && !selectedResource) {
       toast({
         title: "خطا",
         description: "لطفا موضوع را وارد کنید یا منبعی را انتخاب کنید",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    if (userCoins < COIN_COSTS.MINDMAP_GENERATE) {
-      toast({
-        title: "سکه کافی نیست",
-        description: `برای این عملیات به ${COIN_COSTS.MINDMAP_GENERATE} سکه نیاز دارید.`,
         variant: "destructive",
       });
       return;
@@ -193,13 +173,11 @@ const MindMapAI = () => {
         description: "نقشه ذهنی با موفقیت ساخته شد",
       });
     } catch (error: any) {
-      if (!handleCoinError(error, COIN_COSTS.MINDMAP_GENERATE)) {
-        toast({
-          title: "خطا",
-          description: error.message || "خطا در ساخت نقشه ذهنی",
-          variant: "destructive",
-        });
-      }
+      toast({
+        title: "خطا",
+        description: error.message || "خطا در ساخت نقشه ذهنی",
+        variant: "destructive",
+      });
     } finally {
       setLoading(false);
     }
@@ -524,13 +502,11 @@ const MindMapAI = () => {
         description: "نقشه ذهنی با موفقیت اصلاح شد",
       });
     } catch (error: any) {
-      if (!handleCoinError(error, COIN_COSTS.MINDMAP_GENERATE)) {
-        toast({
-          title: "خطا",
-          description: error.message || "خطا در اصلاح نقشه ذهنی",
-          variant: "destructive",
-        });
-      }
+      toast({
+        title: "خطا",
+        description: error.message || "خطا در اصلاح نقشه ذهنی",
+        variant: "destructive",
+      });
     } finally {
       setLoading(false);
     }
@@ -548,10 +524,6 @@ const MindMapAI = () => {
               </div>
               <h1 className="text-2xl font-bold flex items-center gap-2">
                 نقشه ذهنی با AI
-                <span className="text-sm font-normal text-primary flex items-center gap-1">
-                  <Coins className="w-4 h-4" />
-                  10 سکه
-                </span>
               </h1>
             </div>
             <p className="text-sm text-muted-foreground">
@@ -764,7 +736,6 @@ const MindMapAI = () => {
                     <>
                       <Sparkles className="w-4 h-4 ml-2" />
                       اصلاح نقشه ذهنی
-                      <span className="mr-2 text-xs opacity-80">({COIN_COSTS.MINDMAP_GENERATE} سکه)</span>
                     </>
                   )}
                 </Button>
