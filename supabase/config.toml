@@ -38,3 +38,12 @@ verify_jwt = true
 
 [functions.admin-auth]
 verify_jwt = false
+
+[functions.ai-battle-questions]
+verify_jwt = true
+
+[functions.ai-chat-buddy]
+verify_jwt = true
+
+[functions.ai-analyze-resource]
+verify_jwt = true

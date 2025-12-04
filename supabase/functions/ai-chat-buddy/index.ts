@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -13,19 +14,56 @@ const personalityPrompts = {
   smart: "You are an intelligent and knowledgeable study buddy. Be precise, informative, and educational. Focus on deep understanding.",
 };
 
+// Suspicious patterns to detect prompt injection
+const suspiciousPatterns = [
+  /ignore\s+(previous|prior|all)\s+(instructions?|prompts?)/i,
+  /system\s+prompt/i,
+  /you\s+are\s+now/i,
+  /pretend\s+to\s+be/i,
+  /act\s+as\s+if/i,
+  /disregard\s+(all|any|previous)/i,
+];
+
+// Input validation schema
+const chatSchema = z.object({
+  message: z.string()
+    .min(1, 'پیام نمی‌تواند خالی باشد')
+    .max(2000, 'پیام نباید بیشتر از ۲۰۰۰ کاراکتر باشد')
+    .refine(
+      val => !suspiciousPatterns.some(p => p.test(val)),
+      'محتوای نامعتبر'
+    ),
+  personality: z.enum(['friendly', 'energetic', 'caring', 'smart']).optional().default('friendly'),
+});
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const { message, personality = "friendly" } = await req.json();
+    const body = await req.json();
 
-    const systemPrompt = personalityPrompts[personality as keyof typeof personalityPrompts] || personalityPrompts.friendly;
+    // Validate input
+    const validationResult = chatSchema.safeParse(body);
+    if (!validationResult.success) {
+      console.error('Validation error:', validationResult.error);
+      return new Response(
+        JSON.stringify({ error: validationResult.error.errors[0]?.message || 'ورودی نامعتبر است' }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 400 }
+      );
+    }
+
+    const { message, personality } = validationResult.data;
+    const systemPrompt = personalityPrompts[personality] || personalityPrompts.friendly;
 
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     if (!LOVABLE_API_KEY) {
-      throw new Error('کلید API پیکربندی نشده است');
+      console.error('LOVABLE_API_KEY is not configured');
+      return new Response(
+        JSON.stringify({ error: 'کلید API پیکربندی نشده است' }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 500 }
+      );
     }
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
@@ -75,8 +113,9 @@ serve(async (req) => {
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (error: any) {
+    console.error('Error in ai-chat-buddy:', error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: error.message || 'خطای داخلی سرور' }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 500 }
     );
   }
