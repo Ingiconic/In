@@ -7,8 +7,6 @@ import { useWebSpeech } from '@/hooks/useWebSpeech';
 import { supabase } from '@/lib/supabase';
 import { useToast } from '@/hooks/use-toast';
 import { Mic, MicOff, Volume2, VolumeX, ArrowRight, Loader2 } from 'lucide-react';
-import { getUserCoins, checkAndDeductCoins } from '@/lib/coinHelpers';
-import { COIN_COSTS } from '@/lib/coinCosts';
 import MathText from '@/components/MathText';
 
 interface Message {
@@ -22,7 +20,6 @@ const VoiceAssistant = () => {
   const { toast } = useToast();
   const [messages, setMessages] = useState<Message[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [userCoins, setUserCoins] = useState(0);
 
   const {
     isListening,
@@ -37,33 +34,13 @@ const VoiceAssistant = () => {
   } = useWebSpeech();
 
   useEffect(() => {
-    loadUserCoins();
-  }, []);
-
-  useEffect(() => {
     if (transcript && !isListening) {
       handleUserMessage(transcript);
     }
   }, [transcript, isListening]);
 
-  const loadUserCoins = async () => {
-    const coins = await getUserCoins();
-    setUserCoins(coins);
-  };
-
   const handleUserMessage = async (text: string) => {
     if (!text.trim() || isProcessing) return;
-
-    const costInCoins = COIN_COSTS.QUESTION_ANSWER;
-
-    if (userCoins < costInCoins) {
-      toast({
-        title: 'سکه کافی نیست',
-        description: `برای استفاده از دستیار صوتی به ${costInCoins} سکه نیاز دارید`,
-        variant: 'destructive',
-      });
-      return;
-    }
 
     setIsProcessing(true);
 
@@ -75,20 +52,6 @@ const VoiceAssistant = () => {
     setMessages((prev) => [...prev, userMsg]);
 
     try {
-      const success = await checkAndDeductCoins(costInCoins);
-      
-      if (!success) {
-        toast({
-          title: 'خطا',
-          description: 'کسر سکه با مشکل مواجه شد',
-          variant: 'destructive',
-        });
-        setIsProcessing(false);
-        return;
-      }
-
-      await loadUserCoins();
-
       const { data, error: functionError } = await supabase.functions.invoke('ai-answer', {
         body: { question: text },
       });
@@ -104,13 +67,7 @@ const VoiceAssistant = () => {
       };
       setMessages((prev) => [...prev, aiMsg]);
 
-      // Use Web Speech API for text-to-speech
       speak(aiResponse);
-
-      toast({
-        title: 'موفق',
-        description: `${costInCoins} سکه کسر شد`,
-      });
     } catch (err) {
       console.error('Error:', err);
       toast({
@@ -174,13 +131,9 @@ const VoiceAssistant = () => {
             <div>
               <h1 className="text-3xl font-bold text-gradient">دستیار صوتی</h1>
               <p className="text-sm text-muted-foreground">
-                {COIN_COSTS.QUESTION_ANSWER} سکه به ازای هر سوال
+                با صدای خود سوال بپرسید
               </p>
             </div>
-          </div>
-          <div className="flex items-center gap-2 bg-yellow-500/10 px-4 py-2 rounded-lg border border-yellow-500/30">
-            <span className="text-lg font-bold text-yellow-600">{userCoins}</span>
-            <span className="text-sm text-muted-foreground">سکه</span>
           </div>
         </div>
 

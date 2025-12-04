@@ -13,9 +13,6 @@ import AppLayout from "@/components/layout/AppLayout";
 import { usePageView } from "@/hooks/usePageView";
 import ResourceSelector from "@/components/ResourceSelector";
 import MathText from "@/components/MathText";
-import { useCoinError } from "@/hooks/useCoinError";
-import { COIN_COSTS } from "@/lib/coinCosts";
-import { getUserCoins } from "@/lib/coinHelpers";
 
 interface Deck {
   id: string;

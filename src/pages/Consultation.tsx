@@ -5,45 +5,22 @@ import { Card } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/lib/supabase";
-import { ArrowRight, MessageSquare, Sparkles, Loader2, User, Coins } from "lucide-react";
+import { ArrowRight, MessageSquare, Sparkles, Loader2, User } from "lucide-react";
 import { logger } from "@/lib/logger";
 import MathText from "@/components/MathText";
-import { COIN_COSTS } from "@/lib/coinCosts";
-import { useCoinError } from "@/hooks/useCoinError";
-import { getUserCoins } from "@/lib/coinHelpers";
 
 const Consultation = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { handleCoinError } = useCoinError();
   const [message, setMessage] = useState("");
   const [conversation, setConversation] = useState<Array<{ role: string; content: string }>>([]);
   const [loading, setLoading] = useState(false);
-  const [userCoins, setUserCoins] = useState<number>(0);
-
-  useEffect(() => {
-    loadUserCoins();
-  }, []);
-
-  const loadUserCoins = async () => {
-    const coins = await getUserCoins();
-    setUserCoins(coins);
-  };
 
   const handleSend = async () => {
     if (!message.trim()) {
       toast({
         title: "خطا",
         description: "لطفا پیام خود را بنویسید",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    if (userCoins < COIN_COSTS.CONSULTATION) {
-      toast({
-        title: "سکه کافی نیست",
-        description: `برای این عملیات به ${COIN_COSTS.CONSULTATION} سکه نیاز دارید.`,
         variant: "destructive",
       });
       return;
@@ -64,13 +41,11 @@ const Consultation = () => {
       const aiMsg = { role: "assistant", content: data.advice };
       setConversation((prev) => [...prev, aiMsg]);
     } catch (error: any) {
-      if (!handleCoinError(error, COIN_COSTS.CONSULTATION)) {
-        toast({
-          title: "خطا",
-          description: error.message || "مشکلی پیش آمد",
-          variant: "destructive",
-        });
-      }
+      toast({
+        title: "خطا",
+        description: error.message || "مشکلی پیش آمد",
+        variant: "destructive",
+      });
     } finally {
       setLoading(false);
     }
@@ -86,10 +61,6 @@ const Consultation = () => {
           </Button>
           <h1 className="text-xl font-bold text-gradient flex items-center gap-2">
             مشاوره تحصیلی
-            <span className="text-sm font-normal text-primary flex items-center gap-1">
-              <Coins className="w-4 h-4" />
-              {COIN_COSTS.CONSULTATION} سکه
-            </span>
           </h1>
         </div>
       </header>

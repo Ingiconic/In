@@ -6,11 +6,9 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/lib/supabase";
-import { ArrowRight, Calendar, Plus, Trash2, CheckCircle, Sparkles, Brain, Loader2 } from "lucide-react";
+import { ArrowRight, Calendar, Trash2, Sparkles, Brain, Loader2 } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { logger } from "@/lib/logger";
-import { useCoinError } from "@/hooks/useCoinError";
-import { COIN_COSTS } from "@/lib/coinCosts";
 
 interface StudyPlan {
   id: string;
@@ -24,14 +22,12 @@ interface StudyPlan {
 const StudyPlan = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { handleCoinError } = useCoinError();
   const [plans, setPlans] = useState<StudyPlan[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [profile, setProfile] = useState<any>(null);
   
-  // Form fields
   const [studentName, setStudentName] = useState("");
   const [grade, setGrade] = useState("");
   const [subjects, setSubjects] = useState("");
@@ -94,22 +90,6 @@ const StudyPlan = () => {
       return;
     }
 
-    // Check if user has enough coins
-    const { data: profileData } = await supabase
-      .from("profiles")
-      .select("coins")
-      .eq("id", (await supabase.auth.getUser()).data.user?.id)
-      .single();
-
-    if ((profileData?.coins || 0) < COIN_COSTS.STUDY_PLAN) {
-      toast({
-        title: "سکه کافی نیست",
-        description: `برای این عملیات به ${COIN_COSTS.STUDY_PLAN} سکه نیاز دارید.`,
-        variant: "destructive",
-      });
-      return;
-    }
-
     try {
       setGenerating(true);
 
@@ -129,7 +109,6 @@ const StudyPlan = () => {
         throw new Error("برنامه مطالعاتی دریافت نشد");
       }
 
-      // Save the AI-generated plan
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
@@ -157,14 +136,11 @@ const StudyPlan = () => {
     } catch (error) {
       logger.error("Failed to generate AI plan", error);
       const message = error instanceof Error ? error.message : "مشکلی در تولید برنامه پیش آمد";
-      
-      if (!handleCoinError(error, COIN_COSTS.STUDY_PLAN)) {
-        toast({
-          title: "خطا",
-          description: message,
-          variant: "destructive",
-        });
-      }
+      toast({
+        title: "خطا",
+        description: message,
+        variant: "destructive",
+      });
     } finally {
       setGenerating(false);
     }
