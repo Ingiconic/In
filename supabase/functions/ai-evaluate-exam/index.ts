@@ -62,19 +62,6 @@ serve(async (req) => {
       });
     }
 
-    // Check and deduct coins atomically (5 coins for evaluation)
-    const { data: success, error: coinError } = await supabase.rpc('deduct_user_coins', {
-      _amount: 5,
-      _reason: 'ai_evaluate_exam'
-    });
-
-    if (coinError || !success) {
-      return new Response(JSON.stringify({ error: 'سکه کافی نیست. برای ارزیابی آزمون به ۵ سکه نیاز دارید' }), {
-        status: 402,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-
     const body = await req.json();
     
     // Validate input
@@ -93,37 +80,35 @@ serve(async (req) => {
       throw new Error('LOVABLE_API_KEY not configured');
     }
 
-    const systemPrompt = `شما یک معلم دقیق و حمایتگر هستید که آزمون‌ها را ارزیابی و تحلیل می‌کنید.
+    console.log(`Evaluating exam with ${questions.length} questions for user ${user.id}`);
 
-وظایف شما:
-1. پاسخ‌های تشریحی را ارزیابی کنید (0-100 نمره)
-2. پاسخ‌های جای خالی را بررسی کنید (با تساهل در املا)
-3. تحلیل کامل عملکرد دانش‌آموز
-4. نقاط قوت و ضعف
-5. پیشنهادات برای بهبود
-6. موضوعاتی که نیاز به تقویت دارد
+    const systemPrompt = `شما یک معلم دقیق هستید. پاسخ‌ها را سریع و دقیق ارزیابی کنید.
 
-برای هر سوال تشریحی:
-- نمره از 100
-- بازخورد مفصل
-- نکات بهبود
+برای هر سوال:
+- چند گزینه‌ای: اگر درست است 100، غلط 0
+- جای خالی: مقایسه با جواب صحیح (تساهل در املا)
+- تشریحی: نمره 0-100 بر اساس کیفیت
 
-در پایان یک کارنامه جامع با:
-- نمره کل
-- درصد
-- تحلیل موضوعی
-- پیشنهادات مطالعاتی`;
+پاسخ JSON:
+{
+  "scores": [{"question": 1, "score": 100, "feedback": "توضیح کوتاه"}],
+  "totalScore": 85,
+  "percentage": 85,
+  "strengths": ["نقطه قوت"],
+  "weaknesses": ["نقطه ضعف"],
+  "recommendations": ["پیشنهاد"],
+  "topicsToReview": ["موضوع"]
+}`;
 
     let questionsText = "";
     questions.forEach((q: any, i: number) => {
-      questionsText += `\nسوال ${i + 1} (${q.type}):\n${q.question}\n`;
+      questionsText += `\nس${i + 1}(${q.type}): ${q.question}\n`;
       if (q.type === "multiple_choice") {
-        questionsText += `جواب صحیح: ${q.correct_answer}\nپاسخ دانش‌آموز: ${userAnswers[i] || 'پاسخ داده نشده'}\n`;
+        questionsText += `صحیح: ${q.correct_answer} | پاسخ: ${userAnswers[i] || '-'}\n`;
       } else if (q.type === "fill_blank") {
-        questionsText += `جواب صحیح: ${q.correct_answer}\nپاسخ دانش‌آموز: ${userAnswers[i] || 'پاسخ داده نشده'}\n`;
+        questionsText += `صحیح: ${q.correct_answer} | پاسخ: ${userAnswers[i] || '-'}\n`;
       } else if (q.type === "essay") {
-        questionsText += `معیارهای ارزیابی: ${q.evaluation_criteria?.join(', ')}\n`;
-        questionsText += `پاسخ دانش‌آموز: ${userAnswers[i] || 'پاسخ داده نشده'}\n`;
+        questionsText += `معیار: ${q.evaluation_criteria?.join(', ')}\nپاسخ: ${userAnswers[i] || '-'}\n`;
       }
     });
 
@@ -134,24 +119,26 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'google/gemini-2.5-pro',
+        model: 'google/gemini-2.5-flash',
         messages: [
           { role: 'system', content: systemPrompt },
-          { role: 'user', content: `این سوالات و پاسخ‌ها را ارزیابی کن:\n${questionsText}\n\nپاسخ را به فرمت JSON با این ساختار برگردان:\n{
-  "scores": [{"question": 1, "score": 100, "feedback": "..."}],
-  "totalScore": 85,
-  "percentage": 85,
-  "strengths": ["..."],
-  "weaknesses": ["..."],
-  "recommendations": ["..."],
-  "topicsToReview": ["..."]
-}` }
+          { role: 'user', content: questionsText }
         ],
         response_format: { type: 'json_object' },
       }),
     });
 
     if (!response.ok) {
+      const errorText = await response.text();
+      console.error('AI API error:', response.status, errorText);
+      
+      if (response.status === 429) {
+        return new Response(JSON.stringify({ error: 'سرور شلوغ است. لطفا چند ثانیه صبر کنید.' }), {
+          status: 429,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+      
       throw new Error(`AI evaluation failed: ${response.status}`);
     }
 
@@ -162,6 +149,8 @@ serve(async (req) => {
     content = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
     
     const evaluation = JSON.parse(content);
+    
+    console.log(`Exam evaluated successfully. Score: ${evaluation.totalScore}`);
 
     return new Response(
       JSON.stringify(evaluation),
