@@ -1,31 +1,22 @@
 import { useState, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/lib/supabase";
-import { ArrowRight, Loader2 } from "lucide-react";
+import { ArrowRight, Loader2, Info } from "lucide-react";
 import { motion } from "framer-motion";
 import logo from "@/assets/logo.png";
 
-
 const Signup = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [username, setUsername] = useState("");
-  const [fullName, setFullName] = useState("");
   const [password, setPassword] = useState("");
-  const [referralCode, setReferralCode] = useState("");
 
   useEffect(() => {
-    // Get referral code from URL
-    const params = new URLSearchParams(window.location.search);
-    const ref = params.get("ref");
-    if (ref) {
-      setReferralCode(ref);
-    }
-
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) navigate("/dashboard");
@@ -42,10 +33,30 @@ const Signup = () => {
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!username.trim() || !fullName.trim() || !password.trim()) {
+    // Validate username - only English letters, numbers and underscore
+    const usernameRegex = /^[a-zA-Z0-9_]+$/;
+    if (!username.trim() || !password.trim()) {
       toast({ 
         title: "خطا", 
         description: "لطفا تمام فیلدها را پر کنید", 
+        variant: "destructive" 
+      });
+      return;
+    }
+
+    if (!usernameRegex.test(username)) {
+      toast({ 
+        title: "خطا", 
+        description: "نام کاربری باید فقط شامل حروف انگلیسی، اعداد و _ باشد", 
+        variant: "destructive" 
+      });
+      return;
+    }
+
+    if (username.length < 3) {
+      toast({ 
+        title: "خطا", 
+        description: "نام کاربری باید حداقل ۳ کاراکتر باشد", 
         variant: "destructive" 
       });
       return;
@@ -62,42 +73,41 @@ const Signup = () => {
 
     setLoading(true);
     try {
-      // Check if username already exists
+      // Check if username is taken
       const { data: checkData, error: checkError } = await supabase.functions.invoke('check-username', {
         body: { username: username.toLowerCase().trim() }
       });
 
-      if (checkError) {
-        throw new Error("مشکلی پیش آمد");
-      }
-
+      if (checkError) throw checkError;
       if (checkData?.exists) {
         throw new Error("این نام کاربری قبلا استفاده شده است");
       }
+
+      const referralCode = searchParams.get('ref');
 
       const { error } = await supabase.auth.signUp({
         email: `${username.toLowerCase().trim()}@easydars.com`,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/`,
           data: {
-            full_name: fullName,
+            full_name: username,
             username: username.toLowerCase().trim(),
-            ...(referralCode.trim() && { referral_code: referralCode.trim() }),
+            referred_by_code: referralCode,
           },
-        },
+          emailRedirectTo: `${window.location.origin}/dashboard`
+        }
       });
 
       if (error) {
-        if (error.message.includes("User already registered")) {
-          throw new Error("این نام کاربری قبلا استفاده شده است");
+        if (error.message.includes("already registered")) {
+          throw new Error("این نام کاربری قبلا ثبت شده است");
         }
         throw error;
       }
-
+      
       toast({ 
-        title: "خوش آمدید!", 
-        description: "حساب شما با موفقیت ساخته شد" 
+        title: "ثبت‌نام موفق!", 
+        description: "حساب کاربری شما ایجاد شد" 
       });
     } catch (error: any) {
       toast({ 
@@ -175,7 +185,7 @@ const Signup = () => {
             </div>
             <h1 className="text-3xl font-bold text-gradient mb-2">ثبت‌نام در ایزی‌درس</h1>
             <p className="text-muted-foreground text-center">
-              حساب کاربری خود را ایجاد کنید
+              حساب کاربری جدید بسازید
             </p>
           </motion.div>
 
@@ -188,12 +198,17 @@ const Signup = () => {
             >
               <Input
                 type="text"
-                placeholder="نام کاربری"
+                placeholder="نام کاربری (انگلیسی)"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className="text-right h-12 bg-background/50"
+                className="text-left h-12 bg-background/50"
                 disabled={loading}
+                dir="ltr"
               />
+              <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1 justify-end">
+                <span>فقط حروف انگلیسی، اعداد و _ مجاز است</span>
+                <Info className="w-3 h-3" />
+              </p>
             </motion.div>
 
             <motion.div
@@ -202,23 +217,8 @@ const Signup = () => {
               transition={{ delay: 0.4 }}
             >
               <Input
-                type="text"
-                placeholder="نام و نام خانوادگی"
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-                className="text-right h-12 bg-background/50"
-                disabled={loading}
-              />
-            </motion.div>
-
-            <motion.div
-              initial={{ x: -20, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ delay: 0.5 }}
-            >
-              <Input
                 type="password"
-                placeholder="رمز عبور"
+                placeholder="رمز عبور (حداقل ۸ کاراکتر)"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="text-right h-12 bg-background/50"
@@ -227,30 +227,9 @@ const Signup = () => {
             </motion.div>
 
             <motion.div
-              initial={{ x: -20, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ delay: 0.55 }}
-            >
-              <Input
-                type="text"
-                placeholder="کد دعوت (اختیاری)"
-                value={referralCode}
-                onChange={(e) => setReferralCode(e.target.value)}
-                className="text-right h-12 bg-background/50"
-                disabled={loading}
-                dir="ltr"
-              />
-              {referralCode && (
-                <p className="text-xs text-muted-foreground mt-1 text-right">
-                  با استفاده از کد دعوت شما و دوست شما هر کدام 500 سکه دریافت می‌کنید
-                </p>
-              )}
-            </motion.div>
-
-            <motion.div
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.6 }}
+              transition={{ delay: 0.5 }}
             >
               <Button 
                 type="submit"
@@ -260,7 +239,7 @@ const Signup = () => {
                 {loading ? (
                   <>
                     <Loader2 className="ml-2 h-5 w-5 animate-spin" />
-                    در حال بارگذاری...
+                    در حال ثبت‌نام...
                   </>
                 ) : (
                   <>
@@ -276,11 +255,11 @@ const Signup = () => {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.7 }}
+            transition={{ delay: 0.6 }}
             className="mt-6 text-center"
           >
             <p className="text-muted-foreground">
-              قبلاً ثبت‌نام کرده‌اید؟{" "}
+              قبلا ثبت‌نام کردید؟{" "}
               <Link 
                 to="/login" 
                 className="text-primary hover:underline font-semibold"
