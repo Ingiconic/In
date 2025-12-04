@@ -499,6 +499,39 @@ All colors MUST be HSL.
     min-width: 44px;
   }
 
+  /* Better focus states for accessibility */
+  .focus-ring {
+    @apply focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background;
+  }
+
+  /* Smooth card style - less glassmorphism */
+  .card-clean {
+    @apply bg-card border border-border/40 rounded-xl transition-all duration-200;
+  }
+
+  .card-clean:hover {
+    @apply border-primary/30 shadow-md;
+  }
+
+  /* Button press effect */
+  .press-effect {
+    @apply active:scale-[0.98] transition-transform;
+  }
+
+  /* Skeleton animation */
+  @keyframes skeleton-pulse {
+    0%, 100% {
+      opacity: 0.5;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+
+  .animate-skeleton {
+    animation: skeleton-pulse 1.5s ease-in-out infinite;
+  }
+
   /* Mobile card optimization */
   @media (max-width: 640px) {
     .glassmorphism-card:hover {

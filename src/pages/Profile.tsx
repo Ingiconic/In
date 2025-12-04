@@ -7,10 +7,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Avatar } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
-import { User, Save, Lock, Eye, EyeOff } from "lucide-react";
+import { User, Save, Lock, Eye, EyeOff, LogOut } from "lucide-react";
 import { usePageView } from "@/hooks/usePageView";
 import AppLayout from "@/components/layout/AppLayout";
 import AvatarSelector from "@/components/chat/AvatarSelector";
+import { ProfileSkeleton } from "@/components/ui/skeleton-loaders";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -20,6 +21,7 @@ const Profile = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [changingPassword, setChangingPassword] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
   
   const [username, setUsername] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
@@ -192,11 +194,31 @@ const Profile = () => {
     }
   };
 
+  const handleLogout = async () => {
+    setLoggingOut(true);
+    try {
+      await supabase.auth.signOut();
+      toast({
+        title: "خروج موفق",
+        description: "با موفقیت از حساب خارج شدید",
+      });
+      navigate("/");
+    } catch (error: any) {
+      toast({
+        title: "خطا",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setLoggingOut(false);
+    }
+  };
+
   if (loading) {
     return (
       <AppLayout>
-        <div className="flex items-center justify-center h-full">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-primary"></div>
+        <div className="container mx-auto px-4 py-6 max-w-md pb-24 lg:pb-6">
+          <ProfileSkeleton />
         </div>
       </AppLayout>
     );
@@ -204,15 +226,15 @@ const Profile = () => {
 
   return (
     <AppLayout>
-      <div className="container mx-auto px-4 py-6 max-w-md">
+      <div className="container mx-auto px-4 py-6 max-w-md pb-24 lg:pb-6">
         {/* Header */}
         <div className="mb-6">
-          <div className="bg-gradient-to-br from-primary/5 to-secondary/5 rounded-xl p-6 border border-border/30">
+          <div className="bg-card rounded-xl p-5 border border-border/40">
             <div className="flex items-center gap-3 mb-2">
-              <div className="gradient-primary p-2.5 rounded-xl shadow-glow">
-                <User className="w-6 h-6 text-white" />
+              <div className="gradient-primary p-2.5 rounded-xl">
+                <User className="w-5 h-5 text-white" />
               </div>
-              <h1 className="text-2xl font-bold">پروفایل</h1>
+              <h1 className="text-xl font-bold">پروفایل</h1>
             </div>
             <p className="text-sm text-muted-foreground">
               تنظیمات حساب کاربری
@@ -234,7 +256,7 @@ const Profile = () => {
         </div>
 
         {/* Username & Avatar Section */}
-        <Card className="p-5 glassmorphism-card border-primary/10 mb-4">
+        <Card className="p-5 bg-card border-border/40 mb-4">
           <h3 className="font-bold text-base mb-4 flex items-center gap-2">
             <User className="w-5 h-5 text-primary" />
             نام کاربری و آواتار
@@ -249,9 +271,9 @@ const Profile = () => {
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder="نام کاربری (انگلیسی)"
                 dir="ltr"
-                className="text-left"
+                className="text-left mt-1.5"
               />
-              <p className="text-xs text-muted-foreground mt-1">
+              <p className="text-xs text-muted-foreground mt-1.5">
                 فقط حروف انگلیسی، اعداد و _ (۳ تا ۲۰ کاراکتر)
               </p>
             </div>
@@ -264,7 +286,7 @@ const Profile = () => {
             <Button
               onClick={handleSaveProfile}
               disabled={saving}
-              className="w-full gradient-primary shadow-glow"
+              className="w-full gradient-primary touch-target"
             >
               <Save className="w-4 h-4 ml-2" />
               {saving ? "در حال ذخیره..." : "ذخیره تغییرات"}
@@ -273,7 +295,7 @@ const Profile = () => {
         </Card>
 
         {/* Password Change Section */}
-        <Card className="p-5 glassmorphism-card border-primary/10">
+        <Card className="p-5 bg-card border-border/40 mb-4">
           <h3 className="font-bold text-base mb-4 flex items-center gap-2">
             <Lock className="w-5 h-5 text-primary" />
             تغییر رمز عبور
@@ -282,7 +304,7 @@ const Profile = () => {
           <div className="space-y-4">
             <div>
               <Label htmlFor="oldPassword">رمز عبور فعلی</Label>
-              <div className="relative">
+              <div className="relative mt-1.5">
                 <Input
                   id="oldPassword"
                   type={showOldPassword ? "text" : "password"}
@@ -295,7 +317,7 @@ const Profile = () => {
                 <button
                   type="button"
                   onClick={() => setShowOldPassword(!showOldPassword)}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground p-1"
                 >
                   {showOldPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
@@ -304,7 +326,7 @@ const Profile = () => {
 
             <div>
               <Label htmlFor="newPassword">رمز عبور جدید</Label>
-              <div className="relative">
+              <div className="relative mt-1.5">
                 <Input
                   id="newPassword"
                   type={showNewPassword ? "text" : "password"}
@@ -317,7 +339,7 @@ const Profile = () => {
                 <button
                   type="button"
                   onClick={() => setShowNewPassword(!showNewPassword)}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground p-1"
                 >
                   {showNewPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
@@ -326,7 +348,7 @@ const Profile = () => {
 
             <div>
               <Label htmlFor="confirmPassword">تکرار رمز عبور جدید</Label>
-              <div className="relative">
+              <div className="relative mt-1.5">
                 <Input
                   id="confirmPassword"
                   type={showConfirmPassword ? "text" : "password"}
@@ -339,7 +361,7 @@ const Profile = () => {
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground p-1"
                 >
                   {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
@@ -350,12 +372,25 @@ const Profile = () => {
               onClick={handleChangePassword}
               disabled={changingPassword}
               variant="outline"
-              className="w-full"
+              className="w-full touch-target"
             >
               <Lock className="w-4 h-4 ml-2" />
               {changingPassword ? "در حال تغییر..." : "تغییر رمز عبور"}
             </Button>
           </div>
+        </Card>
+
+        {/* Logout Section */}
+        <Card className="p-5 bg-card border-destructive/30">
+          <Button
+            onClick={handleLogout}
+            disabled={loggingOut}
+            variant="destructive"
+            className="w-full touch-target"
+          >
+            <LogOut className="w-4 h-4 ml-2" />
+            {loggingOut ? "در حال خروج..." : "خروج از حساب"}
+          </Button>
         </Card>
       </div>
     </AppLayout>
