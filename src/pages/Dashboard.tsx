@@ -11,7 +11,6 @@ import {
 } from "lucide-react";
 import { usePageView } from "@/hooks/usePageView";
 import AppLayout from "@/components/layout/AppLayout";
-import { VoiceAssistantWidget } from "@/components/VoiceAssistantWidget";
 import { useToast } from "@/hooks/use-toast";
 
 const Dashboard = () => {
@@ -161,34 +160,6 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Voice Assistant */}
-        {isLoggedIn && <VoiceAssistantWidget />}
-
-        {/* Quick Stats - Only for logged in users */}
-        {isLoggedIn && (
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div className="bg-card/50 backdrop-blur-sm rounded-xl p-4 border border-border/20 text-center">
-              <CheckSquare className="w-5 h-5 text-accent mx-auto mb-2" />
-              <p className="text-2xl font-bold">{stats.examsCount}</p>
-              <p className="text-xs text-muted-foreground">آزمون</p>
-            </div>
-            <div className="bg-card/50 backdrop-blur-sm rounded-xl p-4 border border-border/20 text-center">
-              <Calendar className="w-5 h-5 text-secondary mx-auto mb-2" />
-              <p className="text-2xl font-bold">{stats.studyPlansCount}</p>
-              <p className="text-xs text-muted-foreground">برنامه</p>
-            </div>
-            <div className="bg-card/50 backdrop-blur-sm rounded-xl p-4 border border-border/20 text-center">
-              <MessageSquare className="w-5 h-5 text-primary mx-auto mb-2" />
-              <p className="text-2xl font-bold">{stats.messagesCount}</p>
-              <p className="text-xs text-muted-foreground">پیام</p>
-            </div>
-            <div className="bg-card/50 backdrop-blur-sm rounded-xl p-4 border border-border/20 text-center">
-              <Users className="w-5 h-5 text-green-500 mx-auto mb-2" />
-              <p className="text-2xl font-bold">{stats.friendsCount}</p>
-              <p className="text-xs text-muted-foreground">دوست</p>
-            </div>
-          </div>
-        )}
 
         {/* Main Tabs */}
         <Tabs defaultValue="ai" className="w-full">
