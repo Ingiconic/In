@@ -51,6 +51,9 @@ import GoalsTracker from "./pages/GoalsTracker";
 import MotivationWall from "./pages/MotivationWall";
 import PomodoroTimer from "./pages/PomodoroTimer";
 import ThemeSettings from "./pages/ThemeSettings";
+import Contact from "./pages/Contact";
+import AdminAds from "./pages/AdminAds";
+import AdminTickets from "./pages/AdminTickets";
 
 const queryClient = new QueryClient();
 
@@ -70,6 +73,9 @@ const App = () => (
               <Route path="/admin" element={<AdminLogin />} />
               <Route path="/admin/dashboard" element={<Admin />} />
               <Route path="/admin/blog" element={<AdminBlog />} />
+              <Route path="/admin/ads" element={<AdminAds />} />
+              <Route path="/admin/tickets" element={<AdminTickets />} />
+              <Route path="/contact" element={<Contact />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/blog" element={<Blog />} />
               <Route path="/summarize" element={<Summarize />} />

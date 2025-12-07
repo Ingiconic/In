@@ -7,7 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { 
   Users, Eye, Coins, TrendingUp, Calendar, Shield,
-  Plus, Minus, Search, ArrowLeft, Loader2, LogOut, BookOpen
+  Plus, Minus, Search, ArrowLeft, Loader2, LogOut, BookOpen,
+  Megaphone, MessageSquare
 } from "lucide-react";
 import { motion } from "framer-motion";
 import {
@@ -188,13 +189,27 @@ const Admin = () => {
               </Button>
             </div>
             
-            <div className="flex gap-2">
+            <div className="flex gap-2 flex-wrap">
               <Button
                 variant="outline"
                 onClick={() => navigate("/admin/blog")}
               >
                 <BookOpen className="ml-2 h-4 w-4" />
                 مدیریت بلاگ
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => navigate("/admin/ads")}
+              >
+                <Megaphone className="ml-2 h-4 w-4" />
+                مدیریت تبلیغات
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => navigate("/admin/tickets")}
+              >
+                <MessageSquare className="ml-2 h-4 w-4" />
+                مدیریت تیکت‌ها
               </Button>
               <Button
                 variant="outline"

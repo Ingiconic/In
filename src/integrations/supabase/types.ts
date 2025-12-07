@@ -131,6 +131,33 @@ export type Database = {
         }
         Relationships: []
       }
+      banners: {
+        Row: {
+          created_at: string | null
+          id: string
+          image_url: string
+          is_active: boolean | null
+          link_url: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          image_url: string
+          is_active?: boolean | null
+          link_url: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          image_url?: string
+          is_active?: boolean | null
+          link_url?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       blog_posts: {
         Row: {
           content: string
@@ -1813,6 +1840,42 @@ export type Database = {
           last_study_date?: string | null
           longest_streak?: number | null
           streak_milestones?: Json | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      tickets: {
+        Row: {
+          admin_reply: string | null
+          created_at: string | null
+          id: string
+          message: string
+          replied_at: string | null
+          status: string
+          subject: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          admin_reply?: string | null
+          created_at?: string | null
+          id?: string
+          message: string
+          replied_at?: string | null
+          status?: string
+          subject: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          admin_reply?: string | null
+          created_at?: string | null
+          id?: string
+          message?: string
+          replied_at?: string | null
+          status?: string
+          subject?: string
           updated_at?: string | null
           user_id?: string
         }

@@ -13,6 +13,7 @@ import AppLayout from "@/components/layout/AppLayout";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 import { DashboardSkeleton } from "@/components/ui/skeleton-loaders";
+import AdBanner from "@/components/dashboard/AdBanner";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -204,6 +205,9 @@ const Dashboard = () => {
             </div>
           )}
         </motion.div>
+
+        {/* Ad Banner */}
+        <AdBanner />
 
         {/* Main Tabs - Better touch targets */}
         <Tabs defaultValue="ai" className="w-full">
