@@ -54,6 +54,9 @@ import ThemeSettings from "./pages/ThemeSettings";
 import Contact from "./pages/Contact";
 import AdminAds from "./pages/AdminAds";
 import AdminTickets from "./pages/AdminTickets";
+import EasyTube from "./pages/EasyTube";
+import EasyTubeWatch from "./pages/EasyTubeWatch";
+import EasyTubeChannel from "./pages/EasyTubeChannel";
 
 const queryClient = new QueryClient();
 
@@ -119,6 +122,9 @@ const App = () => (
               <Route path="/daily-quests" element={<DailyQuests />} />
               <Route path="/avatar-customizer" element={<AvatarCustomizer />} />
               <Route path="/mindmap-ai" element={<MindMapAI />} />
+              <Route path="/easytube" element={<EasyTube />} />
+              <Route path="/easytube/watch/:videoId" element={<EasyTubeWatch />} />
+              <Route path="/easytube/channel/:channelId" element={<EasyTubeChannel />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
           </Routes>

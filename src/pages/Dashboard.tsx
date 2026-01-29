@@ -6,7 +6,7 @@ import {
   Brain, BookOpen, HelpCircle, FileText, CheckSquare, ClipboardList, 
   BookCheck, NotebookPen, Sparkles, Box, Gamepad2, Flame, Swords, 
   Heart, Trophy, User, Music, Calendar, Target, 
-  BarChart3, Users, ChevronLeft, Zap, Star
+  BarChart3, Users, ChevronLeft, Zap, Star, Play
 } from "lucide-react";
 import { usePageView } from "@/hooks/usePageView";
 import AppLayout from "@/components/layout/AppLayout";
@@ -14,6 +14,9 @@ import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 import { DashboardSkeleton } from "@/components/ui/skeleton-loaders";
 import AdBanner from "@/components/dashboard/AdBanner";
+import Carousel3D from "@/components/dashboard/Carousel3D";
+
+
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -161,29 +164,13 @@ const Dashboard = () => {
             </div>
             
             {isLoggedIn ? (
-              <div className="flex items-center gap-2 w-full sm:w-auto">
-                <div className="flex-1 sm:flex-initial bg-muted/50 p-3 rounded-xl text-center min-w-[70px]">
-                  <div className="flex items-center justify-center gap-1 text-primary">
-                    <Trophy className="w-4 h-4" />
-                    <span className="font-bold text-base">{stats.totalPoints}</span>
-                  </div>
-                  <p className="text-[10px] text-muted-foreground">امتیاز</p>
-                </div>
-                <div className="flex-1 sm:flex-initial bg-muted/50 p-3 rounded-xl text-center min-w-[70px]">
-                  <div className="flex items-center justify-center gap-1 text-orange-500">
-                    <Flame className="w-4 h-4" />
-                    <span className="font-bold text-base">{stats.streakDays}</span>
-                  </div>
-                  <p className="text-[10px] text-muted-foreground">روز</p>
-                </div>
-                <div className="flex-1 sm:flex-initial bg-muted/50 p-3 rounded-xl text-center min-w-[70px]">
-                  <div className="flex items-center justify-center gap-1 text-secondary">
-                    <Star className="w-4 h-4" />
-                    <span className="font-bold text-base">{stats.examsCount}</span>
-                  </div>
-                  <p className="text-[10px] text-muted-foreground">آزمون</p>
-                </div>
-              </div>
+              <button
+                onClick={() => navigate("/easytube")}
+                className="flex items-center gap-2 bg-gradient-to-r from-red-500 to-rose-600 text-white px-4 py-3 rounded-xl font-bold text-sm active:scale-95 transition-transform shadow-lg hover:shadow-xl w-full sm:w-auto touch-target"
+              >
+                <Play className="w-5 h-5" />
+                <span>ایزی تیوب 📺</span>
+              </button>
             ) : (
               <button
                 onClick={() => navigate("/signup")}
@@ -209,282 +196,78 @@ const Dashboard = () => {
         {/* Ad Banner */}
         <AdBanner />
 
-        {/* Main Tabs - Better touch targets */}
-        <Tabs defaultValue="ai" className="w-full">
-          <TabsList className="grid w-full grid-cols-4 h-auto p-1.5 bg-muted/50 rounded-xl">
-            <TabsTrigger 
-              value="ai" 
-              className="gap-1.5 py-3 text-xs sm:text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-lg font-medium"
-            >
-              <Brain className="w-4 h-4" />
-              <span className="hidden xs:inline">هوش مصنوعی</span>
-              <span className="xs:hidden">AI</span>
-            </TabsTrigger>
-            <TabsTrigger 
-              value="study" 
-              className="gap-1.5 py-3 text-xs sm:text-sm data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground rounded-lg font-medium"
-            >
-              <BookOpen className="w-4 h-4" />
-              <span className="hidden xs:inline">مطالعه</span>
-              <span className="xs:hidden">درس</span>
-            </TabsTrigger>
-            <TabsTrigger 
-              value="gamification" 
-              className="gap-1.5 py-3 text-xs sm:text-sm data-[state=active]:bg-accent data-[state=active]:text-accent-foreground rounded-lg font-medium"
-            >
-              <Gamepad2 className="w-4 h-4" />
-              <span className="hidden xs:inline">بازی</span>
-              <span className="xs:hidden">گیم</span>
-            </TabsTrigger>
-            <TabsTrigger 
-              value="social" 
-              className="gap-1.5 py-3 text-xs sm:text-sm data-[state=active]:bg-green-600 data-[state=active]:text-white rounded-lg font-medium"
-            >
-              <Users className="w-4 h-4" />
-              <span>اجتماعی</span>
-            </TabsTrigger>
-          </TabsList>
-
-          {/* AI Tools Tab */}
-          <TabsContent value="ai" className="mt-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              <ToolCard
-                icon={HelpCircle}
-                title="پرسش درسی"
-                description="سوالت رو بپرس، جواب بگیر"
-                gradient="gradient-primary"
-                onClick={() => handleToolClick("/questions")}
-                delay={0}
-              />
-              <ToolCard
-                icon={FileText}
-                title="خلاصه‌ساز هوشمند"
-                description="متن بده، خلاصه بگیر"
-                gradient="gradient-secondary"
-                onClick={() => handleToolClick("/summarize")}
-                delay={0.03}
-              />
-              <ToolCard
-                icon={CheckSquare}
-                title="آزمون‌ساز AI"
-                description="آزمون شخصی‌سازی شده"
-                gradient="gradient-accent"
-                onClick={() => handleToolClick("/exam")}
-                delay={0.06}
-              />
-              <ToolCard
-                icon={Brain}
-                title="مشاور هوشمند"
-                description="راهنمایی تحصیلی"
-                gradient="gradient-primary"
-                onClick={() => handleToolClick("/consultation")}
-                delay={0.09}
-              />
-              <ToolCard
-                icon={ClipboardList}
-                title="حل کاربرگ"
-                description="عکس بگیر، جواب ببین"
-                gradient="gradient-secondary"
-                onClick={() => handleToolClick("/worksheet-solver")}
-                delay={0.12}
-              />
-              <ToolCard
-                icon={BookCheck}
-                title="حل تکالیف"
-                description="راهنمای گام به گام"
-                gradient="gradient-accent"
-                onClick={() => handleToolClick("/homework-helper")}
-                delay={0.15}
-              />
-              <ToolCard
-                icon={Sparkles}
-                title="دوست هوشمند"
-                description="چت با AI دوستانه"
-                gradient="bg-gradient-to-br from-purple-500 to-pink-500"
-                onClick={() => handleToolClick("/ai-buddy")}
-                delay={0.18}
-              />
-              <ToolCard
-                icon={Zap}
-                title="همراه مطالعه"
-                description="تحلیل سبک یادگیری"
-                gradient="bg-gradient-to-br from-amber-500 to-orange-500"
-                onClick={() => handleToolClick("/study-companion")}
-                delay={0.21}
-              />
-            </div>
-          </TabsContent>
-
-          {/* Study Tools Tab */}
-          <TabsContent value="study" className="mt-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              <ToolCard
-                icon={NotebookPen}
-                title="یادداشت‌ها"
-                description="LaTeX + PDF پشتیبانی"
-                gradient="bg-gradient-to-br from-blue-500 to-cyan-500"
-                onClick={() => handleToolClick("/notes")}
-                delay={0}
-              />
-              <ToolCard
-                icon={Box}
-                title="یادگیری 3D"
-                description="مدل‌های تعاملی واقعی"
-                gradient="bg-gradient-to-br from-cyan-500 to-teal-500"
-                onClick={() => handleToolClick("/ar-learning")}
-                delay={0.03}
-              />
-              <ToolCard
-                icon={Calendar}
-                title="تقویم درسی"
-                description="برنامه‌ریزی هوشمند"
-                gradient="gradient-primary"
-                onClick={() => handleToolClick("/study-calendar")}
-                delay={0.06}
-              />
-              <ToolCard
-                icon={Target}
-                title="اهداف من"
-                description="پیگیری پیشرفت"
-                gradient="gradient-secondary"
-                onClick={() => handleToolClick("/goals-tracker")}
-                delay={0.09}
-              />
-              <ToolCard
-                icon={BarChart3}
-                title="گزارش پیشرفت"
-                description="نمودار عملکرد"
-                gradient="gradient-accent"
-                onClick={() => handleToolClick("/progress")}
-                delay={0.12}
-              />
-              <ToolCard
-                icon={BookOpen}
-                title="منابع درسی"
-                description="کتاب‌ها و جزوات"
-                gradient="gradient-primary"
-                onClick={() => handleToolClick("/resources")}
-                delay={0.15}
-              />
-              <ToolCard
-                icon={Brain}
-                title="نقشه ذهنی"
-                description="سازماندهی ایده‌ها"
-                gradient="bg-gradient-to-br from-violet-500 to-purple-500"
-                onClick={() => handleToolClick("/mindmap-ai")}
-                delay={0.18}
-              />
-              <ToolCard
-                icon={CheckSquare}
-                title="فلش‌کارت"
-                description="مرور سریع مطالب"
-                gradient="bg-gradient-to-br from-emerald-500 to-green-500"
-                onClick={() => handleToolClick("/flashcards")}
-                delay={0.21}
-              />
-            </div>
-          </TabsContent>
-
-          {/* Gamification Tab */}
-          <TabsContent value="gamification" className="mt-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              <ToolCard
-                icon={Flame}
-                title="استریک مطالعه"
-                description="ردیابی روزهای متوالی"
-                gradient="bg-gradient-to-br from-orange-500 to-red-500"
-                onClick={() => handleToolClick("/study-streak")}
-                delay={0}
-              />
-              <ToolCard
-                icon={Swords}
-                title="نبرد مطالعه"
-                description="رقابت آنلاین"
-                gradient="bg-gradient-to-br from-red-500 to-rose-500"
-                onClick={() => handleToolClick("/study-battle")}
-                delay={0.03}
-              />
-              <ToolCard
-                icon={Heart}
-                title="دیوار انگیزشی"
-                description="جملات الهام‌بخش"
-                gradient="bg-gradient-to-br from-pink-500 to-rose-500"
-                onClick={() => handleToolClick("/motivation-wall")}
-                delay={0.06}
-              />
-              <ToolCard
-                icon={Trophy}
-                title="ماموریت روزانه"
-                description="جوایز ویژه"
-                gradient="bg-gradient-to-br from-yellow-500 to-amber-500"
-                onClick={() => handleToolClick("/daily-quests")}
-                delay={0.09}
-              />
-              <ToolCard
-                icon={User}
-                title="حیوان خانگی"
-                description="پرورش با مطالعه"
-                gradient="bg-gradient-to-br from-lime-500 to-green-500"
-                onClick={() => handleToolClick("/pet")}
-                delay={0.12}
-              />
-              <ToolCard
-                icon={Trophy}
-                title="جدول امتیازات"
-                description="رقابت با دوستان"
-                gradient="gradient-primary"
-                onClick={() => handleToolClick("/leaderboard")}
-                delay={0.15}
-              />
-              <ToolCard
-                icon={Music}
-                title="موزیک مطالعه"
-                description="تمرکز با موسیقی"
-                gradient="bg-gradient-to-br from-indigo-500 to-purple-500"
-                onClick={() => handleToolClick("/music-player")}
-                delay={0.18}
-              />
-              <ToolCard
-                icon={Zap}
-                title="پومودورو"
-                description="تایمر تمرکز"
-                gradient="bg-gradient-to-br from-rose-500 to-pink-500"
-                onClick={() => handleToolClick("/pomodoro")}
-                delay={0.21}
-              />
-            </div>
-          </TabsContent>
-
-          {/* Social Tab */}
-          <TabsContent value="social" className="mt-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              <ToolCard
-                icon={Users}
-                title="انجمن"
-                description="گفتگو با دانش‌آموزان"
-                gradient="bg-gradient-to-br from-green-500 to-emerald-500"
-                onClick={() => handleToolClick("/forum")}
-                delay={0}
-              />
-              <ToolCard
-                icon={BookOpen}
-                title="بلاگ"
-                description="مقالات آموزشی"
-                gradient="bg-gradient-to-br from-teal-500 to-cyan-500"
-                onClick={() => handleToolClick("/blog")}
-                delay={0.03}
-              />
-              <ToolCard
-                icon={User}
-                title="معرفی به دوستان"
-                description="جوایز دعوت"
-                gradient="bg-gradient-to-br from-blue-500 to-indigo-500"
-                onClick={() => handleToolClick("/referral")}
-                delay={0.06}
-              />
-            </div>
-          </TabsContent>
-        </Tabs>
+        {/* 3D Carousel Categories */}
+        <Carousel3D
+          items={[
+            {
+              key: "ai",
+              label: "هوش مصنوعی",
+              icon: <Brain className="w-6 h-6 text-white" />,
+              color: "gradient-primary",
+              content: (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                  <ToolCard icon={HelpCircle} title="پرسش درسی" description="سوالت رو بپرس، جواب بگیر" gradient="gradient-primary" onClick={() => handleToolClick("/questions")} delay={0} />
+                  <ToolCard icon={FileText} title="خلاصه‌ساز هوشمند" description="متن بده، خلاصه بگیر" gradient="gradient-secondary" onClick={() => handleToolClick("/summarize")} delay={0.03} />
+                  <ToolCard icon={CheckSquare} title="آزمون‌ساز AI" description="آزمون شخصی‌سازی شده" gradient="gradient-accent" onClick={() => handleToolClick("/exam")} delay={0.06} />
+                  <ToolCard icon={Brain} title="مشاور هوشمند" description="راهنمایی تحصیلی" gradient="gradient-primary" onClick={() => handleToolClick("/consultation")} delay={0.09} />
+                  <ToolCard icon={ClipboardList} title="حل کاربرگ" description="عکس بگیر، جواب ببین" gradient="gradient-secondary" onClick={() => handleToolClick("/worksheet-solver")} delay={0.12} />
+                  <ToolCard icon={BookCheck} title="حل تکالیف" description="راهنمای گام به گام" gradient="gradient-accent" onClick={() => handleToolClick("/homework-helper")} delay={0.15} />
+                  <ToolCard icon={Sparkles} title="دوست هوشمند" description="چت با AI دوستانه" gradient="bg-gradient-to-br from-purple-500 to-pink-500" onClick={() => handleToolClick("/ai-buddy")} delay={0.18} />
+                  <ToolCard icon={Zap} title="همراه مطالعه" description="تحلیل سبک یادگیری" gradient="bg-gradient-to-br from-amber-500 to-orange-500" onClick={() => handleToolClick("/study-companion")} delay={0.21} />
+                </div>
+              ),
+            },
+            {
+              key: "study",
+              label: "مطالعه",
+              icon: <BookOpen className="w-6 h-6 text-white" />,
+              color: "gradient-secondary",
+              content: (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                  <ToolCard icon={NotebookPen} title="یادداشت‌ها" description="LaTeX + PDF پشتیبانی" gradient="bg-gradient-to-br from-blue-500 to-cyan-500" onClick={() => handleToolClick("/notes")} delay={0} />
+                  <ToolCard icon={Box} title="یادگیری 3D" description="مدل‌های تعاملی واقعی" gradient="bg-gradient-to-br from-cyan-500 to-teal-500" onClick={() => handleToolClick("/ar-learning")} delay={0.03} />
+                  <ToolCard icon={Calendar} title="تقویم درسی" description="برنامه‌ریزی هوشمند" gradient="gradient-primary" onClick={() => handleToolClick("/study-calendar")} delay={0.06} />
+                  <ToolCard icon={Target} title="اهداف من" description="پیگیری پیشرفت" gradient="gradient-secondary" onClick={() => handleToolClick("/goals-tracker")} delay={0.09} />
+                  <ToolCard icon={BarChart3} title="گزارش پیشرفت" description="نمودار عملکرد" gradient="gradient-accent" onClick={() => handleToolClick("/progress")} delay={0.12} />
+                  <ToolCard icon={BookOpen} title="منابع درسی" description="کتاب‌ها و جزوات" gradient="gradient-primary" onClick={() => handleToolClick("/resources")} delay={0.15} />
+                  <ToolCard icon={Brain} title="نقشه ذهنی" description="سازماندهی ایده‌ها" gradient="bg-gradient-to-br from-violet-500 to-purple-500" onClick={() => handleToolClick("/mindmap-ai")} delay={0.18} />
+                  <ToolCard icon={CheckSquare} title="فلش‌کارت" description="مرور سریع مطالب" gradient="bg-gradient-to-br from-emerald-500 to-green-500" onClick={() => handleToolClick("/flashcards")} delay={0.21} />
+                </div>
+              ),
+            },
+            {
+              key: "gamification",
+              label: "بازی",
+              icon: <Gamepad2 className="w-6 h-6 text-white" />,
+              color: "gradient-accent",
+              content: (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                  <ToolCard icon={Flame} title="استریک مطالعه" description="ردیابی روزهای متوالی" gradient="bg-gradient-to-br from-orange-500 to-red-500" onClick={() => handleToolClick("/study-streak")} delay={0} />
+                  <ToolCard icon={Swords} title="نبرد مطالعه" description="رقابت آنلاین" gradient="bg-gradient-to-br from-red-500 to-rose-500" onClick={() => handleToolClick("/study-battle")} delay={0.03} />
+                  <ToolCard icon={Heart} title="دیوار انگیزشی" description="جملات الهام‌بخش" gradient="bg-gradient-to-br from-pink-500 to-rose-500" onClick={() => handleToolClick("/motivation-wall")} delay={0.06} />
+                  <ToolCard icon={Trophy} title="ماموریت روزانه" description="جوایز ویژه" gradient="bg-gradient-to-br from-yellow-500 to-amber-500" onClick={() => handleToolClick("/daily-quests")} delay={0.09} />
+                  <ToolCard icon={User} title="حیوان خانگی" description="پرورش با مطالعه" gradient="bg-gradient-to-br from-lime-500 to-green-500" onClick={() => handleToolClick("/pet")} delay={0.12} />
+                  <ToolCard icon={Trophy} title="جدول امتیازات" description="رقابت با دوستان" gradient="gradient-primary" onClick={() => handleToolClick("/leaderboard")} delay={0.15} />
+                  <ToolCard icon={Music} title="موزیک مطالعه" description="تمرکز با موسیقی" gradient="bg-gradient-to-br from-indigo-500 to-purple-500" onClick={() => handleToolClick("/music-player")} delay={0.18} />
+                  <ToolCard icon={Zap} title="پومودورو" description="تایمر تمرکز" gradient="bg-gradient-to-br from-rose-500 to-pink-500" onClick={() => handleToolClick("/pomodoro")} delay={0.21} />
+                </div>
+              ),
+            },
+            {
+              key: "social",
+              label: "اجتماعی",
+              icon: <Users className="w-6 h-6 text-white" />,
+              color: "bg-gradient-to-br from-green-500 to-emerald-600",
+              content: (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                  <ToolCard icon={Users} title="انجمن" description="گفتگو با دانش‌آموزان" gradient="bg-gradient-to-br from-green-500 to-emerald-500" onClick={() => handleToolClick("/forum")} delay={0} />
+                  <ToolCard icon={BookOpen} title="بلاگ" description="مقالات آموزشی" gradient="bg-gradient-to-br from-teal-500 to-cyan-500" onClick={() => handleToolClick("/blog")} delay={0.03} />
+                  <ToolCard icon={User} title="معرفی به دوستان" description="جوایز دعوت" gradient="bg-gradient-to-br from-blue-500 to-indigo-500" onClick={() => handleToolClick("/referral")} delay={0.06} />
+                </div>
+              ),
+            },
+          ]}
+        />
       </div>
     </AppLayout>
   );
