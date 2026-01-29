@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
-import AppLayout from "@/components/layout/AppLayout";
+import PlatformLayout from "@/components/layout/PlatformLayout";
 import { usePageView } from "@/hooks/usePageView";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -9,7 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Search, Upload, Play, ThumbsUp, Eye, Clock, 
-  Flame, TrendingUp, History, Bookmark, Home
+  Flame, TrendingUp, History, Bookmark, Home, Video
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import VideoCard from "@/components/easytube/VideoCard";
@@ -239,17 +239,25 @@ const EasyTube = () => {
 
   if (loading) {
     return (
-      <AppLayout>
-        <div className="container mx-auto px-4 py-4 max-w-6xl pb-24 lg:pb-6">
+      <PlatformLayout
+        platformName="ایزی تیوب"
+        platformIcon={<Video className="w-5 h-5 text-white" />}
+        platformColor="bg-gradient-to-br from-red-500 to-rose-600"
+      >
+        <div className="container mx-auto px-4 py-4 max-w-6xl pb-6">
           <DashboardSkeleton />
         </div>
-      </AppLayout>
+      </PlatformLayout>
     );
   }
 
   return (
-    <AppLayout>
-      <div className="container mx-auto px-4 py-4 max-w-6xl space-y-4 pb-24 lg:pb-6">
+    <PlatformLayout
+      platformName="ایزی تیوب"
+      platformIcon={<Video className="w-5 h-5 text-white" />}
+      platformColor="bg-gradient-to-br from-red-500 to-rose-600"
+    >
+      <div className="container mx-auto px-4 py-4 max-w-6xl space-y-4 pb-6">
         {/* Header */}
         <motion.div 
           initial={{ opacity: 0, y: -10 }}
@@ -384,7 +392,7 @@ const EasyTube = () => {
           }}
         />
       </div>
-    </AppLayout>
+    </PlatformLayout>
   );
 };
 

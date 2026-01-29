@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
-import AppLayout from "@/components/layout/AppLayout";
+import PlatformLayout from "@/components/layout/PlatformLayout";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { motion } from "framer-motion";
@@ -177,32 +177,34 @@ const EasyTubeChannel = () => {
 
   if (loading) {
     return (
-      <AppLayout>
+      <PlatformLayout
+        platformName="ایزی تیوب"
+        platformIcon={<Video className="w-5 h-5 text-white" />}
+        platformColor="bg-gradient-to-br from-red-500 to-rose-600"
+        backPath="/easytube"
+        backLabel="برگشت به ایزی تیوب"
+      >
         <div className="container mx-auto px-4 py-8 max-w-6xl">
           <div className="animate-pulse space-y-4">
             <div className="h-32 bg-muted rounded-xl" />
             <div className="h-6 bg-muted rounded w-1/4" />
           </div>
         </div>
-      </AppLayout>
+      </PlatformLayout>
     );
   }
 
   if (!channel) return null;
 
   return (
-    <AppLayout>
-      <div className="container mx-auto px-4 py-4 max-w-6xl space-y-6 pb-24 lg:pb-6">
-        {/* Back Button */}
-        <Button 
-          variant="ghost" 
-          size="sm"
-          onClick={() => navigate("/easytube")}
-          className="gap-2"
-        >
-          <ArrowRight className="w-4 h-4" />
-          برگشت به ایزی تیوب
-        </Button>
+    <PlatformLayout
+      platformName="ایزی تیوب"
+      platformIcon={<Video className="w-5 h-5 text-white" />}
+      platformColor="bg-gradient-to-br from-red-500 to-rose-600"
+      backPath="/easytube"
+      backLabel="برگشت به ایزی تیوب"
+    >
+      <div className="container mx-auto px-4 py-4 max-w-6xl space-y-6 pb-6">
 
         {/* Channel Header */}
         <motion.div 
@@ -328,7 +330,7 @@ const EasyTubeChannel = () => {
           }}
         />
       </div>
-    </AppLayout>
+    </PlatformLayout>
   );
 };
 

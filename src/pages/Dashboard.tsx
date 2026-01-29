@@ -101,15 +101,15 @@ const Dashboard = () => {
       onClick={onClick}
       className="group cursor-pointer touch-target"
     >
-      <div className="relative bg-card rounded-2xl p-4 border border-border/40 hover:border-primary/50 transition-all duration-200 hover:shadow-md active:scale-[0.98]">
-        <div className="flex items-center gap-3">
-          <div className={`${gradient} p-3 rounded-xl shadow-sm flex-shrink-0`}>
-            <Icon className="w-5 h-5 text-white" strokeWidth={2} />
+      <div className="relative bg-card rounded-2xl p-3 sm:p-4 border border-border/40 hover:border-primary/50 transition-all duration-200 hover:shadow-lg active:scale-[0.98]">
+        <div className="flex items-center gap-2 sm:gap-3">
+          <div className={`${gradient} p-2 sm:p-3 rounded-xl shadow-sm flex-shrink-0`}>
+            <Icon className="w-4 h-4 sm:w-5 sm:h-5 text-white" strokeWidth={2} />
           </div>
           <div className="flex-1 min-w-0">
-            <h3 className="font-bold text-sm text-foreground truncate">{title}</h3>
+            <h3 className="font-bold text-xs sm:text-sm text-foreground truncate">{title}</h3>
             {description && (
-              <p className="text-xs text-muted-foreground truncate mt-0.5">{description}</p>
+              <p className="text-[10px] sm:text-xs text-muted-foreground truncate mt-0.5">{description}</p>
             )}
           </div>
           <ChevronLeft className="w-4 h-4 text-muted-foreground/40 group-hover:text-primary transition-colors flex-shrink-0" />
@@ -205,14 +205,14 @@ const Dashboard = () => {
               icon: <Brain className="w-6 h-6 text-white" />,
               color: "gradient-primary",
               content: (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                  <ToolCard icon={HelpCircle} title="پرسش درسی" description="سوالت رو بپرس، جواب بگیر" gradient="gradient-primary" onClick={() => handleToolClick("/questions")} delay={0} />
-                  <ToolCard icon={FileText} title="خلاصه‌ساز هوشمند" description="متن بده، خلاصه بگیر" gradient="gradient-secondary" onClick={() => handleToolClick("/summarize")} delay={0.03} />
-                  <ToolCard icon={CheckSquare} title="آزمون‌ساز AI" description="آزمون شخصی‌سازی شده" gradient="gradient-accent" onClick={() => handleToolClick("/exam")} delay={0.06} />
-                  <ToolCard icon={Brain} title="مشاور هوشمند" description="راهنمایی تحصیلی" gradient="gradient-primary" onClick={() => handleToolClick("/consultation")} delay={0.09} />
+                <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-3">
+                  <ToolCard icon={HelpCircle} title="پرسش درسی" description="سوالت رو بپرس" gradient="gradient-primary" onClick={() => handleToolClick("/questions")} delay={0} />
+                  <ToolCard icon={FileText} title="خلاصه‌ساز" description="متن بده، خلاصه بگیر" gradient="gradient-secondary" onClick={() => handleToolClick("/summarize")} delay={0.03} />
+                  <ToolCard icon={CheckSquare} title="آزمون‌ساز" description="آزمون شخصی" gradient="gradient-accent" onClick={() => handleToolClick("/exam")} delay={0.06} />
+                  <ToolCard icon={Brain} title="مشاور" description="راهنمایی تحصیلی" gradient="gradient-primary" onClick={() => handleToolClick("/consultation")} delay={0.09} />
                   <ToolCard icon={ClipboardList} title="حل کاربرگ" description="عکس بگیر، جواب ببین" gradient="gradient-secondary" onClick={() => handleToolClick("/worksheet-solver")} delay={0.12} />
                   <ToolCard icon={BookCheck} title="حل تکالیف" description="راهنمای گام به گام" gradient="gradient-accent" onClick={() => handleToolClick("/homework-helper")} delay={0.15} />
-                  <ToolCard icon={Sparkles} title="دوست هوشمند" description="چت با AI دوستانه" gradient="bg-gradient-to-br from-purple-500 to-pink-500" onClick={() => handleToolClick("/ai-buddy")} delay={0.18} />
+                  <ToolCard icon={Sparkles} title="دوست هوشمند" description="چت با AI" gradient="bg-gradient-to-br from-purple-500 to-pink-500" onClick={() => handleToolClick("/ai-buddy")} delay={0.18} />
                   <ToolCard icon={Zap} title="همراه مطالعه" description="تحلیل سبک یادگیری" gradient="bg-gradient-to-br from-amber-500 to-orange-500" onClick={() => handleToolClick("/study-companion")} delay={0.21} />
                 </div>
               ),
@@ -223,15 +223,15 @@ const Dashboard = () => {
               icon: <BookOpen className="w-6 h-6 text-white" />,
               color: "gradient-secondary",
               content: (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                  <ToolCard icon={NotebookPen} title="یادداشت‌ها" description="LaTeX + PDF پشتیبانی" gradient="bg-gradient-to-br from-blue-500 to-cyan-500" onClick={() => handleToolClick("/notes")} delay={0} />
-                  <ToolCard icon={Box} title="یادگیری 3D" description="مدل‌های تعاملی واقعی" gradient="bg-gradient-to-br from-cyan-500 to-teal-500" onClick={() => handleToolClick("/ar-learning")} delay={0.03} />
+                <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-3">
+                  <ToolCard icon={NotebookPen} title="یادداشت‌ها" description="LaTeX + PDF" gradient="bg-gradient-to-br from-blue-500 to-cyan-500" onClick={() => handleToolClick("/notes")} delay={0} />
+                  <ToolCard icon={Box} title="یادگیری 3D" description="مدل‌های تعاملی" gradient="bg-gradient-to-br from-cyan-500 to-teal-500" onClick={() => handleToolClick("/ar-learning")} delay={0.03} />
                   <ToolCard icon={Calendar} title="تقویم درسی" description="برنامه‌ریزی هوشمند" gradient="gradient-primary" onClick={() => handleToolClick("/study-calendar")} delay={0.06} />
                   <ToolCard icon={Target} title="اهداف من" description="پیگیری پیشرفت" gradient="gradient-secondary" onClick={() => handleToolClick("/goals-tracker")} delay={0.09} />
                   <ToolCard icon={BarChart3} title="گزارش پیشرفت" description="نمودار عملکرد" gradient="gradient-accent" onClick={() => handleToolClick("/progress")} delay={0.12} />
                   <ToolCard icon={BookOpen} title="منابع درسی" description="کتاب‌ها و جزوات" gradient="gradient-primary" onClick={() => handleToolClick("/resources")} delay={0.15} />
                   <ToolCard icon={Brain} title="نقشه ذهنی" description="سازماندهی ایده‌ها" gradient="bg-gradient-to-br from-violet-500 to-purple-500" onClick={() => handleToolClick("/mindmap-ai")} delay={0.18} />
-                  <ToolCard icon={CheckSquare} title="فلش‌کارت" description="مرور سریع مطالب" gradient="bg-gradient-to-br from-emerald-500 to-green-500" onClick={() => handleToolClick("/flashcards")} delay={0.21} />
+                  <ToolCard icon={CheckSquare} title="فلش‌کارت" description="مرور سریع" gradient="bg-gradient-to-br from-emerald-500 to-green-500" onClick={() => handleToolClick("/flashcards")} delay={0.21} />
                 </div>
               ),
             },
@@ -241,8 +241,8 @@ const Dashboard = () => {
               icon: <Gamepad2 className="w-6 h-6 text-white" />,
               color: "gradient-accent",
               content: (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                  <ToolCard icon={Flame} title="استریک مطالعه" description="ردیابی روزهای متوالی" gradient="bg-gradient-to-br from-orange-500 to-red-500" onClick={() => handleToolClick("/study-streak")} delay={0} />
+                <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-3">
+                  <ToolCard icon={Flame} title="استریک" description="روزهای متوالی" gradient="bg-gradient-to-br from-orange-500 to-red-500" onClick={() => handleToolClick("/study-streak")} delay={0} />
                   <ToolCard icon={Swords} title="نبرد مطالعه" description="رقابت آنلاین" gradient="bg-gradient-to-br from-red-500 to-rose-500" onClick={() => handleToolClick("/study-battle")} delay={0.03} />
                   <ToolCard icon={Heart} title="دیوار انگیزشی" description="جملات الهام‌بخش" gradient="bg-gradient-to-br from-pink-500 to-rose-500" onClick={() => handleToolClick("/motivation-wall")} delay={0.06} />
                   <ToolCard icon={Trophy} title="ماموریت روزانه" description="جوایز ویژه" gradient="bg-gradient-to-br from-yellow-500 to-amber-500" onClick={() => handleToolClick("/daily-quests")} delay={0.09} />
@@ -259,9 +259,9 @@ const Dashboard = () => {
               icon: <Users className="w-6 h-6 text-white" />,
               color: "bg-gradient-to-br from-green-500 to-emerald-600",
               content: (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-3">
                   <ToolCard icon={Users} title="انجمن" description="گفتگو با دانش‌آموزان" gradient="bg-gradient-to-br from-green-500 to-emerald-500" onClick={() => handleToolClick("/forum")} delay={0} />
-                  <ToolCard icon={BookOpen} title="بلاگ" description="مقالات آموزشی" gradient="bg-gradient-to-br from-teal-500 to-cyan-500" onClick={() => handleToolClick("/blog")} delay={0.03} />
+                  <ToolCard icon={BookOpen} title="ایزی بلاگ" description="مقالات آموزشی" gradient="bg-gradient-to-br from-teal-500 to-cyan-500" onClick={() => handleToolClick("/easyblog")} delay={0.03} />
                   <ToolCard icon={User} title="معرفی به دوستان" description="جوایز دعوت" gradient="bg-gradient-to-br from-blue-500 to-indigo-500" onClick={() => handleToolClick("/referral")} delay={0.06} />
                 </div>
               ),

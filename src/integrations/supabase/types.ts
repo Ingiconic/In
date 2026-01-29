@@ -168,8 +168,10 @@ export type Database = {
           published: boolean | null
           published_at: string | null
           slug: string
+          status: string | null
           title: string
           updated_at: string | null
+          user_id: string | null
         }
         Insert: {
           content: string
@@ -180,8 +182,10 @@ export type Database = {
           published?: boolean | null
           published_at?: string | null
           slug: string
+          status?: string | null
           title: string
           updated_at?: string | null
+          user_id?: string | null
         }
         Update: {
           content?: string
@@ -192,8 +196,10 @@ export type Database = {
           published?: boolean | null
           published_at?: string | null
           slug?: string
+          status?: string | null
           title?: string
           updated_at?: string | null
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -2046,6 +2052,51 @@ export type Database = {
         }
         Relationships: []
       }
+      user_blogs: {
+        Row: {
+          content: string
+          created_at: string
+          excerpt: string | null
+          featured_image: string | null
+          id: string
+          published_at: string | null
+          rejection_reason: string | null
+          slug: string
+          status: string | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          excerpt?: string | null
+          featured_image?: string | null
+          id?: string
+          published_at?: string | null
+          rejection_reason?: string | null
+          slug: string
+          status?: string | null
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          excerpt?: string | null
+          featured_image?: string | null
+          id?: string
+          published_at?: string | null
+          rejection_reason?: string | null
+          slug?: string
+          status?: string | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_daily_quests: {
         Row: {
           completed: boolean | null
@@ -2374,6 +2425,7 @@ export type Database = {
           id: string
           is_public: boolean | null
           likes_count: number | null
+          status: string | null
           thumbnail_url: string | null
           title: string
           updated_at: string
@@ -2390,6 +2442,7 @@ export type Database = {
           id?: string
           is_public?: boolean | null
           likes_count?: number | null
+          status?: string | null
           thumbnail_url?: string | null
           title: string
           updated_at?: string
@@ -2406,6 +2459,7 @@ export type Database = {
           id?: string
           is_public?: boolean | null
           likes_count?: number | null
+          status?: string | null
           thumbnail_url?: string | null
           title?: string
           updated_at?: string

@@ -57,6 +57,9 @@ import AdminTickets from "./pages/AdminTickets";
 import EasyTube from "./pages/EasyTube";
 import EasyTubeWatch from "./pages/EasyTubeWatch";
 import EasyTubeChannel from "./pages/EasyTubeChannel";
+import EasyBlog from "./pages/EasyBlog";
+import EasyBlogPost from "./pages/EasyBlogPost";
+import AdminContent from "./pages/AdminContent";
 
 const queryClient = new QueryClient();
 
@@ -125,6 +128,9 @@ const App = () => (
               <Route path="/easytube" element={<EasyTube />} />
               <Route path="/easytube/watch/:videoId" element={<EasyTubeWatch />} />
               <Route path="/easytube/channel/:channelId" element={<EasyTubeChannel />} />
+              <Route path="/easyblog" element={<EasyBlog />} />
+              <Route path="/easyblog/post/:postId" element={<EasyBlogPost />} />
+              <Route path="/admin/content" element={<AdminContent />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
           </Routes>

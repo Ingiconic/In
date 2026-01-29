@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
-import AppLayout from "@/components/layout/AppLayout";
+import PlatformLayout from "@/components/layout/PlatformLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -10,7 +10,7 @@ import { motion } from "framer-motion";
 import { 
   ThumbsUp, Eye, Share2, Bookmark, BookmarkCheck, 
   Bell, BellOff, Send, MessageCircle, ChevronDown,
-  ChevronUp, ArrowRight, Play
+  ChevronUp, ArrowRight, Play, Video
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { formatDistanceToNow } from "date-fns";
@@ -391,7 +391,13 @@ const EasyTubeWatch = () => {
 
   if (loading) {
     return (
-      <AppLayout>
+      <PlatformLayout
+        platformName="ایزی تیوب"
+        platformIcon={<Video className="w-5 h-5 text-white" />}
+        platformColor="bg-gradient-to-br from-red-500 to-rose-600"
+        backPath="/easytube"
+        backLabel="برگشت به ایزی تیوب"
+      >
         <div className="container mx-auto px-4 py-8 max-w-7xl">
           <div className="animate-pulse">
             <div className="aspect-video bg-muted rounded-xl mb-4" />
@@ -399,28 +405,24 @@ const EasyTubeWatch = () => {
             <div className="h-4 bg-muted rounded w-1/2" />
           </div>
         </div>
-      </AppLayout>
+      </PlatformLayout>
     );
   }
 
   if (!video) return null;
 
   return (
-    <AppLayout>
-      <div className="container mx-auto px-4 py-4 max-w-7xl pb-24 lg:pb-6">
+    <PlatformLayout
+      platformName="ایزی تیوب"
+      platformIcon={<Video className="w-5 h-5 text-white" />}
+      platformColor="bg-gradient-to-br from-red-500 to-rose-600"
+      backPath="/easytube"
+      backLabel="برگشت به ایزی تیوب"
+    >
+      <div className="container mx-auto px-4 py-4 max-w-7xl pb-6">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-4">
-            {/* Back Button */}
-            <Button 
-              variant="ghost" 
-              size="sm"
-              onClick={() => navigate("/easytube")}
-              className="gap-2"
-            >
-              <ArrowRight className="w-4 h-4" />
-              برگشت به ایزی تیوب
-            </Button>
 
             {/* Video Player */}
             <motion.div 
@@ -705,7 +707,7 @@ const EasyTubeWatch = () => {
           </div>
         </div>
       </div>
-    </AppLayout>
+    </PlatformLayout>
   );
 };
 
