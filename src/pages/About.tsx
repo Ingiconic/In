@@ -35,35 +35,33 @@ const About = () => {
   const navigate = useNavigate();
 
   const stats = [
-    { number: "۱۰+", label: "سال تجربه", icon: Clock },
     { number: "۵۰۰+", label: "هزار کاربر", icon: Users },
     { number: "۱M+", label: "آزمون تولید شده", icon: BookOpen },
-    { number: "۹۸٪", label: "رضایت کاربران", icon: Star },
   ];
 
   const teamMembers = [
     {
       name: "مهدی رنجبر",
       role: "موسس و مدیر ارشد اجرایی (CEO)",
-      description: "بنیان‌گذار ایزی درس با بیش از یک دهه تجربه در حوزه فناوری آموزشی و توسعه پلتفرم‌های یادگیری هوشمند",
+      description: "بنیان‌گذار ایزی درس با تجربه در حوزه فناوری آموزشی و توسعه پلتفرم‌های یادگیری هوشمند",
       icon: Building2,
     },
     {
       name: "تیم توسعه",
       role: "واحد فنی و مهندسی",
-      description: "متشکل از متخصصان هوش مصنوعی، توسعه‌دهندگان ارشد و مهندسان نرم‌افزار با تجربه در شرکت‌های بین‌المللی",
+      description: "متشکل از متخصصان هوش مصنوعی، توسعه‌دهندگان و مهندسان نرم‌افزار",
       icon: Brain,
     },
     {
       name: "تیم محتوا",
       role: "واحد تولید محتوای آموزشی",
-      description: "گروهی از معلمان برتر، اساتید دانشگاه و متخصصان حوزه‌های مختلف علمی برای تضمین کیفیت محتوا",
+      description: "گروهی از معلمان و متخصصان حوزه‌های مختلف علمی برای تضمین کیفیت محتوا",
       icon: GraduationCap,
     },
     {
       name: "تیم پشتیبانی",
       role: "واحد ارتباط با کاربران",
-      description: "تیم متعهد ۲۴ ساعته برای پاسخگویی و راهنمایی کاربران در هر زمان",
+      description: "تیم پاسخگویی و راهنمایی کاربران",
       icon: HeartHandshake,
     },
   ];
@@ -101,12 +99,7 @@ const About = () => {
     },
   ];
 
-  const achievements = [
-    { title: "برترین استارتاپ آموزشی ۱۴۰۲", icon: Medal },
-    { title: "گواهی امنیت اطلاعات ISO 27001", icon: Shield },
-    { title: "عضو رسمی پارک فناوری", icon: Building2 },
-    { title: "همکاری با ۱۰۰+ مدرسه", icon: GraduationCap },
-  ];
+  // Achievements removed - only showing real stats
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
@@ -149,7 +142,7 @@ const About = () => {
             ایزی درس
           </h2>
           <p className="text-base md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed px-2">
-            پیشگام در آموزش هوشمند ایران | بیش از یک دهه تجربه در خدمت یادگیری
+            پلتفرم آموزش هوشمند ایران | از سال ۱۴۰۳ در خدمت یادگیری
           </p>
           
           {/* Trust Badge */}
@@ -170,15 +163,15 @@ const About = () => {
         </div>
 
         {/* Stats Section */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6 mb-10 md:mb-16">
+        <div className="grid grid-cols-2 gap-4 md:gap-6 mb-10 md:mb-16 max-w-md mx-auto">
           {stats.map((stat, index) => (
             <Card 
               key={index}
-              className="p-4 md:p-6 text-center border-2 border-border/30 hover:border-primary/50 transition-all bg-gradient-to-br from-card to-primary/5"
+              className="p-6 md:p-8 text-center border-2 border-border/30 hover:border-primary/50 transition-all bg-gradient-to-br from-card to-primary/5"
             >
-              <stat.icon className="w-6 h-6 md:w-8 md:h-8 text-primary mx-auto mb-2" />
-              <p className="text-2xl md:text-4xl font-black text-primary">{stat.number}</p>
-              <p className="text-xs md:text-sm text-muted-foreground mt-1">{stat.label}</p>
+              <stat.icon className="w-8 h-8 md:w-10 md:h-10 text-primary mx-auto mb-3" />
+              <p className="text-3xl md:text-5xl font-black text-primary">{stat.number}</p>
+              <p className="text-sm md:text-base text-muted-foreground mt-2">{stat.label}</p>
             </Card>
           ))}
         </div>
@@ -195,10 +188,10 @@ const About = () => {
                   داستان ایزی درس
                 </h3>
                 <p className="text-muted-foreground text-lg leading-relaxed">
-                  <strong className="text-foreground">ایزی درس</strong> در سال ۱۳۹۲ با یک هدف بزرگ متولد شد: 
-                  دموکراتیزه کردن دسترسی به آموزش باکیفیت. از آن زمان تاکنون، تیم ایزی درس با تلاش شبانه‌روزی 
-                  توانسته به بیش از <strong className="text-primary">۵۰۰ هزار دانش‌آموز و دانشجو</strong> در 
-                  سراسر ایران خدمات آموزشی ارائه دهد.
+                  <strong className="text-foreground">ایزی درس</strong> در سال ۱۴۰۳ با یک هدف بزرگ متولد شد: 
+                  دموکراتیزه کردن دسترسی به آموزش باکیفیت. تیم ایزی درس با تلاش شبانه‌روزی 
+                  در حال خدمت‌رسانی به <strong className="text-primary">دانش‌آموزان و دانشجویان</strong> در 
+                  سراسر ایران است.
                 </p>
               </div>
             </div>
@@ -223,9 +216,9 @@ const About = () => {
                 </div>
               </AccordionTrigger>
               <AccordionContent className="pb-4 text-muted-foreground leading-relaxed text-sm">
-                <strong className="text-foreground">ایزی درس</strong> در سال ۱۳۹۲ با هدف دموکراتیزه کردن 
-                دسترسی به آموزش باکیفیت متولد شد. تیم ایزی درس توانسته به بیش از 
-                <strong className="text-primary"> ۵۰۰ هزار دانش‌آموز</strong> خدمات ارائه دهد.
+                <strong className="text-foreground">ایزی درس</strong> در سال ۱۴۰۳ با هدف دموکراتیزه کردن 
+                دسترسی به آموزش باکیفیت متولد شد. تیم ایزی درس در حال خدمت‌رسانی به 
+                <strong className="text-primary"> دانش‌آموزان و دانشجویان</strong> سراسر ایران است.
               </AccordionContent>
             </AccordionItem>
           </Accordion>
@@ -361,28 +354,6 @@ const About = () => {
           </div>
         </div>
 
-        {/* Achievements & Trust Section */}
-        <div className="mb-10 md:mb-16">
-          <h3 className="text-2xl md:text-3xl font-bold text-center mb-6 md:mb-10 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-            افتخارات و گواهینامه‌ها
-          </h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
-            {achievements.map((achievement, index) => (
-              <Card 
-                key={index}
-                className="p-4 md:p-6 text-center border-2 border-border/30 hover:border-primary/50 transition-all bg-gradient-to-br from-card to-primary/5"
-              >
-                <div className="inline-flex p-2 md:p-3 rounded-xl bg-gradient-to-br from-primary/20 to-secondary/20 mb-2 md:mb-3">
-                  <achievement.icon className="w-5 h-5 md:w-6 md:h-6 text-primary" />
-                </div>
-                <p className="text-xs md:text-sm font-medium text-foreground leading-tight">
-                  {achievement.title}
-                </p>
-              </Card>
-            ))}
-          </div>
-        </div>
-
         {/* Quality & Security - Desktop Cards */}
         <div className="hidden md:grid md:grid-cols-2 gap-6 mb-12">
           <Card className="p-8 border-2 hover:border-primary/50 transition-all hover:shadow-xl bg-gradient-to-br from-card to-card/50">
@@ -393,11 +364,8 @@ const About = () => {
               <h3 className="text-2xl font-bold">تعهد به کیفیت</h3>
             </div>
             <p className="text-muted-foreground leading-relaxed mb-3">
-              تیم ایزی درس با بیش از یک دهه تجربه، استانداردهای سختگیرانه‌ای برای تضمین کیفیت محتوای 
+              تیم ایزی درس استانداردهای سختگیرانه‌ای برای تضمین کیفیت محتوای 
               آموزشی تعریف کرده است. هر محتوا قبل از انتشار توسط کارشناسان حوزه بررسی می‌شود.
-            </p>
-            <p className="text-muted-foreground leading-relaxed">
-              همکاری با بیش از ۱۰۰ مدرسه و موسسه آموزشی گواه اعتماد جامعه آموزشی به ماست.
             </p>
           </Card>
 
@@ -409,11 +377,8 @@ const About = () => {
               <h3 className="text-2xl font-bold">امنیت و حریم خصوصی</h3>
             </div>
             <p className="text-muted-foreground leading-relaxed mb-3">
-              دارای گواهینامه امنیت اطلاعات ISO 27001. تمام داده‌های کاربران با بالاترین استانداردهای 
+              تمام داده‌های کاربران با بالاترین استانداردهای 
               امنیتی محافظت می‌شوند و هرگز با شخص ثالثی به اشتراک گذاشته نمی‌شوند.
-            </p>
-            <p className="text-muted-foreground leading-relaxed">
-              سرورهای ما در دیتاسنترهای معتبر ایران با پشتیبان‌گیری روزانه قرار دارند.
             </p>
           </Card>
         </div>
@@ -431,8 +396,8 @@ const About = () => {
                 </div>
               </AccordionTrigger>
               <AccordionContent className="pb-4 text-muted-foreground leading-relaxed text-sm">
-                تیم ایزی درس با بیش از یک دهه تجربه، استانداردهای سختگیرانه‌ای برای تضمین کیفیت 
-                تعریف کرده است. همکاری با بیش از ۱۰۰ مدرسه گواه اعتماد جامعه آموزشی است.
+                تیم ایزی درس استانداردهای سختگیرانه‌ای برای تضمین کیفیت 
+                تعریف کرده است.
               </AccordionContent>
             </AccordionItem>
 
@@ -446,8 +411,8 @@ const About = () => {
                 </div>
               </AccordionTrigger>
               <AccordionContent className="pb-4 text-muted-foreground leading-relaxed text-sm">
-                دارای گواهینامه ISO 27001. تمام داده‌ها با بالاترین استانداردهای امنیتی محافظت 
-                می‌شوند. سرورها در دیتاسنترهای معتبر با پشتیبان‌گیری روزانه.
+                تمام داده‌ها با بالاترین استانداردهای امنیتی محافظت 
+                می‌شوند.
               </AccordionContent>
             </AccordionItem>
           </Accordion>
@@ -513,7 +478,7 @@ const About = () => {
               همین امروز شروع کنید
             </h3>
             <p className="text-sm md:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed mb-6">
-              به جمع بیش از <strong className="text-primary">۵۰۰ هزار</strong> کاربر ایزی درس بپیوندید و 
+              به جمع کاربران ایزی درس بپیوندید و 
               تجربه‌ای متفاوت از یادگیری را تجربه کنید.
             </p>
             <Button 
