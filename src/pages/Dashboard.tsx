@@ -164,13 +164,22 @@ const Dashboard = () => {
             </div>
             
             {isLoggedIn ? (
-              <button
-                onClick={() => navigate("/easytube")}
-                className="flex items-center gap-2 bg-gradient-to-r from-red-500 to-rose-600 text-white px-4 py-3 rounded-xl font-bold text-sm active:scale-95 transition-transform shadow-lg hover:shadow-xl w-full sm:w-auto touch-target"
-              >
-                <Play className="w-5 h-5" />
-                <span>ایزی تیوب 📺</span>
-              </button>
+              <div className="flex gap-2 w-full sm:w-auto">
+                <button
+                  onClick={() => navigate("/easytube")}
+                  className="flex items-center gap-2 bg-gradient-to-r from-red-500 to-rose-600 text-white px-3 py-2.5 rounded-xl font-bold text-xs sm:text-sm active:scale-95 transition-transform shadow-lg hover:shadow-xl flex-1 sm:flex-none touch-target"
+                >
+                  <Play className="w-4 h-4" />
+                  <span>ایزی تیوب</span>
+                </button>
+                <button
+                  onClick={() => navigate("/easyblog")}
+                  className="flex items-center gap-2 bg-gradient-to-r from-teal-500 to-cyan-600 text-white px-3 py-2.5 rounded-xl font-bold text-xs sm:text-sm active:scale-95 transition-transform shadow-lg hover:shadow-xl flex-1 sm:flex-none touch-target"
+                >
+                  <BookOpen className="w-4 h-4" />
+                  <span>ایزی بلاگ</span>
+                </button>
+              </div>
             ) : (
               <button
                 onClick={() => navigate("/signup")}
@@ -260,9 +269,7 @@ const Dashboard = () => {
               color: "bg-gradient-to-br from-green-500 to-emerald-600",
               content: (
                 <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-3">
-                  <ToolCard icon={Users} title="انجمن" description="گفتگو با دانش‌آموزان" gradient="bg-gradient-to-br from-green-500 to-emerald-500" onClick={() => handleToolClick("/forum")} delay={0} />
-                  <ToolCard icon={BookOpen} title="ایزی بلاگ" description="مقالات آموزشی" gradient="bg-gradient-to-br from-teal-500 to-cyan-500" onClick={() => handleToolClick("/easyblog")} delay={0.03} />
-                  <ToolCard icon={User} title="معرفی به دوستان" description="جوایز دعوت" gradient="bg-gradient-to-br from-blue-500 to-indigo-500" onClick={() => handleToolClick("/referral")} delay={0.06} />
+                  <ToolCard icon={User} title="معرفی به دوستان" description="جوایز دعوت" gradient="bg-gradient-to-br from-blue-500 to-indigo-500" onClick={() => handleToolClick("/referral")} delay={0} />
                 </div>
               ),
             },

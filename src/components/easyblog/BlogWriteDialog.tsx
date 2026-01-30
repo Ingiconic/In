@@ -32,6 +32,7 @@ const BlogWriteDialog = ({ open, onOpenChange, onSuccess }: BlogWriteDialogProps
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [title, setTitle] = useState("");
+  const [authorName, setAuthorName] = useState("");
   const [content, setContent] = useState("");
   const [excerpt, setExcerpt] = useState("");
   const [featuredImage, setFeaturedImage] = useState("");
@@ -85,6 +86,7 @@ const BlogWriteDialog = ({ open, onOpenChange, onSuccess }: BlogWriteDialogProps
         content: content.trim(),
         excerpt: excerpt.trim() || null,
         featured_image: featuredImage.trim() || null,
+        author_name: authorName.trim() || null,
         status: "pending",
       });
 
@@ -92,6 +94,7 @@ const BlogWriteDialog = ({ open, onOpenChange, onSuccess }: BlogWriteDialogProps
 
       // Reset form
       setTitle("");
+      setAuthorName("");
       setContent("");
       setExcerpt("");
       setFeaturedImage("");
@@ -136,6 +139,20 @@ const BlogWriteDialog = ({ open, onOpenChange, onSuccess }: BlogWriteDialogProps
             {errors.title && (
               <p className="text-xs text-destructive">{errors.title}</p>
             )}
+          </div>
+
+          {/* Author Name */}
+          <div className="space-y-2">
+            <Label htmlFor="author_name">نام نویسنده (اختیاری)</Label>
+            <Input
+              id="author_name"
+              value={authorName}
+              onChange={(e) => setAuthorName(e.target.value)}
+              placeholder="نام خود به عنوان نویسنده..."
+            />
+            <p className="text-xs text-muted-foreground">
+              اگر خالی بگذارید، نام کاربری شما نمایش داده می‌شود
+            </p>
           </div>
 
           {/* Excerpt */}
