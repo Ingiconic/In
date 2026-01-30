@@ -30,4 +30,4 @@ User-agent: Yandex
 Crawl-delay: 2
 
 # Sitemap location
-Sitemap: https://easydars.lovable.app/sitemap.xml
+Sitemap: https://easydars.ir/sitemap.xml
