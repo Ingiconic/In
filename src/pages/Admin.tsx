@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { 
   Users, Eye, Coins, TrendingUp, Calendar, Shield,
   Plus, Minus, Search, ArrowLeft, Loader2, LogOut, BookOpen,
-  Megaphone, MessageSquare
+  Megaphone, MessageSquare, FileText
 } from "lucide-react";
 import { motion } from "framer-motion";
 import {
@@ -190,6 +190,13 @@ const Admin = () => {
             </div>
             
             <div className="flex gap-2 flex-wrap">
+              <Button
+                variant="outline"
+                onClick={() => navigate("/admin/content")}
+              >
+                <FileText className="ml-2 h-4 w-4" />
+                تایید محتوا
+              </Button>
               <Button
                 variant="outline"
                 onClick={() => navigate("/admin/blog")}

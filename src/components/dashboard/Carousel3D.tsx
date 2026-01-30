@@ -1,6 +1,5 @@
 import { useState, useRef, ReactNode } from "react";
-import { motion, useMotionValue, useTransform, animate, PanInfo } from "framer-motion";
-import { ChevronRight, ChevronLeft } from "lucide-react";
+import { motion, useMotionValue, animate, PanInfo } from "framer-motion";
 
 interface Carousel3DProps {
   items: {
@@ -17,10 +16,8 @@ const Carousel3D = ({ items }: Carousel3DProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const x = useMotionValue(0);
 
-  const rotateY = useTransform(x, [-100, 100], [15, -15]);
-
   const handleDragEnd = (event: any, info: PanInfo) => {
-    const threshold = 50;
+    const threshold = 30;
     if (info.offset.x > threshold && activeIndex > 0) {
       setActiveIndex(activeIndex - 1);
     } else if (info.offset.x < -threshold && activeIndex < items.length - 1) {
@@ -41,29 +38,29 @@ const Carousel3D = ({ items }: Carousel3DProps) => {
     
     return {
       transform: `
-        translateX(${diff * 90}%) 
-        translateZ(${isActive ? 0 : -150}px) 
-        rotateY(${diff * -25}deg)
-        scale(${isActive ? 1 : 0.75})
+        translateX(${diff * 70}%) 
+        translateZ(${isActive ? 0 : -100}px) 
+        rotateY(${diff * -20}deg)
+        scale(${isActive ? 1 : 0.7})
       `,
       zIndex: items.length - Math.abs(diff),
-      opacity: Math.abs(diff) > 1 ? 0 : 1 - Math.abs(diff) * 0.3,
+      opacity: Math.abs(diff) > 1 ? 0 : 1 - Math.abs(diff) * 0.4,
     };
   };
 
   return (
     <div className="w-full space-y-4">
-      {/* 3D Cards Container */}
+      {/* 3D Cards Container - No buttons, touch/mouse only */}
       <div 
         ref={containerRef}
-        className="relative h-[120px] perspective-1000"
-        style={{ perspective: "1000px" }}
+        className="relative h-[100px] perspective-1000 touch-pan-x"
+        style={{ perspective: "800px" }}
       >
         <motion.div 
-          className="relative w-full h-full flex items-center justify-center"
+          className="relative w-full h-full flex items-center justify-center cursor-grab active:cursor-grabbing"
           drag="x"
           dragConstraints={{ left: 0, right: 0 }}
-          dragElastic={0.1}
+          dragElastic={0.2}
           onDragEnd={handleDragEnd}
           style={{ x }}
         >
@@ -71,7 +68,7 @@ const Carousel3D = ({ items }: Carousel3DProps) => {
             <motion.div
               key={item.key}
               onClick={() => goTo(index)}
-              className={`absolute w-[200px] sm:w-[240px] cursor-pointer transition-all duration-500 ease-out`}
+              className={`absolute w-[140px] sm:w-[160px] cursor-pointer transition-all duration-400 ease-out`}
               style={{
                 ...getCardStyle(index),
                 transformStyle: "preserve-3d",
@@ -80,37 +77,21 @@ const Carousel3D = ({ items }: Carousel3DProps) => {
               <div 
                 className={`
                   ${item.color} 
-                  p-4 rounded-2xl shadow-lg 
-                  ${index === activeIndex ? 'shadow-glow ring-2 ring-white/20' : ''}
-                  transition-shadow duration-300
+                  p-3 rounded-full shadow-lg 
+                  ${index === activeIndex ? 'shadow-glow ring-2 ring-white/30 scale-105' : ''}
+                  transition-all duration-300
                 `}
               >
-                <div className="flex flex-col items-center gap-2 text-white">
-                  <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center">
+                <div className="flex items-center gap-2 text-white justify-center">
+                  <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
                     {item.icon}
                   </div>
-                  <span className="font-bold text-sm">{item.label}</span>
+                  <span className="font-bold text-xs">{item.label}</span>
                 </div>
               </div>
             </motion.div>
           ))}
         </motion.div>
-
-        {/* Navigation Arrows */}
-        <button
-          onClick={() => goTo(activeIndex - 1)}
-          disabled={activeIndex === 0}
-          className="absolute right-0 top-1/2 -translate-y-1/2 z-50 w-10 h-10 rounded-full bg-background/80 border border-border/40 flex items-center justify-center disabled:opacity-30 disabled:cursor-not-allowed hover:bg-background transition-colors"
-        >
-          <ChevronRight className="w-5 h-5" />
-        </button>
-        <button
-          onClick={() => goTo(activeIndex + 1)}
-          disabled={activeIndex === items.length - 1}
-          className="absolute left-0 top-1/2 -translate-y-1/2 z-50 w-10 h-10 rounded-full bg-background/80 border border-border/40 flex items-center justify-center disabled:opacity-30 disabled:cursor-not-allowed hover:bg-background transition-colors"
-        >
-          <ChevronLeft className="w-5 h-5" />
-        </button>
       </div>
 
       {/* Dots Indicator */}
@@ -132,10 +113,10 @@ const Carousel3D = ({ items }: Carousel3DProps) => {
       {/* Active Content */}
       <motion.div
         key={activeIndex}
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -20 }}
-        transition={{ duration: 0.3 }}
+        exit={{ opacity: 0, y: -15 }}
+        transition={{ duration: 0.25 }}
       >
         {items[activeIndex].content}
       </motion.div>

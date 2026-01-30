@@ -158,6 +158,70 @@ export type Database = {
         }
         Relationships: []
       }
+      blog_comments: {
+        Row: {
+          blog_id: string
+          content: string
+          created_at: string | null
+          id: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          blog_id: string
+          content: string
+          created_at?: string | null
+          id?: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          blog_id?: string
+          content?: string
+          created_at?: string | null
+          id?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "blog_comments_blog_id_fkey"
+            columns: ["blog_id"]
+            isOneToOne: false
+            referencedRelation: "user_blogs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      blog_likes: {
+        Row: {
+          blog_id: string
+          created_at: string | null
+          id: string
+          user_id: string
+        }
+        Insert: {
+          blog_id: string
+          created_at?: string | null
+          id?: string
+          user_id: string
+        }
+        Update: {
+          blog_id?: string
+          created_at?: string | null
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "blog_likes_blog_id_fkey"
+            columns: ["blog_id"]
+            isOneToOne: false
+            referencedRelation: "user_blogs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       blog_posts: {
         Row: {
           content: string
@@ -2054,11 +2118,13 @@ export type Database = {
       }
       user_blogs: {
         Row: {
+          author_name: string | null
           content: string
           created_at: string
           excerpt: string | null
           featured_image: string | null
           id: string
+          likes_count: number | null
           published_at: string | null
           rejection_reason: string | null
           slug: string
@@ -2068,11 +2134,13 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          author_name?: string | null
           content: string
           created_at?: string
           excerpt?: string | null
           featured_image?: string | null
           id?: string
+          likes_count?: number | null
           published_at?: string | null
           rejection_reason?: string | null
           slug: string
@@ -2082,11 +2150,13 @@ export type Database = {
           user_id: string
         }
         Update: {
+          author_name?: string | null
           content?: string
           created_at?: string
           excerpt?: string | null
           featured_image?: string | null
           id?: string
+          likes_count?: number | null
           published_at?: string | null
           rejection_reason?: string | null
           slug?: string
@@ -2572,6 +2642,14 @@ export type Database = {
         }[]
       }
       get_user_coins: { Args: never; Returns: number }
+      get_user_protected_fields: {
+        Args: { _user_id: string }
+        Returns: {
+          coins: number
+          exams_taken: number
+          points: number
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -2596,6 +2674,7 @@ export type Database = {
         Returns: boolean
       }
       purchase_shop_item: { Args: { _item_id: string }; Returns: Json }
+      toggle_blog_like: { Args: { blog_id_param: string }; Returns: boolean }
       toggle_comment_like: {
         Args: { comment_id_param: string }
         Returns: boolean
