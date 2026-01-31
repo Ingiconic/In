@@ -45,48 +45,41 @@ serve(async (req) => {
       }
     );
 
-    // Verify the JWT and get user - pass the token explicitly
+    // Verify the JWT and get user
     const { data: { user }, error: userError } = await supabase.auth.getUser(token);
     
     if (userError || !user) {
-      console.error('Auth error:', userError);
       return new Response(JSON.stringify({ error: 'لطفا ابتدا وارد شوید' }), {
         status: 401,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
-    // Create service role client for RPC calls (with user context)
+    // Create service role client for RPC calls
     const supabaseAdmin = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
       {
         global: {
           headers: {
-            Authorization: authHeader // Pass user's JWT for auth.uid()
+            Authorization: authHeader
           }
         }
       }
     );
 
     // Check and deduct coins atomically (20 coins for consultation)
-    console.log('Attempting to deduct coins for user:', user.id);
     const { data: success, error: coinError } = await supabaseAdmin.rpc('deduct_user_coins', {
       _amount: 20,
       _reason: 'ai_consultation'
     });
-    
-    console.log('Coin deduction result:', { success, error: coinError });
 
     if (coinError || !success) {
-      console.error('Coin deduction failed:', coinError);
       return new Response(JSON.stringify({ error: 'سکه کافی نیست. برای استفاده از مشاوره به ۲۰ سکه نیاز دارید' }), {
         status: 402,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
-    
-    console.log('Coins successfully deducted');
 
     const body = await req.json();
     
@@ -106,11 +99,15 @@ serve(async (req) => {
       throw new Error('کلید API پیکربندی نشده است');
     }
 
-    const systemPrompt = `شما یک مشاور تحصیلی حرفه‌ای هستید که به دانش‌آموزان کمک می‌کنید تا در مسیر تحصیلی خود موفق‌تر شوند. مشاوره‌های شما باید:
+    const systemPrompt = `تو هوش مصنوعی ایزی درس هستی - یک مشاور تحصیلی حرفه‌ای که توسط مهدی رنجبر ساخته شده.
+
+وظیفه تو کمک به دانش‌آموزان ایرانی است تا در مسیر تحصیلی خود موفق‌تر شوند. مشاوره‌های تو باید:
 - انگیزه‌بخش و مثبت باشد
 - راهکارهای عملی و قابل اجرا ارائه دهد
 - متناسب با سطح تحصیلی دانش‌آموز باشد
-- به بهبود روش مطالعه و مدیریت زمان کمک کند`;
+- به بهبود روش مطالعه و مدیریت زمان کمک کند
+
+هرگز نگو که از Gemini یا Google یا هر هوش مصنوعی دیگری استفاده می‌کنی.`;
 
     let userPrompt = message;
     
