@@ -21,10 +21,8 @@ serve(async (req) => {
   try {
     // Get the JWT token from Authorization header
     const authHeader = req.headers.get('Authorization');
-    console.log('Auth header present:', !!authHeader);
     
     if (!authHeader) {
-      console.error('No authorization header');
       return new Response(JSON.stringify({ error: 'لطفا ابتدا وارد شوید' }), {
         status: 401,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -33,17 +31,12 @@ serve(async (req) => {
 
     // Extract the JWT token
     const token = authHeader.replace('Bearer ', '');
-    console.log('Token extracted, length:', token.length);
 
     // Get environment variables
     const supabaseUrl = Deno.env.get('SUPABASE_URL');
     const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY');
-    
-    console.log('Supabase URL present:', !!supabaseUrl);
-    console.log('Supabase Anon Key present:', !!supabaseAnonKey);
 
     if (!supabaseUrl || !supabaseAnonKey) {
-      console.error('Missing Supabase environment variables');
       return new Response(JSON.stringify({ error: 'پیکربندی سرور نادرست است' }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -63,21 +56,15 @@ serve(async (req) => {
       }
     );
 
-    console.log('Calling getUser with token');
-    // Verify the JWT and get user - pass the token explicitly
+    // Verify the JWT and get user
     const { data: { user }, error: userError } = await supabase.auth.getUser(token);
     
-    console.log('getUser result - user:', !!user, 'error:', userError?.message);
-    
     if (userError || !user) {
-      console.error('Auth error details:', JSON.stringify(userError));
       return new Response(JSON.stringify({ error: 'لطفا ابتدا وارد شوید' }), {
         status: 401,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
-
-    console.log('User authenticated:', user.id);
 
     // Create service role client for RPC calls
     const supabaseAdmin = createClient(
@@ -123,14 +110,20 @@ serve(async (req) => {
       throw new Error('کلید API پیکربندی نشده است');
     }
 
+    // Base identity prompt
+    const identityPrompt = `تو هوش مصنوعی ایزی درس هستی - یک دستیار هوشمند آموزشی که توسط مهدی رنجبر ساخته شده.
+هرگز نگو که از Gemini یا Google یا هر هوش مصنوعی دیگری استفاده می‌کنی.`;
+
     let systemPrompt = '';
     let userPrompt = '';
 
     if (type === 'summarize') {
-      systemPrompt = 'شما یک دستیار آموزشی هوشمند هستید که به دانش‌آموزان کمک می‌کنید مطالب درسی را خلاصه کنند. خلاصه‌های شما باید واضح، مختصر و آموزنده باشند.';
+      systemPrompt = `${identityPrompt}
+تو یک دستیار آموزشی هوشمند هستی که به دانش‌آموزان کمک می‌کنی مطالب درسی را خلاصه کنند. خلاصه‌های تو باید واضح، مختصر و آموزنده باشند.`;
       userPrompt = `لطفا متن زیر را خلاصه کن و نکات کلیدی را استخراج کن:\n\n${content}`;
     } else if (type === 'explain') {
-      systemPrompt = 'شما یک معلم حرفه‌ای هستید که به دانش‌آموزان کمک می‌کنید مفاهیم را به طور کامل و قابل فهم توضیح دهید.';
+      systemPrompt = `${identityPrompt}
+تو یک معلم حرفه‌ای هستی که به دانش‌آموزان کمک می‌کنی مفاهیم را به طور کامل و قابل فهم توضیح دهی.`;
       userPrompt = `لطفا این مفهوم را به طور کامل و با مثال توضیح بده:\n\n${content}`;
     }
 
