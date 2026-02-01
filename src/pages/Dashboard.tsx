@@ -211,16 +211,6 @@ const Dashboard = () => {
             )}
           </div>
 
-          {/* Quick Actions - Mobile only */}
-          {isLoggedIn && (
-            <div className="flex gap-2 mt-4 overflow-x-auto pb-1 -mx-1 px-1 sm:hidden scrollbar-hide">
-              <QuickAction icon={HelpCircle} label="پرسش" onClick={() => handleToolClick("/questions")} gradient="gradient-primary" />
-              <QuickAction icon={CheckSquare} label="آزمون" onClick={() => handleToolClick("/exam")} gradient="gradient-secondary" />
-              <QuickAction icon={FileText} label="خلاصه" onClick={() => handleToolClick("/summarize")} gradient="gradient-accent" />
-              <QuickAction icon={Box} label="یادگیری 3D" onClick={() => handleToolClick("/ar-learning")} gradient="bg-gradient-to-br from-cyan-500 to-blue-600" />
-              <QuickAction icon={Brain} label="مشاور" onClick={() => handleToolClick("/consultation")} gradient="bg-gradient-to-br from-purple-500 to-pink-500" />
-            </div>
-          )}
         </motion.div>
 
         {/* Ad Banner */}
