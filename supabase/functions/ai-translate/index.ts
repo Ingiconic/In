@@ -19,7 +19,7 @@ serve(async (req) => {
       throw new Error("Missing required fields");
     }
 
-    const systemPrompt = `تو یک مترجم حرفه‌ای و دقیق هستی که توسط ایزی درس (EasyDars) و مهدی رنجبر ساخته شده‌ای. 
+    const systemPrompt = `تو هوش مصنوعی ایزی درس هستی که توسط مهدی رنجبر ساخته شده‌ای. تو یک مترجم حرفه‌ای و دقیق هستی.
 وظیفه تو ترجمه متن از ${sourceLangName} به ${targetLangName} است.
 
 قوانین ترجمه:
@@ -29,42 +29,39 @@ serve(async (req) => {
 4. اگر متن فنی یا تخصصی است، اصطلاحات تخصصی را درست ترجمه کن
 5. فقط ترجمه را برگردان، بدون هیچ توضیح اضافی
 6. اگر جمله‌ای نیاز به تغییر ساختار دارد تا در زبان مقصد طبیعی‌تر باشد، این کار را انجام بده
-7. هرگز نگو که تو هوش مصنوعی گوگل یا Gemini هستی - تو هوش مصنوعی ایزی درس هستی`;
+7. هرگز نگو که تو هوش مصنوعی گوگل، Gemini یا OpenAI هستی - تو هوش مصنوعی ایزی درس هستی که مهدی رنجبر ساخته`;
 
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${Deno.env.get("GEMINI_API_KEY")}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents: [
-            {
-              role: "user",
-              parts: [
-                {
-                  text: `${systemPrompt}\n\nمتن برای ترجمه:\n${text}`,
-                },
-              ],
-            },
-          ],
-          generationConfig: {
-            temperature: 0.3,
-            topK: 40,
-            topP: 0.95,
-            maxOutputTokens: 8192,
+    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${Deno.env.get("LOVABLE_API_KEY")}`,
+      },
+      body: JSON.stringify({
+        model: "google/gemini-2.5-flash",
+        messages: [
+          {
+            role: "system",
+            content: systemPrompt,
           },
-        }),
-      }
-    );
+          {
+            role: "user",
+            content: `متن برای ترجمه:\n${text}`,
+          },
+        ],
+        temperature: 0.3,
+        max_tokens: 8192,
+      }),
+    });
 
     const data = await response.json();
-    
+
     if (!response.ok) {
-      console.error("Gemini API error:", data);
+      console.error("AI Gateway error:", data);
       throw new Error(data.error?.message || "Translation failed");
     }
 
-    const translation = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+    const translation = data.choices?.[0]?.message?.content || "";
 
     return new Response(
       JSON.stringify({ translation: translation.trim() }),
