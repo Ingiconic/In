@@ -193,6 +193,13 @@ const Dashboard = () => {
                   <Gamepad2 className="w-3.5 h-3.5" />
                   <span>بازی</span>
                 </button>
+                <button
+                  onClick={() => navigate("/handouts")}
+                  className="flex items-center gap-1.5 bg-gradient-to-r from-amber-500 to-orange-600 text-white px-2.5 py-2 rounded-xl font-bold text-[11px] sm:text-sm active:scale-95 transition-transform shadow-lg hover:shadow-xl touch-target"
+                >
+                  <FileText className="w-3.5 h-3.5" />
+                  <span>جزوات</span>
+                </button>
               </div>
             ) : (
               <button
