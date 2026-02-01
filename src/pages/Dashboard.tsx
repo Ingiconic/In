@@ -4,8 +4,8 @@ import { supabase } from "@/lib/supabase";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   Brain, BookOpen, HelpCircle, FileText, CheckSquare, ClipboardList, 
-  BookCheck, NotebookPen, Sparkles, Box, Gamepad2, Flame, Swords, 
-  Heart, Trophy, User, Music, Calendar, Target, 
+  BookCheck, NotebookPen, Sparkles, Box, Gamepad2, Flame, Swords, Languages,
+  Heart, Trophy, User, Music, Calendar, Target,
   BarChart3, Users, ChevronLeft, Zap, Star, Play
 } from "lucide-react";
 import { usePageView } from "@/hooks/usePageView";
@@ -164,20 +164,34 @@ const Dashboard = () => {
             </div>
             
             {isLoggedIn ? (
-              <div className="flex gap-2 w-full sm:w-auto">
+              <div className="flex gap-2 w-full sm:w-auto flex-wrap">
+                <button
+                  onClick={() => navigate("/easytranslate")}
+                  className="flex items-center gap-1.5 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white px-2.5 py-2 rounded-xl font-bold text-[11px] sm:text-sm active:scale-95 transition-transform shadow-lg hover:shadow-xl touch-target"
+                >
+                  <span>🌐</span>
+                  <span>ترجمه</span>
+                </button>
                 <button
                   onClick={() => navigate("/easytube")}
-                  className="flex items-center gap-2 bg-gradient-to-r from-red-500 to-rose-600 text-white px-3 py-2.5 rounded-xl font-bold text-xs sm:text-sm active:scale-95 transition-transform shadow-lg hover:shadow-xl flex-1 sm:flex-none touch-target"
+                  className="flex items-center gap-1.5 bg-gradient-to-r from-red-500 to-rose-600 text-white px-2.5 py-2 rounded-xl font-bold text-[11px] sm:text-sm active:scale-95 transition-transform shadow-lg hover:shadow-xl touch-target"
                 >
-                  <Play className="w-4 h-4" />
-                  <span>ایزی تیوب</span>
+                  <Play className="w-3.5 h-3.5" />
+                  <span>تیوب</span>
                 </button>
                 <button
                   onClick={() => navigate("/easyblog")}
-                  className="flex items-center gap-2 bg-gradient-to-r from-teal-500 to-cyan-600 text-white px-3 py-2.5 rounded-xl font-bold text-xs sm:text-sm active:scale-95 transition-transform shadow-lg hover:shadow-xl flex-1 sm:flex-none touch-target"
+                  className="flex items-center gap-1.5 bg-gradient-to-r from-teal-500 to-cyan-600 text-white px-2.5 py-2 rounded-xl font-bold text-[11px] sm:text-sm active:scale-95 transition-transform shadow-lg hover:shadow-xl touch-target"
                 >
-                  <BookOpen className="w-4 h-4" />
-                  <span>ایزی بلاگ</span>
+                  <BookOpen className="w-3.5 h-3.5" />
+                  <span>بلاگ</span>
+                </button>
+                <button
+                  onClick={() => navigate("/easygame")}
+                  className="flex items-center gap-1.5 bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500 text-white px-2.5 py-2 rounded-xl font-bold text-[11px] sm:text-sm active:scale-95 transition-transform shadow-lg hover:shadow-xl touch-target"
+                >
+                  <Gamepad2 className="w-3.5 h-3.5" />
+                  <span>بازی</span>
                 </button>
               </div>
             ) : (

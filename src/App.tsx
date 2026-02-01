@@ -60,6 +60,17 @@ import EasyTubeChannel from "./pages/EasyTubeChannel";
 import EasyBlog from "./pages/EasyBlog";
 import EasyBlogPost from "./pages/EasyBlogPost";
 import AdminContent from "./pages/AdminContent";
+import EasyTranslate from "./pages/EasyTranslate";
+import EasyGame from "./pages/EasyGame";
+import SmartCalculator from "./pages/SmartCalculator";
+import FocusMode from "./pages/FocusMode";
+import QuickQuiz from "./pages/QuickQuiz";
+import StudyAnalytics from "./pages/StudyAnalytics";
+import VoiceAssistant from "./pages/VoiceAssistant";
+import BookmarksPage from "./pages/BookmarksPage";
+import DailyQuote from "./pages/DailyQuote";
+import ExamChecker from "./pages/ExamChecker";
+import VocabNotebook from "./pages/VocabNotebook";
 
 const queryClient = new QueryClient();
 
@@ -130,6 +141,17 @@ const App = () => (
               <Route path="/easytube/channel/:channelId" element={<EasyTubeChannel />} />
               <Route path="/easyblog" element={<EasyBlog />} />
               <Route path="/easyblog/post/:postId" element={<EasyBlogPost />} />
+              <Route path="/easytranslate" element={<EasyTranslate />} />
+              <Route path="/easygame" element={<EasyGame />} />
+              <Route path="/smart-calculator" element={<SmartCalculator />} />
+              <Route path="/focus-mode" element={<FocusMode />} />
+              <Route path="/quick-quiz" element={<QuickQuiz />} />
+              <Route path="/study-analytics" element={<StudyAnalytics />} />
+              <Route path="/voice-assistant" element={<VoiceAssistant />} />
+              <Route path="/bookmarks" element={<BookmarksPage />} />
+              <Route path="/daily-quote" element={<DailyQuote />} />
+              <Route path="/exam-checker" element={<ExamChecker />} />
+              <Route path="/vocab-notebook" element={<VocabNotebook />} />
               <Route path="/admin/content" element={<AdminContent />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />

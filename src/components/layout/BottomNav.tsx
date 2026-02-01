@@ -1,8 +1,8 @@
 import { 
   LayoutDashboard,
   Trophy, 
-  HelpCircle, 
-  Play, 
+  Brain, 
+  Gamepad2, 
   User,
 } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -13,8 +13,8 @@ const BottomNav = () => {
 
   const navItems = [
     { icon: LayoutDashboard, label: "خانه", path: "/dashboard" },
-    { icon: HelpCircle, label: "پرسش", path: "/questions" },
-    { icon: Play, label: "ایزی تیوب", path: "/easytube" },
+    { icon: Brain, label: "هوش مصنوعی", path: "/ai-buddy" },
+    { icon: Gamepad2, label: "بازی", path: "/easygame" },
     { icon: Trophy, label: "رتبه", path: "/leaderboard" },
     { icon: User, label: "پروفایل", path: "/profile" },
   ];
