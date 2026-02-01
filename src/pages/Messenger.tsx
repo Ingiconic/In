@@ -1,11 +1,11 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { 
   MessageCircle, Loader2, ArrowLeft, Settings, Moon, Sun, 
   Plus, Search, Menu, Bookmark, Users, Hash, User, Pin,
   Check, CheckCheck, Send, Smile, MoreVertical, ArrowRight,
-  Reply, Copy, Trash2, X, Phone, Video, Mic
+  Reply, Copy, Trash2, X, Phone, Video, Mic, Link, Share2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,6 +19,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { NewChatDialog } from "@/components/messenger";
 import type { ChatItem, Message, UserProfile } from "@/components/messenger/types";
 import { EMOJI_LIST } from "@/components/messenger/types";
@@ -27,8 +33,13 @@ import { supabase } from "@/lib/supabase";
 import { useToast } from "@/hooks/use-toast";
 import { logger } from "@/lib/logger";
 
+// Constants for default chats
+const EASYDARS_PUBLIC_GROUP_ID = '00000000-0000-0000-0000-000000000001';
+const EASYDARS_OFFICIAL_CHANNEL_ID = '00000000-0000-0000-0000-000000000002';
+
 const Messenger = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { toast } = useToast();
   const scrollRef = useRef<HTMLDivElement>(null);
   const [isDark, setIsDark] = useState(document.documentElement.classList.contains('dark'));
@@ -46,7 +57,8 @@ const Messenger = () => {
   const [messageText, setMessageText] = useState("");
   const [replyingTo, setReplyingTo] = useState<Message | null>(null);
   const [showEmoji, setShowEmoji] = useState(false);
-  const [showMenu, setShowMenu] = useState(false);
+  const [showInviteDialog, setShowInviteDialog] = useState(false);
+  const [inviteLink, setInviteLink] = useState("");
 
   // Toggle theme
   const toggleTheme = () => {
@@ -61,7 +73,41 @@ const Messenger = () => {
     }
   }, [messages]);
 
-  // Load current user and open saved messages
+  // Handle invite link from URL
+  useEffect(() => {
+    const inviteCode = searchParams.get('invite');
+    if (inviteCode && currentUser) {
+      handleJoinByInvite(inviteCode);
+    }
+  }, [searchParams, currentUser]);
+
+  const handleJoinByInvite = async (inviteCode: string) => {
+    try {
+      // Try group first
+      const { data: groupResult } = await supabase.rpc('join_group_by_invite', { invite_code: inviteCode });
+      const groupData = groupResult as { success?: boolean; group_name?: string } | null;
+      if (groupData?.success) {
+        toast({ title: `عضو گروه "${groupData.group_name}" شدید! 🎉` });
+        loadChats();
+        return;
+      }
+      
+      // Try channel
+      const { data: channelResult } = await supabase.rpc('join_channel_by_invite', { invite_code: inviteCode });
+      const channelData = channelResult as { success?: boolean; channel_name?: string } | null;
+      if (channelData?.success) {
+        toast({ title: `عضو کانال "${channelData.channel_name}" شدید! 🎉` });
+        loadChats();
+        return;
+      }
+      
+      toast({ title: "لینک دعوت نامعتبر است", variant: "destructive" });
+    } catch (error) {
+      logger.error("Failed to join by invite", error);
+    }
+  };
+
+  // Load current user
   const loadCurrentUser = useCallback(async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
@@ -79,18 +125,6 @@ const Messenger = () => {
       if (profile) {
         const userProfile = profile as UserProfile;
         setCurrentUser(userProfile);
-        
-        // Auto-select Saved Messages
-        const savedChat: ChatItem = {
-          id: userProfile.id,
-          type: 'direct',
-          name: 'پیام‌های ذخیره شده',
-          avatar: userProfile.avatar_url,
-          unreadCount: 0,
-          isOnline: true,
-        };
-        setSelectedChat(savedChat);
-        
         return userProfile;
       }
       return null;
@@ -132,7 +166,6 @@ const Messenger = () => {
         for (const msg of dmData) {
           const otherUserId = msg.sender_id === currentUser.id ? msg.receiver_id : msg.sender_id;
           
-          // Skip self messages (they're in Saved Messages)
           if (otherUserId === currentUser.id) continue;
           
           if (otherUserId && !dmChats.has(otherUserId)) {
@@ -222,6 +255,14 @@ const Messenger = () => {
 
         if (channels) {
           for (const channel of channels) {
+            const { data: lastMsg } = await supabase
+              .from("channel_messages")
+              .select("content, created_at")
+              .eq("channel_id", channel.id)
+              .order("created_at", { ascending: false })
+              .limit(1)
+              .maybeSingle();
+
             const { count } = await supabase
               .from("channel_members")
               .select("*", { count: "exact", head: true })
@@ -231,8 +272,8 @@ const Messenger = () => {
               id: channel.id,
               type: 'channel',
               name: channel.name,
-              lastMessage: undefined,
-              lastMessageTime: channel.created_at || undefined,
+              lastMessage: lastMsg?.content,
+              lastMessageTime: lastMsg?.created_at || channel.created_at || undefined,
               unreadCount: 0,
               membersCount: count || 0,
             });
@@ -250,12 +291,17 @@ const Messenger = () => {
       });
 
       setChats(allChats);
+      
+      // Auto-select saved messages if nothing selected
+      if (!selectedChat) {
+        setSelectedChat(allChats[0]);
+      }
     } catch (error) {
       logger.error("Failed to load chats", error);
     } finally {
       setLoading(false);
     }
-  }, [currentUser]);
+  }, [currentUser, selectedChat]);
 
   // Load messages for selected chat
   const loadMessages = useCallback(async () => {
@@ -265,7 +311,6 @@ const Messenger = () => {
       let data: Message[] = [];
 
       if (selectedChat.type === 'direct') {
-        // For saved messages (self chat)
         const isSelfChat = selectedChat.id === currentUser.id;
         
         let query;
@@ -284,7 +329,8 @@ const Messenger = () => {
             .order("created_at", { ascending: true });
         }
         
-        const { data: msgs } = await query;
+        const { data: msgs, error } = await query;
+        if (error) throw error;
         
         const senderIds = [...new Set((msgs || []).map(m => m.sender_id))] as string[];
         const { data: profiles } = await supabase
@@ -299,7 +345,6 @@ const Messenger = () => {
           sender: profileMap.get(m.sender_id) || null,
         })) as Message[];
 
-        // Mark as read (not for self)
         if (!isSelfChat) {
           await supabase
             .from("direct_messages")
@@ -310,11 +355,13 @@ const Messenger = () => {
         }
 
       } else if (selectedChat.type === 'group') {
-        const { data: msgs } = await supabase
+        const { data: msgs, error } = await supabase
           .from("group_messages")
           .select("*")
           .eq("group_id", selectedChat.id)
           .order("created_at", { ascending: true });
+        
+        if (error) throw error;
         
         const senderIds = [...new Set((msgs || []).map(m => m.user_id))];
         const { data: profiles } = await supabase
@@ -331,11 +378,13 @@ const Messenger = () => {
         })) as Message[];
 
       } else if (selectedChat.type === 'channel') {
-        const { data: msgs } = await supabase
+        const { data: msgs, error } = await supabase
           .from("channel_messages")
           .select("*")
           .eq("channel_id", selectedChat.id)
           .order("created_at", { ascending: true });
+        
+        if (error) throw error;
         
         const senderIds = [...new Set((msgs || []).map(m => m.user_id))];
         const { data: profiles } = await supabase
@@ -355,8 +404,9 @@ const Messenger = () => {
       setMessages(data);
     } catch (error) {
       logger.error("Failed to load messages", error);
+      toast({ title: "خطا در بارگذاری پیام‌ها", variant: "destructive" });
     }
-  }, [selectedChat, currentUser]);
+  }, [selectedChat, currentUser, toast]);
 
   // Send message with optimistic update
   const sendMessage = useCallback(async (): Promise<boolean> => {
@@ -365,7 +415,6 @@ const Messenger = () => {
     const content = messageText.trim();
     setMessageText("");
     
-    // Create optimistic message
     const optimisticId = `temp-${Date.now()}`;
     const optimisticMessage: Message = {
       id: optimisticId,
@@ -381,7 +430,6 @@ const Messenger = () => {
       },
     };
 
-    // INSTANT UI update
     setMessages(prev => [...prev, optimisticMessage]);
     setReplyingTo(null);
     setSendingMessage(true);
@@ -392,7 +440,6 @@ const Messenger = () => {
           sender_id: currentUser.id,
           receiver_id: selectedChat.id,
           content,
-          reply_to_id: replyingTo?.id || null,
         }).select().single();
         
         if (error) throw error;
@@ -406,7 +453,6 @@ const Messenger = () => {
           group_id: selectedChat.id,
           user_id: currentUser.id,
           content,
-          reply_to_id: replyingTo?.id || null,
         }).select().single();
         
         if (error) throw error;
@@ -416,6 +462,19 @@ const Messenger = () => {
         ));
 
       } else if (selectedChat.type === 'channel') {
+        // Check if user is channel owner
+        const { data: channel } = await supabase
+          .from("channels")
+          .select("owner_id")
+          .eq("id", selectedChat.id)
+          .single();
+        
+        if (channel?.owner_id !== currentUser.id) {
+          setMessages(prev => prev.filter(m => m.id !== optimisticId));
+          toast({ title: "فقط مدیر کانال می‌تواند پیام ارسال کند", variant: "destructive" });
+          return false;
+        }
+        
         const { data, error } = await supabase.from("channel_messages").insert({
           channel_id: selectedChat.id,
           user_id: currentUser.id,
@@ -430,12 +489,13 @@ const Messenger = () => {
       }
 
       return true;
-    } catch (error) {
+    } catch (error: any) {
       setMessages(prev => prev.filter(m => m.id !== optimisticId));
       setMessageText(content);
       logger.error("Failed to send message", error);
       toast({
-        title: "خطا در ارسال",
+        title: "خطا در ارسال پیام",
+        description: error?.message || "لطفاً دوباره تلاش کنید",
         variant: "destructive",
       });
       return false;
@@ -461,6 +521,33 @@ const Messenger = () => {
       loadMessages();
     }
   }, [selectedChat, loadMessages]);
+
+  // Get invite link for group/channel
+  const getInviteLink = useCallback(async () => {
+    if (!selectedChat || selectedChat.type === 'direct') return;
+    
+    try {
+      const table = selectedChat.type === 'group' ? 'groups' : 'channels';
+      const { data } = await supabase
+        .from(table)
+        .select("invite_link")
+        .eq("id", selectedChat.id)
+        .single();
+      
+      if (data?.invite_link) {
+        const fullLink = `${window.location.origin}/messenger?invite=${data.invite_link}`;
+        setInviteLink(fullLink);
+        setShowInviteDialog(true);
+      }
+    } catch (error) {
+      logger.error("Failed to get invite link", error);
+    }
+  }, [selectedChat]);
+
+  const copyInviteLink = () => {
+    navigator.clipboard.writeText(inviteLink);
+    toast({ title: "لینک کپی شد! 📋" });
+  };
 
   // Filter chats
   const filteredChats = chats.filter(chat => {
@@ -490,7 +577,6 @@ const Messenger = () => {
     if (selectedChat && currentUser) {
       loadMessages();
 
-      // Real-time subscription
       const table = 
         selectedChat.type === 'direct' ? 'direct_messages' :
         selectedChat.type === 'group' ? 'group_messages' : 'channel_messages';
@@ -516,7 +602,6 @@ const Messenger = () => {
     loadChats();
   };
 
-  // Get chat icon
   const getChatIcon = (chat: ChatItem) => {
     if (chat.id === currentUser?.id) return <Bookmark className="w-5 h-5" />;
     if (chat.type === 'group') return <Users className="w-5 h-5" />;
@@ -538,7 +623,6 @@ const Messenger = () => {
     );
   }
 
-  // Group messages by date
   const groupedMessages = groupMessagesByDate(messages);
 
   return (
@@ -728,9 +812,26 @@ const Messenger = () => {
                 </div>
               )}
               
-              <Button variant="ghost" size="icon" className="rounded-full">
-                <MoreVertical className="w-4 h-4" />
-              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" className="rounded-full">
+                    <MoreVertical className="w-4 h-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-48">
+                  {(selectedChat.type === 'group' || selectedChat.type === 'channel') && (
+                    <DropdownMenuItem onClick={getInviteLink}>
+                      <Link className="w-4 h-4 ml-2" />
+                      دریافت لینک دعوت
+                    </DropdownMenuItem>
+                  )}
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem className="text-destructive">
+                    <Trash2 className="w-4 h-4 ml-2" />
+                    خروج
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
 
             {/* Messages */}
@@ -868,13 +969,16 @@ const Messenger = () => {
                         initial={{ opacity: 0, scale: 0.9 }}
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.9 }}
-                        className="absolute bottom-12 right-0 p-2 bg-card border rounded-xl shadow-xl grid grid-cols-8 gap-1 z-50"
+                        className="absolute bottom-12 right-0 p-2 bg-card border rounded-xl shadow-lg grid grid-cols-8 gap-1 z-50"
                       >
                         {EMOJI_LIST.map(emoji => (
                           <button
                             key={emoji}
-                            onClick={() => { setMessageText(prev => prev + emoji); setShowEmoji(false); }}
-                            className="w-8 h-8 flex items-center justify-center hover:bg-muted rounded-lg text-lg"
+                            onClick={() => {
+                              setMessageText(prev => prev + emoji);
+                              setShowEmoji(false);
+                            }}
+                            className="w-8 h-8 flex items-center justify-center hover:bg-muted rounded text-lg"
                           >
                             {emoji}
                           </button>
@@ -884,32 +988,48 @@ const Messenger = () => {
                   </AnimatePresence>
                 </div>
                 
-                <Input
-                  placeholder="پیام..."
-                  value={messageText}
-                  onChange={(e) => setMessageText(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && sendMessage()}
-                  className="flex-1 bg-muted border-0 rounded-full h-10"
-                  dir="rtl"
-                />
+                <Button variant="ghost" size="icon" className="rounded-full">
+                  <Mic className="w-5 h-5" />
+                </Button>
+                
+                <div className="flex-1">
+                  <Input
+                    placeholder="پیام خود را بنویسید..."
+                    value={messageText}
+                    onChange={(e) => setMessageText(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" && !e.shiftKey) {
+                        e.preventDefault();
+                        sendMessage();
+                      }
+                    }}
+                    className="bg-muted/50 border-0 rounded-full h-10"
+                    dir="rtl"
+                  />
+                </div>
                 
                 <Button 
                   size="icon"
                   onClick={sendMessage}
                   disabled={!messageText.trim() || sendingMessage}
-                  className="rounded-full"
+                  className="rounded-full bg-primary hover:bg-primary/90"
                 >
-                  {sendingMessage ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
+                  {sendingMessage ? (
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                  ) : (
+                    <Send className="w-5 h-5" />
+                  )}
                 </Button>
               </div>
             </div>
           </>
         ) : (
           <div className="flex-1 flex flex-col items-center justify-center text-muted-foreground">
-            <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center mb-4">
-              <MessageCircle className="w-10 h-10" />
+            <div className="w-24 h-24 rounded-full bg-muted/50 flex items-center justify-center mb-4">
+              <MessageCircle className="w-12 h-12" />
             </div>
-            <p className="font-medium">یک گفتگو انتخاب کنید</p>
+            <h2 className="text-lg font-bold mb-2">پیام‌رسان ایزی‌درس</h2>
+            <p className="text-sm">یک گفتگو انتخاب کنید یا گفتگوی جدید شروع کنید</p>
           </div>
         )}
       </div>
@@ -922,6 +1042,35 @@ const Messenger = () => {
         existingChats={chats}
         onChatCreated={handleChatCreated}
       />
+
+      {/* Invite Link Dialog */}
+      <Dialog open={showInviteDialog} onOpenChange={setShowInviteDialog}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="text-center">لینک دعوت</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <p className="text-sm text-muted-foreground text-center">
+              این لینک را با دوستانتان به اشتراک بگذارید
+            </p>
+            <div className="flex gap-2">
+              <Input
+                value={inviteLink}
+                readOnly
+                className="text-xs"
+                dir="ltr"
+              />
+              <Button onClick={copyInviteLink} size="icon">
+                <Copy className="w-4 h-4" />
+              </Button>
+            </div>
+            <Button onClick={copyInviteLink} className="w-full">
+              <Share2 className="w-4 h-4 ml-2" />
+              کپی لینک
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

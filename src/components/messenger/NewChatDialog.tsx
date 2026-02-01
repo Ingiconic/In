@@ -13,7 +13,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Users, Hash, Check, Loader2, Search, User, AtSign } from "lucide-react";
+import { Users, Hash, Check, Loader2, Search, AtSign } from "lucide-react";
 import type { ChatItem, UserProfile } from "./types";
 
 interface NewChatDialogProps {
@@ -56,23 +56,25 @@ export const NewChatDialog = ({
     setSearchResults([]);
     
     try {
-      // Remove @ if user added it
       const query = usernameSearch.replace('@', '').trim().toLowerCase();
       
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from("profiles")
         .select("id, full_name, avatar_url, username, is_online, bio")
         .neq("id", currentUser.id)
         .or(`username.ilike.%${query}%,full_name.ilike.%${query}%`)
         .limit(10);
       
+      if (error) throw error;
+      
       setSearchResults(data as UserProfile[] || []);
       
       if (!data || data.length === 0) {
         toast({ title: "کاربری یافت نشد", description: "آیدی یا نام دیگری امتحان کنید" });
       }
-    } catch (error) {
-      toast({ title: "خطا در جستجو", variant: "destructive" });
+    } catch (error: any) {
+      console.error("Search error:", error);
+      toast({ title: "خطا در جستجو", description: error?.message, variant: "destructive" });
     } finally {
       setSearching(false);
     }
@@ -83,13 +85,16 @@ export const NewChatDialog = ({
     
     setLoadingUsers(true);
     try {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from("profiles")
         .select("id, full_name, avatar_url, username, is_online")
         .neq("id", currentUser.id)
         .order("full_name");
       
+      if (error) throw error;
       if (data) setAllUsers(data as UserProfile[]);
+    } catch (error) {
+      console.error("Load users error:", error);
     } finally {
       setLoadingUsers(false);
     }
@@ -100,7 +105,6 @@ export const NewChatDialog = ({
     if (isOpen) {
       loadUsers();
     } else {
-      // Reset state
       setSelectedUsers([]);
       setSelectedUser(null);
       setUsernameSearch("");
@@ -133,7 +137,6 @@ export const NewChatDialog = ({
     
     try {
       if (chatType === 'direct' && selectedUser) {
-        // Check if chat already exists
         const existingChat = existingChats.find(c => c.type === 'direct' && c.id === selectedUser.id);
         if (existingChat) {
           onChatCreated(existingChat);
@@ -153,34 +156,43 @@ export const NewChatDialog = ({
         toast({ title: `گفتگو با ${selectedUser.full_name} شروع شد` });
         
       } else if (chatType === 'group') {
-        const { data: group, error } = await supabase
+        // Create group
+        const { data: group, error: groupError } = await supabase
           .from("groups")
           .insert({
             name: groupName.trim(),
-            description: groupDesc.trim(),
+            description: groupDesc.trim() || null,
             owner_id: currentUser.id,
           })
           .select()
           .single();
 
-        if (error) throw error;
+        if (groupError) {
+          console.error("Group creation error:", groupError);
+          throw new Error(groupError.message);
+        }
 
         // Add creator as admin
-        await supabase.from("group_members").insert({
+        const { error: memberError } = await supabase.from("group_members").insert({
           group_id: group.id,
           user_id: currentUser.id,
           is_admin: true,
         });
 
+        if (memberError) {
+          console.error("Member add error:", memberError);
+        }
+
         // Add selected users
         if (selectedUsers.length > 0) {
-          await supabase.from("group_members").insert(
+          const { error: usersError } = await supabase.from("group_members").insert(
             selectedUsers.map(userId => ({
               group_id: group.id,
               user_id: userId,
               is_admin: false,
             }))
           );
+          if (usersError) console.error("Add users error:", usersError);
         }
 
         const newChat: ChatItem = {
@@ -191,26 +203,34 @@ export const NewChatDialog = ({
           membersCount: selectedUsers.length + 1,
         };
         onChatCreated(newChat);
-        toast({ title: `گروه "${group.name}" ایجاد شد` });
+        toast({ title: `گروه "${group.name}" ایجاد شد ✅` });
         
       } else if (chatType === 'channel') {
-        const { data: channel, error } = await supabase
+        // Create channel
+        const { data: channel, error: channelError } = await supabase
           .from("channels")
           .insert({
             name: groupName.trim(),
-            description: groupDesc.trim(),
+            description: groupDesc.trim() || null,
             owner_id: currentUser.id,
           })
           .select()
           .single();
 
-        if (error) throw error;
+        if (channelError) {
+          console.error("Channel creation error:", channelError);
+          throw new Error(channelError.message);
+        }
 
         // Add creator as member
-        await supabase.from("channel_members").insert({
+        const { error: memberError } = await supabase.from("channel_members").insert({
           channel_id: channel.id,
           user_id: currentUser.id,
         });
+
+        if (memberError) {
+          console.error("Channel member add error:", memberError);
+        }
 
         const newChat: ChatItem = {
           id: channel.id,
@@ -220,7 +240,7 @@ export const NewChatDialog = ({
           membersCount: 1,
         };
         onChatCreated(newChat);
-        toast({ title: `کانال "${channel.name}" ایجاد شد` });
+        toast({ title: `کانال "${channel.name}" ایجاد شد ✅` });
       }
 
       handleOpenChange(false);
@@ -228,7 +248,7 @@ export const NewChatDialog = ({
       console.error("Create chat error:", error);
       toast({ 
         title: "خطا در ایجاد", 
-        description: error?.message || "مشکلی پیش آمد",
+        description: error?.message || "مشکلی پیش آمد. دوباره تلاش کنید.",
         variant: "destructive" 
       });
     } finally {
@@ -341,7 +361,7 @@ export const NewChatDialog = ({
                   </Avatar>
                   <div className="flex-1">
                     <p className="font-bold">{selectedUser.full_name}</p>
-                    <p className="text-xs text-primary" dir="ltr">@{selectedUser.username}</p>
+                    <p className="text-xs text-primary" dir="ltr">@{selectedUser.username || 'بدون آیدی'}</p>
                   </div>
                   <Check className="w-5 h-5 text-primary" />
                 </div>
@@ -442,7 +462,7 @@ export const NewChatDialog = ({
             
             <div className="p-3 bg-orange-500/10 rounded-xl border border-orange-500/20">
               <p className="text-xs text-muted-foreground">
-                💡 کانال‌ها برای پخش پیام به تعداد زیادی مخاطب استفاده می‌شوند. شما مدیر کانال خواهید بود.
+                💡 کانال‌ها برای پخش پیام به تعداد زیادی مخاطب استفاده می‌شوند. فقط شما (مدیر) می‌توانید پیام ارسال کنید.
               </p>
             </div>
           </TabsContent>
