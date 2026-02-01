@@ -6,7 +6,7 @@ import {
   Brain, BookOpen, HelpCircle, FileText, CheckSquare, ClipboardList, 
   BookCheck, NotebookPen, Sparkles, Box, Gamepad2, Flame, Swords, Languages,
   Heart, Trophy, User, Music, Calendar, Target,
-  BarChart3, Users, ChevronLeft, Zap, Star, Play
+  BarChart3, Users, ChevronLeft, Zap, Star, Play, MessageCircle
 } from "lucide-react";
 import { usePageView } from "@/hooks/usePageView";
 import AppLayout from "@/components/layout/AppLayout";
@@ -153,9 +153,9 @@ const Dashboard = () => {
             <div className="flex-1">
               <h1 className="text-lg sm:text-xl font-bold mb-1">
                 {isLoggedIn ? (
-                  <>سلام {profile?.full_name?.split(' ')[0] || profile?.username || "دوست عزیز"}! 👋</>
+                  <>خوش آمدید {profile?.full_name?.split(' ')[0] || profile?.username || ""}! 👋</>
                 ) : (
-                  <>به ایزی‌درس خوش آمدید! 🎓</>
+                  <>خوش آمدید! 🎓</>
                 )}
               </h1>
               <p className="text-xs sm:text-sm text-muted-foreground">
@@ -164,40 +164,47 @@ const Dashboard = () => {
             </div>
             
             {isLoggedIn ? (
-              <div className="flex gap-2 w-full sm:w-auto flex-wrap">
+              <div className="flex gap-1.5 w-full sm:w-auto flex-wrap">
+                <button
+                  onClick={() => navigate("/messenger")}
+                  className="flex items-center gap-1 bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-2 py-1.5 rounded-lg font-bold text-[10px] sm:text-xs active:scale-95 transition-transform shadow-md hover:shadow-lg touch-target"
+                >
+                  <MessageCircle className="w-3 h-3" />
+                  <span>چت</span>
+                </button>
                 <button
                   onClick={() => navigate("/easytranslate")}
-                  className="flex items-center gap-1.5 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white px-2.5 py-2 rounded-xl font-bold text-[11px] sm:text-sm active:scale-95 transition-transform shadow-lg hover:shadow-xl touch-target"
+                  className="flex items-center gap-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white px-2 py-1.5 rounded-lg font-bold text-[10px] sm:text-xs active:scale-95 transition-transform shadow-md hover:shadow-lg touch-target"
                 >
                   <span>🌐</span>
                   <span>ترجمه</span>
                 </button>
                 <button
                   onClick={() => navigate("/easytube")}
-                  className="flex items-center gap-1.5 bg-gradient-to-r from-red-500 to-rose-600 text-white px-2.5 py-2 rounded-xl font-bold text-[11px] sm:text-sm active:scale-95 transition-transform shadow-lg hover:shadow-xl touch-target"
+                  className="flex items-center gap-1 bg-gradient-to-r from-red-500 to-rose-600 text-white px-2 py-1.5 rounded-lg font-bold text-[10px] sm:text-xs active:scale-95 transition-transform shadow-md hover:shadow-lg touch-target"
                 >
-                  <Play className="w-3.5 h-3.5" />
+                  <Play className="w-3 h-3" />
                   <span>تیوب</span>
                 </button>
                 <button
                   onClick={() => navigate("/easyblog")}
-                  className="flex items-center gap-1.5 bg-gradient-to-r from-teal-500 to-cyan-600 text-white px-2.5 py-2 rounded-xl font-bold text-[11px] sm:text-sm active:scale-95 transition-transform shadow-lg hover:shadow-xl touch-target"
+                  className="flex items-center gap-1 bg-gradient-to-r from-teal-500 to-cyan-600 text-white px-2 py-1.5 rounded-lg font-bold text-[10px] sm:text-xs active:scale-95 transition-transform shadow-md hover:shadow-lg touch-target"
                 >
-                  <BookOpen className="w-3.5 h-3.5" />
+                  <BookOpen className="w-3 h-3" />
                   <span>بلاگ</span>
                 </button>
                 <button
                   onClick={() => navigate("/easygame")}
-                  className="flex items-center gap-1.5 bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500 text-white px-2.5 py-2 rounded-xl font-bold text-[11px] sm:text-sm active:scale-95 transition-transform shadow-lg hover:shadow-xl touch-target"
+                  className="flex items-center gap-1 bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500 text-white px-2 py-1.5 rounded-lg font-bold text-[10px] sm:text-xs active:scale-95 transition-transform shadow-md hover:shadow-lg touch-target"
                 >
-                  <Gamepad2 className="w-3.5 h-3.5" />
+                  <Gamepad2 className="w-3 h-3" />
                   <span>بازی</span>
                 </button>
                 <button
                   onClick={() => navigate("/handouts")}
-                  className="flex items-center gap-1.5 bg-gradient-to-r from-amber-500 to-orange-600 text-white px-2.5 py-2 rounded-xl font-bold text-[11px] sm:text-sm active:scale-95 transition-transform shadow-lg hover:shadow-xl touch-target"
+                  className="flex items-center gap-1 bg-gradient-to-r from-amber-500 to-orange-600 text-white px-2 py-1.5 rounded-lg font-bold text-[10px] sm:text-xs active:scale-95 transition-transform shadow-md hover:shadow-lg touch-target"
                 >
-                  <FileText className="w-3.5 h-3.5" />
+                  <FileText className="w-3 h-3" />
                   <span>جزوات</span>
                 </button>
               </div>
@@ -280,7 +287,8 @@ const Dashboard = () => {
               color: "bg-gradient-to-br from-green-500 to-emerald-600",
               content: (
                 <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-3">
-                  <ToolCard icon={User} title="معرفی به دوستان" description="جوایز دعوت" gradient="bg-gradient-to-br from-blue-500 to-indigo-500" onClick={() => handleToolClick("/referral")} delay={0} />
+                  <ToolCard icon={MessageCircle} title="پیام‌رسان" description="چت با دوستان" gradient="bg-gradient-to-br from-indigo-500 to-purple-600" onClick={() => handleToolClick("/messenger")} delay={0} />
+                  <ToolCard icon={User} title="معرفی به دوستان" description="جوایز دعوت" gradient="bg-gradient-to-br from-blue-500 to-indigo-500" onClick={() => handleToolClick("/referral")} delay={0.03} />
                 </div>
               ),
             },

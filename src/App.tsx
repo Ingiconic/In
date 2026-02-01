@@ -73,6 +73,7 @@ import ExamChecker from "./pages/ExamChecker";
 import VocabNotebook from "./pages/VocabNotebook";
 import Handouts from "./pages/Handouts";
 import AdminHandouts from "./pages/AdminHandouts";
+import Messenger from "./pages/Messenger";
 
 const queryClient = new QueryClient();
 
@@ -157,6 +158,7 @@ const App = () => (
               <Route path="/admin/content" element={<AdminContent />} />
               <Route path="/admin/handouts" element={<AdminHandouts />} />
               <Route path="/handouts" element={<Handouts />} />
+              <Route path="/messenger" element={<Messenger />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
           </Routes>
