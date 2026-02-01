@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { 
   Users, Eye, Coins, TrendingUp, Calendar, Shield,
   Plus, Minus, Search, ArrowLeft, Loader2, LogOut, BookOpen,
-  Megaphone, MessageSquare, FileText
+  Megaphone, MessageSquare, FileText, FolderOpen
 } from "lucide-react";
 import { motion } from "framer-motion";
 import {
@@ -217,6 +217,13 @@ const Admin = () => {
               >
                 <MessageSquare className="ml-2 h-4 w-4" />
                 مدیریت تیکت‌ها
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => navigate("/admin/handouts")}
+              >
+                <FolderOpen className="ml-2 h-4 w-4" />
+                مدیریت جزوات
               </Button>
               <Button
                 variant="outline"

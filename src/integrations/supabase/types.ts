@@ -1011,6 +1011,136 @@ export type Database = {
         }
         Relationships: []
       }
+      handout_categories: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          icon: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          name_fa: string
+          parent_id: string | null
+          sort_order: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          name_fa: string
+          parent_id?: string | null
+          sort_order?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          name_fa?: string
+          parent_id?: string | null
+          sort_order?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "handout_categories_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "handout_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      handouts: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          author: string | null
+          category_id: string | null
+          created_at: string | null
+          description: string | null
+          downloads_count: number | null
+          file_size: number | null
+          grade: string | null
+          id: string
+          is_active: boolean | null
+          is_featured: boolean | null
+          page_count: number | null
+          pdf_url: string
+          status: string | null
+          subject: string | null
+          tags: string[] | null
+          thumbnail_url: string | null
+          title: string
+          updated_at: string | null
+          uploaded_by: string | null
+          views_count: number | null
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          author?: string | null
+          category_id?: string | null
+          created_at?: string | null
+          description?: string | null
+          downloads_count?: number | null
+          file_size?: number | null
+          grade?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_featured?: boolean | null
+          page_count?: number | null
+          pdf_url: string
+          status?: string | null
+          subject?: string | null
+          tags?: string[] | null
+          thumbnail_url?: string | null
+          title: string
+          updated_at?: string | null
+          uploaded_by?: string | null
+          views_count?: number | null
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          author?: string | null
+          category_id?: string | null
+          created_at?: string | null
+          description?: string | null
+          downloads_count?: number | null
+          file_size?: number | null
+          grade?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_featured?: boolean | null
+          page_count?: number | null
+          pdf_url?: string
+          status?: string | null
+          subject?: string | null
+          tags?: string[] | null
+          thumbnail_url?: string | null
+          title?: string
+          updated_at?: string | null
+          uploaded_by?: string | null
+          views_count?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "handouts_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "handout_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       levels: {
         Row: {
           color: string | null
@@ -2656,6 +2786,10 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      increment_handout_downloads: {
+        Args: { handout_id_param: string }
+        Returns: undefined
       }
       increment_topic_views: {
         Args: { topic_id_param: string }
