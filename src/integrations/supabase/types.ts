@@ -375,6 +375,7 @@ export type Database = {
           created_at: string | null
           description: string | null
           id: string
+          invite_link: string | null
           name: string
           owner_id: string
           updated_at: string | null
@@ -383,6 +384,7 @@ export type Database = {
           created_at?: string | null
           description?: string | null
           id?: string
+          invite_link?: string | null
           name: string
           owner_id?: string
           updated_at?: string | null
@@ -391,6 +393,7 @@ export type Database = {
           created_at?: string | null
           description?: string | null
           id?: string
+          invite_link?: string | null
           name?: string
           owner_id?: string
           updated_at?: string | null
@@ -989,6 +992,7 @@ export type Database = {
           created_at: string | null
           description: string | null
           id: string
+          invite_link: string | null
           name: string
           owner_id: string
           updated_at: string | null
@@ -997,6 +1001,7 @@ export type Database = {
           created_at?: string | null
           description?: string | null
           id?: string
+          invite_link?: string | null
           name: string
           owner_id?: string
           updated_at?: string | null
@@ -1005,6 +1010,7 @@ export type Database = {
           created_at?: string | null
           description?: string | null
           id?: string
+          invite_link?: string | null
           name?: string
           owner_id?: string
           updated_at?: string | null
@@ -2762,6 +2768,7 @@ export type Database = {
         Args: { _amount: number; _reason: string }
         Returns: boolean
       }
+      generate_invite_link: { Args: never; Returns: string }
       generate_referral_code: { Args: never; Returns: string }
       get_channel_stats: {
         Args: { channel_id_param: string }
@@ -2807,6 +2814,8 @@ export type Database = {
         Args: { _group_id: string; _user_id: string }
         Returns: boolean
       }
+      join_channel_by_invite: { Args: { invite_code: string }; Returns: Json }
+      join_group_by_invite: { Args: { invite_code: string }; Returns: Json }
       purchase_shop_item: { Args: { _item_id: string }; Returns: Json }
       toggle_blog_like: { Args: { blog_id_param: string }; Returns: boolean }
       toggle_comment_like: {
