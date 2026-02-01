@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
 import {
   Dialog,
@@ -17,7 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Upload, Video, Image, Loader2 } from "lucide-react";
+import { Upload, Video, Image, Loader2, Settings2, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Progress } from "@/components/ui/progress";
 
@@ -28,10 +28,24 @@ interface VideoUploadDialogProps {
   onSuccess: () => void;
 }
 
+const qualityOptions = [
+  { value: "original", label: "اصلی (بدون تغییر)", desc: "کیفیت اصلی" },
+  { value: "1080p", label: "1080p HD", desc: "کیفیت بالا" },
+  { value: "720p", label: "720p", desc: "کیفیت متوسط" },
+  { value: "480p", label: "480p", desc: "حجم کم" },
+];
+
+const visibilityOptions = [
+  { value: "public", label: "عمومی", icon: "🌍" },
+  { value: "private", label: "خصوصی", icon: "🔒" },
+  { value: "unlisted", label: "لیست نشده", icon: "🔗" },
+];
+
 const VideoUploadDialog = ({ open, onOpenChange, categories, onSuccess }: VideoUploadDialogProps) => {
   const { toast } = useToast();
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [uploadStage, setUploadStage] = useState("");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [categoryId, setCategoryId] = useState("");
@@ -39,10 +53,30 @@ const VideoUploadDialog = ({ open, onOpenChange, categories, onSuccess }: VideoU
   const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
   const [videoPreview, setVideoPreview] = useState<string | null>(null);
   const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null);
+  const [quality, setQuality] = useState("original");
+  const [visibility, setVisibility] = useState("public");
+  const [tags, setTags] = useState("");
+  const [showAdvanced, setShowAdvanced] = useState(false);
+
+  const resetForm = useCallback(() => {
+    setTitle("");
+    setDescription("");
+    setCategoryId("");
+    setVideoFile(null);
+    setThumbnailFile(null);
+    setVideoPreview(null);
+    setThumbnailPreview(null);
+    setQuality("original");
+    setVisibility("public");
+    setTags("");
+    setUploadProgress(0);
+    setUploadStage("");
+  }, []);
 
   const handleVideoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      // 100MB limit
       if (file.size > 100 * 1024 * 1024) {
         toast({
           title: "خطا",
@@ -53,6 +87,12 @@ const VideoUploadDialog = ({ open, onOpenChange, categories, onSuccess }: VideoU
       }
       setVideoFile(file);
       setVideoPreview(URL.createObjectURL(file));
+      
+      // Auto-generate title from filename
+      if (!title) {
+        const autoTitle = file.name.replace(/\.[^/.]+$/, "").replace(/[-_]/g, " ");
+        setTitle(autoTitle);
+      }
     }
   };
 
@@ -74,35 +114,32 @@ const VideoUploadDialog = ({ open, onOpenChange, categories, onSuccess }: VideoU
 
   const handleUpload = async () => {
     if (!title.trim()) {
-      toast({
-        title: "خطا",
-        description: "عنوان ویدیو را وارد کنید",
-        variant: "destructive",
-      });
+      toast({ title: "خطا", description: "عنوان ویدیو را وارد کنید", variant: "destructive" });
       return;
     }
 
     if (!videoFile) {
-      toast({
-        title: "خطا",
-        description: "فایل ویدیو را انتخاب کنید",
-        variant: "destructive",
-      });
+      toast({ title: "خطا", description: "فایل ویدیو را انتخاب کنید", variant: "destructive" });
       return;
     }
 
     try {
       setUploading(true);
-      setUploadProgress(10);
+      setUploadStage("آماده‌سازی...");
+      setUploadProgress(5);
 
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("لطفا وارد شوید");
 
-      // Upload video
+      // Upload video with chunked progress simulation
+      setUploadStage("آپلود ویدیو...");
       const videoExt = videoFile.name.split('.').pop();
       const videoPath = `${user.id}/${Date.now()}.${videoExt}`;
       
-      setUploadProgress(20);
+      // Simulate progress for better UX
+      const progressInterval = setInterval(() => {
+        setUploadProgress(prev => Math.min(prev + 2, 55));
+      }, 200);
       
       const { error: videoError } = await supabase.storage
         .from("easytube-videos")
@@ -111,9 +148,12 @@ const VideoUploadDialog = ({ open, onOpenChange, categories, onSuccess }: VideoU
           upsert: false,
         });
 
+      clearInterval(progressInterval);
+      
       if (videoError) throw videoError;
       
       setUploadProgress(60);
+      setUploadStage("دریافت لینک ویدیو...");
 
       const { data: { publicUrl: videoUrl } } = supabase.storage
         .from("easytube-videos")
@@ -122,6 +162,9 @@ const VideoUploadDialog = ({ open, onOpenChange, categories, onSuccess }: VideoU
       // Upload thumbnail if provided
       let thumbnailUrl = null;
       if (thumbnailFile) {
+        setUploadStage("آپلود تصویر بندانگشتی...");
+        setUploadProgress(70);
+        
         const thumbExt = thumbnailFile.name.split('.').pop();
         const thumbPath = `${user.id}/${Date.now()}_thumb.${thumbExt}`;
         
@@ -141,7 +184,11 @@ const VideoUploadDialog = ({ open, onOpenChange, categories, onSuccess }: VideoU
         thumbnailUrl = publicUrl;
       }
       
-      setUploadProgress(80);
+      setUploadProgress(85);
+      setUploadStage("ثبت اطلاعات...");
+
+      // Parse tags
+      const tagsArray = tags.split(",").map(t => t.trim()).filter(Boolean);
 
       // Create video record
       const { error: dbError } = await supabase.from("videos").insert({
@@ -151,24 +198,28 @@ const VideoUploadDialog = ({ open, onOpenChange, categories, onSuccess }: VideoU
         video_url: videoUrl,
         thumbnail_url: thumbnailUrl,
         category_id: categoryId || null,
-        is_public: true,
+        is_public: visibility === "public",
+        status: "pending",
+        quality: quality,
+        tags: tagsArray.length > 0 ? tagsArray : null,
       });
 
       if (dbError) throw dbError;
       
       setUploadProgress(100);
+      setUploadStage("تکمیل شد!");
 
-      // Reset form
-      setTitle("");
-      setDescription("");
-      setCategoryId("");
-      setVideoFile(null);
-      setThumbnailFile(null);
-      setVideoPreview(null);
-      setThumbnailPreview(null);
+      toast({
+        title: "✅ ویدیو آپلود شد",
+        description: "ویدیو شما پس از تأیید منتشر خواهد شد",
+      });
+
+      setTimeout(() => {
+        resetForm();
+        onOpenChange(false);
+        onSuccess();
+      }, 500);
       
-      onOpenChange(false);
-      onSuccess();
     } catch (error: any) {
       console.error("Upload error:", error);
       toast({
@@ -178,7 +229,6 @@ const VideoUploadDialog = ({ open, onOpenChange, categories, onSuccess }: VideoU
       });
     } finally {
       setUploading(false);
-      setUploadProgress(0);
     }
   };
 
@@ -209,16 +259,19 @@ const VideoUploadDialog = ({ open, onOpenChange, categories, onSuccess }: VideoU
                       setVideoFile(null);
                       setVideoPreview(null);
                     }}
-                    className="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded text-xs"
+                    className="absolute top-2 left-2 p-1.5 rounded-lg bg-destructive text-white hover:bg-destructive/90"
                   >
-                    حذف
+                    <Trash2 className="w-4 h-4" />
                   </button>
                 </div>
               ) : (
-                <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-border rounded-lg cursor-pointer hover:bg-muted/50 transition-colors">
-                  <Video className="w-8 h-8 text-muted-foreground mb-2" />
+                <label className="flex flex-col items-center justify-center w-full h-28 border-2 border-dashed border-border rounded-lg cursor-pointer hover:bg-muted/50 transition-colors">
+                  <Video className="w-7 h-7 text-muted-foreground mb-1" />
                   <span className="text-sm text-muted-foreground">
-                    کلیک کنید یا فایل را بکشید
+                    انتخاب ویدیو
+                  </span>
+                  <span className="text-xs text-muted-foreground/60 mt-1">
+                    MP4, MOV, AVI
                   </span>
                   <input
                     type="file"
@@ -247,14 +300,14 @@ const VideoUploadDialog = ({ open, onOpenChange, categories, onSuccess }: VideoU
                       setThumbnailFile(null);
                       setThumbnailPreview(null);
                     }}
-                    className="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded text-xs"
+                    className="absolute top-2 left-2 p-1.5 rounded-lg bg-destructive text-white hover:bg-destructive/90"
                   >
-                    حذف
+                    <Trash2 className="w-4 h-4" />
                   </button>
                 </div>
               ) : (
-                <label className="flex flex-col items-center justify-center w-full h-24 border-2 border-dashed border-border rounded-lg cursor-pointer hover:bg-muted/50 transition-colors">
-                  <Image className="w-6 h-6 text-muted-foreground mb-1" />
+                <label className="flex flex-col items-center justify-center w-full h-20 border-2 border-dashed border-border rounded-lg cursor-pointer hover:bg-muted/50 transition-colors">
+                  <Image className="w-5 h-5 text-muted-foreground mb-1" />
                   <span className="text-xs text-muted-foreground">
                     انتخاب تصویر
                   </span>
@@ -271,12 +324,12 @@ const VideoUploadDialog = ({ open, onOpenChange, categories, onSuccess }: VideoU
 
           {/* Title */}
           <div>
-            <Label htmlFor="title">عنوان ویدیو</Label>
+            <Label htmlFor="title">عنوان ویدیو *</Label>
             <Input
               id="title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="عنوان ویدیو را وارد کنید..."
+              placeholder="عنوان جذاب برای ویدیو..."
               className="mt-1"
             />
           </div>
@@ -288,36 +341,100 @@ const VideoUploadDialog = ({ open, onOpenChange, categories, onSuccess }: VideoU
               id="description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="توضیحات ویدیو..."
-              rows={3}
+              placeholder="درباره ویدیو بنویسید..."
+              rows={2}
               className="mt-1"
             />
           </div>
 
-          {/* Category */}
-          <div>
-            <Label>دسته‌بندی</Label>
-            <Select value={categoryId} onValueChange={setCategoryId}>
-              <SelectTrigger className="mt-1">
-                <SelectValue placeholder="انتخاب دسته‌بندی" />
-              </SelectTrigger>
-              <SelectContent>
-                {categories.map((cat) => (
-                  <SelectItem key={cat.id} value={cat.id}>
-                    {cat.icon} {cat.name_fa}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+          {/* Category & Visibility Row */}
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <Label>دسته‌بندی</Label>
+              <Select value={categoryId} onValueChange={setCategoryId}>
+                <SelectTrigger className="mt-1">
+                  <SelectValue placeholder="انتخاب" />
+                </SelectTrigger>
+                <SelectContent>
+                  {categories.map((cat) => (
+                    <SelectItem key={cat.id} value={cat.id}>
+                      {cat.icon} {cat.name_fa}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div>
+              <Label>نمایش</Label>
+              <Select value={visibility} onValueChange={setVisibility}>
+                <SelectTrigger className="mt-1">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {visibilityOptions.map((opt) => (
+                    <SelectItem key={opt.value} value={opt.value}>
+                      {opt.icon} {opt.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
+
+          {/* Advanced Options Toggle */}
+          <button
+            type="button"
+            onClick={() => setShowAdvanced(!showAdvanced)}
+            className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
+          >
+            <Settings2 className="w-4 h-4" />
+            تنظیمات پیشرفته
+          </button>
+
+          {showAdvanced && (
+            <div className="space-y-3 p-3 rounded-lg bg-muted/30 border border-border/50">
+              {/* Quality */}
+              <div>
+                <Label>کیفیت خروجی</Label>
+                <Select value={quality} onValueChange={setQuality}>
+                  <SelectTrigger className="mt-1">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {qualityOptions.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>
+                        <div className="flex items-center gap-2">
+                          <span>{opt.label}</span>
+                          <span className="text-xs text-muted-foreground">({opt.desc})</span>
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              {/* Tags */}
+              <div>
+                <Label>برچسب‌ها</Label>
+                <Input
+                  value={tags}
+                  onChange={(e) => setTags(e.target.value)}
+                  placeholder="آموزش, ریاضی, کنکور (با کاما جدا کنید)"
+                  className="mt-1"
+                />
+              </div>
+            </div>
+          )}
 
           {/* Progress */}
           {uploading && (
-            <div className="space-y-2">
-              <Progress value={uploadProgress} />
-              <p className="text-xs text-center text-muted-foreground">
-                در حال آپلود... {uploadProgress}%
-              </p>
+            <div className="space-y-2 p-3 rounded-lg bg-primary/5 border border-primary/20">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-muted-foreground">{uploadStage}</span>
+                <span className="font-bold text-primary">{uploadProgress}%</span>
+              </div>
+              <Progress value={uploadProgress} className="h-2" />
             </div>
           )}
 
@@ -325,12 +442,12 @@ const VideoUploadDialog = ({ open, onOpenChange, categories, onSuccess }: VideoU
           <Button 
             onClick={handleUpload} 
             disabled={uploading || !videoFile || !title.trim()}
-            className="w-full gradient-primary"
+            className="w-full h-11 bg-gradient-to-r from-red-500 to-rose-600 hover:opacity-90 text-white font-bold"
           >
             {uploading ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin ml-2" />
-                در حال آپلود...
+                {uploadStage}
               </>
             ) : (
               <>

@@ -54,7 +54,7 @@ const AdBanner = () => {
 
   if (loading) {
     return (
-      <div className="w-full h-24 sm:h-32 bg-muted/50 rounded-2xl animate-pulse" />
+      <div className="w-full h-20 sm:h-28 bg-muted/50 rounded-xl animate-pulse hidden sm:block" />
     );
   }
 
@@ -64,13 +64,13 @@ const AdBanner = () => {
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.3 }}
       onClick={handleClick}
-      className="cursor-pointer group"
+      className="cursor-pointer group hidden sm:block"
     >
-      <div className="relative overflow-hidden rounded-2xl border border-border/40 hover:border-primary/50 transition-all duration-200 hover:shadow-lg">
+      <div className="relative overflow-hidden rounded-xl border border-border/40 hover:border-primary/50 transition-all duration-200 hover:shadow-lg">
         <img
           src={banner?.image_url || defaultBanner}
           alt="تبلیغات"
-          className="w-full h-24 sm:h-32 object-cover group-hover:scale-[1.02] transition-transform duration-300"
+          className="w-full h-20 sm:h-28 object-cover group-hover:scale-[1.02] transition-transform duration-300"
         />
         {!banner && (
           <div className="absolute inset-0 bg-gradient-to-r from-primary/80 to-secondary/80 flex items-center justify-center">
