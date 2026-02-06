@@ -2255,51 +2255,87 @@ export type Database = {
       user_blogs: {
         Row: {
           author_name: string | null
+          auto_draft: Json | null
+          category: string | null
           content: string
+          content_html: string | null
           created_at: string
           excerpt: string | null
           featured_image: string | null
           id: string
+          is_ai_generated: boolean | null
+          is_featured: boolean | null
           likes_count: number | null
           published_at: string | null
+          reading_score: number | null
           rejection_reason: string | null
+          scheduled_at: string | null
+          seo_description: string | null
+          seo_keywords: string[] | null
           slug: string
           status: string | null
+          tags: string[] | null
           title: string
           updated_at: string
           user_id: string
+          versions: Json | null
+          word_count: number | null
         }
         Insert: {
           author_name?: string | null
+          auto_draft?: Json | null
+          category?: string | null
           content: string
+          content_html?: string | null
           created_at?: string
           excerpt?: string | null
           featured_image?: string | null
           id?: string
+          is_ai_generated?: boolean | null
+          is_featured?: boolean | null
           likes_count?: number | null
           published_at?: string | null
+          reading_score?: number | null
           rejection_reason?: string | null
+          scheduled_at?: string | null
+          seo_description?: string | null
+          seo_keywords?: string[] | null
           slug: string
           status?: string | null
+          tags?: string[] | null
           title: string
           updated_at?: string
           user_id: string
+          versions?: Json | null
+          word_count?: number | null
         }
         Update: {
           author_name?: string | null
+          auto_draft?: Json | null
+          category?: string | null
           content?: string
+          content_html?: string | null
           created_at?: string
           excerpt?: string | null
           featured_image?: string | null
           id?: string
+          is_ai_generated?: boolean | null
+          is_featured?: boolean | null
           likes_count?: number | null
           published_at?: string | null
+          reading_score?: number | null
           rejection_reason?: string | null
+          scheduled_at?: string | null
+          seo_description?: string | null
+          seo_keywords?: string[] | null
           slug?: string
           status?: string | null
+          tags?: string[] | null
           title?: string
           updated_at?: string
           user_id?: string
+          versions?: Json | null
+          word_count?: number | null
         }
         Relationships: []
       }
