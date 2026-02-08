@@ -1806,6 +1806,30 @@ export type Database = {
         }
         Relationships: []
       }
+      sport_cache: {
+        Row: {
+          cache_type: string
+          data: Json
+          id: string
+          league_code: string | null
+          updated_at: string
+        }
+        Insert: {
+          cache_type: string
+          data?: Json
+          id: string
+          league_code?: string | null
+          updated_at?: string
+        }
+        Update: {
+          cache_type?: string
+          data?: Json
+          id?: string
+          league_code?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       step_by_step_solutions: {
         Row: {
           created_at: string | null
