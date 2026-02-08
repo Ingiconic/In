@@ -74,6 +74,7 @@ import VocabNotebook from "./pages/VocabNotebook";
 import Handouts from "./pages/Handouts";
 import AdminHandouts from "./pages/AdminHandouts";
 import Messenger from "./pages/Messenger";
+import EasySport from "./pages/EasySport";
 
 const queryClient = new QueryClient();
 
@@ -159,6 +160,7 @@ const App = () => (
               <Route path="/admin/handouts" element={<AdminHandouts />} />
               <Route path="/handouts" element={<Handouts />} />
               <Route path="/messenger" element={<Messenger />} />
+              <Route path="/easysport" element={<EasySport />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
           </Routes>

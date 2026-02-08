@@ -49,7 +49,13 @@ verify_jwt = true
 verify_jwt = true
 
 [functions.ai-blog-enhance]
-verify_jwt = true
+verify_jwt = false
 
 [functions.auto-blog-generate]
+verify_jwt = false
+
+[functions.sport-fetch-data]
+verify_jwt = false
+
+[functions.sport-news]
 verify_jwt = false
