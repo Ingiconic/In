@@ -6,157 +6,232 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-// Football-Data.org free API (10 req/min)
-const FOOTBALL_API = "https://api.football-data.org/v4";
-
-// League codes mapping
-const LEAGUES: Record<string, { code: string; name: string; nameFa: string }> = {
-  PL: { code: "PL", name: "Premier League", nameFa: "پریمیر لیگ" },
-  PD: { code: "PD", name: "La Liga", nameFa: "لالیگا" },
-  SA: { code: "SA", name: "Serie A", nameFa: "سری آ ایتالیا" },
-  BL1: { code: "BL1", name: "Bundesliga", nameFa: "بوندسلیگا" },
-  FL1: { code: "FL1", name: "Ligue 1", nameFa: "لیگ فرانسه" },
-  CL: { code: "CL", name: "Champions League", nameFa: "چمپیونز لیگ" },
-  WC: { code: "WC", name: "World Cup", nameFa: "جام جهانی" },
+const LEAGUES: Record<string, { name: string; nameFa: string }> = {
+  PL: { name: "Premier League", nameFa: "پریمیر لیگ" },
+  PD: { name: "La Liga", nameFa: "لالیگا" },
+  SA: { name: "Serie A", nameFa: "سری آ" },
+  BL1: { name: "Bundesliga", nameFa: "بوندسلیگا" },
+  FL1: { name: "Ligue 1", nameFa: "لیگ فرانسه" },
+  CL: { name: "Champions League", nameFa: "چمپیونز لیگ" },
+  WC: { name: "World Cup", nameFa: "جام جهانی" },
+  IR: { name: "Iran Pro League", nameFa: "لیگ برتر ایران" },
+  BR: { name: "Brasileirão", nameFa: "لیگ برزیل" },
+  SAU: { name: "Saudi Pro League", nameFa: "لیگ عربستان" },
+  AC: { name: "AFC Asian Cup", nameFa: "جام ملت‌های آسیا" },
 };
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const FOOTBALL_API_KEY = Deno.env.get("FOOTBALL_API_KEY");
-    if (!FOOTBALL_API_KEY) {
-      throw new Error("FOOTBALL_API_KEY not configured");
-    }
+    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+    if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
 
     const url = new URL(req.url);
-    const type = url.searchParams.get("type") || "matches"; // matches, standings
-    const league = url.searchParams.get("league") || "";
+    const type = url.searchParams.get("type") || "matches";
+    const league = url.searchParams.get("league") || "PL";
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    const headers = { "X-Auth-Token": FOOTBALL_API_KEY };
+    // Check cache first (5 min for matches, 30 min for standings)
+    const cacheId = type === "matches" ? "matches_global" : `standings_${league}`;
+    const maxAge = type === "matches" ? 300000 : 1800000;
+
+    const { data: cached } = await supabase
+      .from("sport_cache")
+      .select("data, updated_at")
+      .eq("id", cacheId)
+      .single();
+
+    if (cached?.updated_at) {
+      const age = Date.now() - new Date(cached.updated_at).getTime();
+      if (age < maxAge) {
+        return new Response(JSON.stringify(cached.data), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+    }
+
+    const today = new Date();
+    const dateStr = today.toISOString().split("T")[0];
 
     if (type === "matches") {
-      // Fetch matches for yesterday, today, tomorrow, day after
-      const today = new Date();
-      const yesterday = new Date(today); yesterday.setDate(today.getDate() - 1);
-      const tomorrow = new Date(today); tomorrow.setDate(today.getDate() + 1);
-      const dayAfter = new Date(today); dayAfter.setDate(today.getDate() + 2);
+      const prompt = `You are a football data API. Return ONLY valid JSON, no markdown.
+Today is ${dateStr}. Provide real football matches from yesterday, today, tomorrow, and day after tomorrow.
+Include matches from these competitions: Premier League, La Liga, Serie A, Bundesliga, Ligue 1, Champions League, Iran Pro League, Saudi Pro League, Brasileirão.
+Only include matches that are actually scheduled or were actually played. If you're not sure about a match, don't include it.
 
-      const dateFrom = yesterday.toISOString().split("T")[0];
-      const dateTo = dayAfter.toISOString().split("T")[0];
+Return this exact JSON structure:
+{
+  "matches": [
+    {
+      "id": 1,
+      "competition": {"name": "Premier League", "code": "PL", "emblem": ""},
+      "utcDate": "2025-02-10T15:00:00Z",
+      "status": "SCHEDULED",
+      "homeTeam": {"name": "Arsenal", "shortName": "Arsenal", "tla": "ARS", "crest": ""},
+      "awayTeam": {"name": "Chelsea", "shortName": "Chelsea", "tla": "CHE", "crest": ""},
+      "score": {"fullTime": {"home": null, "away": null}, "halfTime": {"home": null, "away": null}}
+    }
+  ]
+}
 
-      const response = await fetch(
-        `${FOOTBALL_API}/matches?dateFrom=${dateFrom}&dateTo=${dateTo}`,
-        { headers }
-      );
+Status values: SCHEDULED, FINISHED, IN_PLAY, PAUSED, POSTPONED, CANCELLED.
+For FINISHED matches, include actual scores. For others, scores should be null.
+Include 15-30 real matches. Be accurate with team names and dates.`;
+
+      const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${LOVABLE_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "google/gemini-2.5-flash",
+          messages: [
+            { role: "system", content: "You are a football data provider. Return ONLY valid JSON. No markdown, no code blocks, no explanation." },
+            { role: "user", content: prompt },
+          ],
+        }),
+      });
 
       if (!response.ok) {
-        const errText = await response.text();
-        console.error("Football API error:", response.status, errText);
-        throw new Error(`Football API error: ${response.status}`);
+        console.error("AI error:", response.status);
+        // Return cached data if available
+        if (cached?.data) {
+          return new Response(JSON.stringify(cached.data), {
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+        throw new Error("AI request failed");
       }
 
-      const data = await response.json();
+      const aiData = await response.json();
+      let content = aiData.choices?.[0]?.message?.content || "";
       
-      // Group matches by competition and date
-      const matches = (data.matches || []).map((m: any) => ({
-        id: m.id,
-        competition: {
-          name: m.competition?.name,
-          code: m.competition?.code,
-          emblem: m.competition?.emblem,
-        },
-        utcDate: m.utcDate,
-        status: m.status,
-        matchday: m.matchday,
-        homeTeam: {
-          name: m.homeTeam?.name,
-          shortName: m.homeTeam?.shortName,
-          tla: m.homeTeam?.tla,
-          crest: m.homeTeam?.crest,
-        },
-        awayTeam: {
-          name: m.awayTeam?.name,
-          shortName: m.awayTeam?.shortName,
-          tla: m.awayTeam?.tla,
-          crest: m.awayTeam?.crest,
-        },
-        score: {
-          fullTime: m.score?.fullTime,
-          halfTime: m.score?.halfTime,
-        },
-      }));
+      // Clean markdown code blocks if present
+      content = content.replace(/```json\s*/g, "").replace(/```\s*/g, "").trim();
 
-      // Cache in database
+      let parsed;
+      try {
+        parsed = JSON.parse(content);
+      } catch {
+        console.error("Failed to parse AI response:", content.substring(0, 500));
+        if (cached?.data) {
+          return new Response(JSON.stringify(cached.data), {
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+        parsed = { matches: [] };
+      }
+
+      const result = { matches: parsed.matches || [], fetchedAt: new Date().toISOString() };
+
       await supabase.from("sport_cache").upsert({
         id: "matches_global",
         cache_type: "matches",
-        data: { matches, dateFrom, dateTo, fetchedAt: new Date().toISOString() },
+        data: result,
         updated_at: new Date().toISOString(),
       }, { onConflict: "id" });
 
-      return new Response(JSON.stringify({ matches, dateFrom, dateTo }), {
+      return new Response(JSON.stringify(result), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
     if (type === "standings") {
-      const leagueCode = league || "PL";
-      const leagueInfo = LEAGUES[leagueCode];
+      const leagueInfo = LEAGUES[league];
       if (!leagueInfo) {
-        return new Response(JSON.stringify({ error: "Invalid league code" }), {
+        return new Response(JSON.stringify({ error: "Invalid league" }), {
           status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
 
-      const response = await fetch(
-        `${FOOTBALL_API}/competitions/${leagueCode}/standings`,
-        { headers }
-      );
+      const prompt = `You are a football data API. Return ONLY valid JSON, no markdown.
+Provide the current ${leagueInfo.name} (${leagueInfo.nameFa}) standings for the 2024-2025 season.
+Include all teams with their actual current stats. Be as accurate as possible.
+
+Return this exact JSON structure:
+{
+  "standings": [{
+    "type": "TOTAL",
+    "table": [
+      {
+        "position": 1,
+        "team": {"name": "Team Name", "shortName": "Short", "tla": "TLA", "crest": ""},
+        "playedGames": 20,
+        "won": 15,
+        "draw": 3,
+        "lost": 2,
+        "points": 48,
+        "goalsFor": 45,
+        "goalsAgainst": 15,
+        "goalDifference": 30
+      }
+    ]
+  }]
+}
+
+Include all teams in the league, sorted by position. Use real current data for the 2024-2025 season.`;
+
+      const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${LOVABLE_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "google/gemini-2.5-flash",
+          messages: [
+            { role: "system", content: "You are a football data provider. Return ONLY valid JSON. No markdown, no code blocks." },
+            { role: "user", content: prompt },
+          ],
+        }),
+      });
 
       if (!response.ok) {
-        const errText = await response.text();
-        console.error("Standings API error:", response.status, errText);
-        throw new Error(`Standings API error: ${response.status}`);
+        if (cached?.data) {
+          return new Response(JSON.stringify(cached.data), {
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+        throw new Error("AI request failed");
       }
 
-      const data = await response.json();
-      
-      const standings = (data.standings || []).map((s: any) => ({
-        type: s.type,
-        table: (s.table || []).map((t: any) => ({
-          position: t.position,
-          team: {
-            name: t.team?.name,
-            shortName: t.team?.shortName,
-            tla: t.team?.tla,
-            crest: t.team?.crest,
-          },
-          playedGames: t.playedGames,
-          won: t.won,
-          draw: t.draw,
-          lost: t.lost,
-          points: t.points,
-          goalsFor: t.goalsFor,
-          goalsAgainst: t.goalsAgainst,
-          goalDifference: t.goalDifference,
-        })),
-      }));
+      const aiData = await response.json();
+      let content = aiData.choices?.[0]?.message?.content || "";
+      content = content.replace(/```json\s*/g, "").replace(/```\s*/g, "").trim();
 
-      // Cache
+      let parsed;
+      try {
+        parsed = JSON.parse(content);
+      } catch {
+        console.error("Failed to parse standings:", content.substring(0, 500));
+        if (cached?.data) {
+          return new Response(JSON.stringify(cached.data), {
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+        parsed = { standings: [] };
+      }
+
+      const result = {
+        standings: parsed.standings || [],
+        leagueInfo,
+        fetchedAt: new Date().toISOString(),
+      };
+
       await supabase.from("sport_cache").upsert({
-        id: `standings_${leagueCode}`,
+        id: `standings_${league}`,
         cache_type: "standings",
-        league_code: leagueCode,
-        data: { standings, competition: data.competition, season: data.season, fetchedAt: new Date().toISOString() },
+        league_code: league,
+        data: result,
         updated_at: new Date().toISOString(),
       }, { onConflict: "id" });
 
-      return new Response(JSON.stringify({ standings, competition: data.competition, leagueInfo }), {
+      return new Response(JSON.stringify(result), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
