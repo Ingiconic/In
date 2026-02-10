@@ -10,6 +10,9 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
 import { supabase } from "@/lib/supabase";
+
+const SUPABASE_URL = "https://ajhvxkbmpbuslllbgkab.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFqaHZ4a2JtcGJ1c2xsbGJna2FiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE4NDMwNTMsImV4cCI6MjA3NzQxOTA1M30.z0pFauKITaI1nRRTPBf6J124XOHWnVJWSG9_KChe2w8";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Trophy, Newspaper, Calendar, RefreshCw, Wifi, Globe, TrendingUp, Shield, Zap, Timer,
@@ -224,20 +227,22 @@ const EasySport = () => {
           .from("sport_cache").select("data, updated_at").eq("id", "matches_global").single();
         const cacheData = cached?.data as any;
         if (cacheData?.matches) {
-          setMatches(cacheData.matches);
+          setMatches(Array.isArray(cacheData.matches) ? cacheData.matches : Object.values(cacheData.matches));
           setLastUpdate(cached.updated_at);
           setLoadingMatches(false);
           const age = Date.now() - new Date(cached.updated_at).getTime();
           if (age < 60000) return;
         }
       }
-      const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/sport-fetch-data?type=matches`,
-        { headers: { Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` } }
-      );
+      const response = await fetch(`${SUPABASE_URL}/functions/v1/sport-data`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${SUPABASE_KEY}`, "Content-Type": "application/json" },
+        body: JSON.stringify({ type: "matches" }),
+      });
       if (response.ok) {
         const data = await response.json();
-        setMatches(data.matches || []);
+        const matchArr = Array.isArray(data.matches) ? data.matches : Object.values(data.matches || {});
+        setMatches(matchArr as Match[]);
         setLastUpdate(new Date().toISOString());
       }
     } catch (e) { console.error("Error loading matches:", e); }
@@ -252,19 +257,24 @@ const EasySport = () => {
           .from("sport_cache").select("data, updated_at").eq("id", `standings_${league}`).single();
         const cacheData = cached?.data as any;
         if (cacheData?.standings?.[0]?.table) {
-          setStandings(cacheData.standings[0].table);
+          const tbl = cacheData.standings[0].table;
+          setStandings(Array.isArray(tbl) ? tbl : Object.values(tbl));
           setLoadingStandings(false);
           const age = Date.now() - new Date(cached.updated_at).getTime();
           if (age < 60000) return;
         }
       }
-      const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/sport-fetch-data?type=standings&league=${league}`,
-        { headers: { Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` } }
-      );
+      const response = await fetch(`${SUPABASE_URL}/functions/v1/sport-data`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${SUPABASE_KEY}`, "Content-Type": "application/json" },
+        body: JSON.stringify({ type: "standings", league }),
+      });
       if (response.ok) {
         const data = await response.json();
-        setStandings(data.standings?.[0]?.table || []);
+        const stArr = Array.isArray(data.standings) ? data.standings : Object.values(data.standings || {});
+        const firstStanding = stArr[0] as any;
+        const tbl = firstStanding?.table;
+        setStandings(Array.isArray(tbl) ? tbl : Object.values(tbl || {}));
       }
     } catch (e) { console.error("Error loading standings:", e); }
     finally { setLoadingStandings(false); }
@@ -281,10 +291,9 @@ const EasySport = () => {
         const age = Date.now() - new Date(cached.updated_at).getTime();
         if (age < 120000) return;
       }
-      const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/sport-news`,
-        { headers: { Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` } }
-      );
+      const response = await fetch(`${SUPABASE_URL}/functions/v1/sport-news`, {
+        headers: { Authorization: `Bearer ${SUPABASE_KEY}` },
+      });
       if (response.ok) {
         const data = await response.json();
         setNews(data.news || []);
