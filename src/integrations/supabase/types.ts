@@ -1830,6 +1830,54 @@ export type Database = {
         }
         Relationships: []
       }
+      sport_news_articles: {
+        Row: {
+          category: string | null
+          content: string
+          created_at: string | null
+          id: string
+          image_url: string | null
+          is_translated: boolean | null
+          lang: string | null
+          published_at: string | null
+          source_name: string | null
+          source_url: string | null
+          summary: string | null
+          title: string
+          title_original: string | null
+        }
+        Insert: {
+          category?: string | null
+          content: string
+          created_at?: string | null
+          id?: string
+          image_url?: string | null
+          is_translated?: boolean | null
+          lang?: string | null
+          published_at?: string | null
+          source_name?: string | null
+          source_url?: string | null
+          summary?: string | null
+          title: string
+          title_original?: string | null
+        }
+        Update: {
+          category?: string | null
+          content?: string
+          created_at?: string | null
+          id?: string
+          image_url?: string | null
+          is_translated?: boolean | null
+          lang?: string | null
+          published_at?: string | null
+          source_name?: string | null
+          source_url?: string | null
+          summary?: string | null
+          title?: string
+          title_original?: string | null
+        }
+        Relationships: []
+      }
       step_by_step_solutions: {
         Row: {
           created_at: string | null

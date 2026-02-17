@@ -207,6 +207,13 @@ const Dashboard = () => {
                   <FileText className="w-3 h-3" />
                   <span>جزوات</span>
                 </button>
+                <button
+                  onClick={() => navigate("/easysport")}
+                  className="flex items-center gap-1 bg-gradient-to-r from-emerald-500 to-green-600 text-white px-2 py-1.5 rounded-lg font-bold text-[10px] sm:text-xs active:scale-95 transition-transform shadow-md hover:shadow-lg touch-target"
+                >
+                  <Trophy className="w-3 h-3" />
+                  <span>اسپورت</span>
+                </button>
               </div>
             ) : (
               <button
